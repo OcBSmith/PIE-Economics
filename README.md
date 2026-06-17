@@ -7,7 +7,10 @@ asistido por IA generativa, para portar los modelos del libro
 Torres, Vernon Press, 2019) a código abierto.
 
 Ver [`PLAN_MAESTRO_MACRO_AI_COMP.md`](PLAN_MAESTRO_MACRO_AI_COMP.md) para el
-plan de ejecución completo y [`PROPUESTA DE PROYECTO DE INNOVACIÓN
+plan de ejecución completo (con sus checkboxes de progreso),
+[`docs/WIKI.md`](docs/WIKI.md) para el registro técnico día a día
+(decisiones, hallazgos sobre el libro, qué se hizo en cada sesión), y
+[`PROPUESTA DE PROYECTO DE INNOVACIÓN
 EDUCATIVA-2.docx`](<PROPUESTA DE PROYECTO DE INNOVACIÓN EDUCATIVA-2.docx>)
 para la propuesta oficial de la convocatoria.
 

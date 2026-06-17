@@ -4,7 +4,7 @@
 > **Duración:** 24 meses (Noviembre 2026 – Noviembre 2028)
 > **IP / Coordinadora:** Dra. Anelí Bongers
 > **Responsable técnico (PTGAS):** D. Antonio Francisco Romero Carrasco
-> **Versión del plan:** v1.0 — última actualización: _(rellenar)_
+> **Versión del plan:** v1.0 — última actualización: 2026-06-17
 
 ---
 
@@ -228,17 +228,17 @@ macro-ai-comp/
     └── PULL_REQUEST_TEMPLATE.md
 ```
 
-- [ ] Crear estructura de carpetas con commits trazables (AR)
-- [ ] Añadir `.gitignore` correcto para Python + Julia + Jupyter + LaTeX (AR)
+- [~] Crear estructura de carpetas con commits trazables (AR) — creados `src/`, `tests/`, `practicas/00.../` con el primer commit (2026-06-17); faltan `docs/actas/`, `prompts/`, `bitacora/`, `evaluacion/`, `infraestructura/`, `.github/`
+- [~] Añadir `.gitignore` correcto para Python + Julia + Jupyter + LaTeX (AR) — Python/Jupyter cubierto; falta Julia y LaTeX
 - [ ] Configurar `pre-commit` con los hooks de calidad de código (ver §0.3):
   - [ ] `black` — formateo automático Python
   - [ ] `ruff` — linting Python (sustituye flake8 + isort + pydocstyle)
-  - [ ] `nbstripout` — limpia outputs de notebooks antes de commit
+  - [~] `nbstripout` — instalado y ejecutado manualmente antes de cada commit; falta integrarlo como hook de pre-commit automático
   - [ ] `JuliaFormatter` — formateo automático Julia (via pre-commit hook)
   - [ ] `nbval` (opcional) — valida que los notebooks se ejecutan como smoke test local
-- [ ] Crear `pyproject.toml` con configuración de `black` y `ruff` (line-length 88, target Python 3.11)
+- [x] Crear `pyproject.toml` con configuración de `black` y `ruff` (line-length 88, target Python 3.11)
 - [ ] Crear `.JuliaFormatter.toml` con estilo BlueStyle
-- [ ] Crear `setup.py` / `pyproject.toml` para que `macroaicomp` sea instalable con `pip install -e .`
+- [x] Crear `setup.py` / `pyproject.toml` para que `macroaicomp` sea instalable con `pip install -e .`
 - [ ] Crear `Project.toml` del paquete Julia `MacroAIComp`
 - [ ] Configurar GitHub Actions para CI:
   - [ ] Test que cada notebook se ejecuta sin errores (`nbconvert --execute`)
@@ -252,8 +252,9 @@ macro-ai-comp/
 
 ### 1.3. Entornos reproducibles
 
-- [ ] **Python**: fijar versión (recomendado 3.11), `requirements.txt` con:
+- [~] **Python**: fijar versión (recomendado 3.11), `requirements.txt` con:
   - `numpy`, `scipy`, `sympy`, `matplotlib`, `pandas`, `statsmodels`, `linearmodels`, `numba`, `jupyter`, `ipywidgets`
+  - Hecho hasta ahora: `numpy`, `scipy`, `matplotlib`, `ipywidgets`, `jupyter`, `nbconvert`, `nbstripout`, `pytest` (suficiente para P0). Pendientes: `sympy`, `pandas`, `statsmodels`, `linearmodels`, `numba` (se añadirán cuando las prácticas que los necesiten lo requieran). Venv local con Python 3.14 (la máquina no tiene 3.11, pero `requires-python >=3.11` es compatible).
 - [ ] **Julia**: fijar versión (recomendado 1.10 LTS), `Project.toml` con:
   - `DifferentialEquations`, `NLsolve`, `Optim`, `Plots`, `DataFrames`, `Symbolics`, `IJulia`
 - [ ] Probar que **un notebook funciona en Google Colab gratuito** sin tocar nada (instalación al vuelo de Julia con `%%capture`)
@@ -280,7 +281,7 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 
 | # | Capítulo del libro (Bongers/Gómez/Torres 2019) | Modelo | Excel original | Apéndice MATLAB/DYNARE de verificación | Versión Python/Colab | Versión Julia | Bitácora plantilla | Prompts curados | Estado |
 |---|---|---|---|---|---|---|---|---|---|
-| P0 | Cap. 1 — Introduction to computational dynamic systems | Sistema 2 ecuaciones genérico | [ ] localizar `.xlsx` del libro | App. B (MATLAB) | [ ] `practicas/00/python.ipynb` | [ ] `practicas/00/julia.ipynb` | [ ] | [ ] | [ ] |
+| P0 | Cap. 1 — Introduction to computational dynamic systems | Sistema 2 ecuaciones genérico | [ ] localizar `.xlsx` del libro | App. B (MATLAB) + App. C (DYNARE) | [x] `practicas/00/python.ipynb` | [ ] `practicas/00/julia.ipynb` | [ ] | [ ] | [~] Python listo y verificado (2026-06-17); falta Excel, Julia, bitácora y prompts |
 | P1 | Cap. 2 — The dynamic IS-LM model | IS-LM dinámico + Phillips | [ ] | App. D (MATLAB) + App. E (DYNARE) | [ ] | [ ] | [ ] | [ ] | [ ] |
 | P2 | Cap. 3 — Exchange rate overshooting | Dornbusch overshooting | [ ] | App. F (DYNARE) | [ ] | [ ] | [ ] | [ ] | [ ] |
 | P3 | Cap. 4 — Consumption-saving optimal decision | Hogar consumo-ahorro | [ ] | App. G (MATLAB) + App. H (Newton) | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -315,10 +316,10 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 
 > Orden de ataque, de menor a mayor dificultad:
 
-- [ ] **P0** Cap. 1 — sistema dinámico genérico (AR)
-  - [ ] Notebook Colab con celdas de teoría → calibración → solución → gráficas
-  - [ ] Validación cruzada con App. B MATLAB del libro
-  - [ ] Widget `ipywidgets` para que el alumno mueva parámetros en vivo
+- [x] **P0** Cap. 1 — sistema dinámico genérico (AR) — completado 2026-06-17 (ver [`docs/WIKI.md`](docs/WIKI.md))
+  - [x] Notebook Colab con celdas de teoría → calibración → solución → gráficas
+  - [x] Validación cruzada con App. B MATLAB del libro (y App. C DYNARE, caso punto de silla)
+  - [x] Widget `ipywidgets` para que el alumno mueva parámetros en vivo
 - [ ] **P1** Cap. 2 — IS-LM dinámico (AB + AR)
   - [ ] Notebook con shock monetario y fiscal en `scipy.integrate.solve_ivp`
   - [ ] Diagrama de fase generado con `matplotlib`
