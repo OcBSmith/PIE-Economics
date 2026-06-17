@@ -1,0 +1,18 @@
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+.ipynb_checkpoints/
+.pytest_cache/
+.ruff_cache/
+*.pdf
+*.aux
+*.log
+.DS_Store
+
+# Material con copyright de Vernon Press (no es nuestro para redistribuir
+# en un repo que aspira a ser MIT/CC BY-SA en abierto). Se usa solo como
+# fuente local para portar capitulos; no se versiona.
+An_Introduction_to_Computational_Macroeconomics*.docx
