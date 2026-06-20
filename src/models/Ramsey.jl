@@ -32,11 +32,6 @@ end
 
 Computes the deterministic steady state of the Ramsey model.
 """
-"""
-    compute_ramsey_steady_state(params)
-
-Computes the deterministic steady state of the Ramsey model.
-"""
 function compute_ramsey_steady_state(params::RamseyParams)
     alpha = params.alpha
     beta = params.beta
