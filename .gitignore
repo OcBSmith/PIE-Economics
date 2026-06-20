@@ -23,4 +23,7 @@ site/
 # Temp scratch files
 scratch/recovered/
 
+# Julia Manifest
+Manifest.toml
+
 
