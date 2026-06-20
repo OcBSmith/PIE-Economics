@@ -6,3 +6,4 @@ pytest
 jupyter
 nbconvert
 nbstripout
+cvxpy

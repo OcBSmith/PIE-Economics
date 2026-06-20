@@ -1,0 +1,320 @@
+
+f(2*t-1) = C(t+1)-beta*(1+R)*C(t);
+
+f(2*t) = W(t)-(C(t)/((1-L(t))))*(1-gamma)/gamma;
+
+end
+
+f(2*T) = C(T)-W(T)*L(T)-(1+R)*B(T-1);
+
+f(2*T+1) = W(T)-(C(T)/((1-L(T))))*(1-gamma)/gamma;
+
+Appendix J: The consumer problem with taxes in MATLAB
+
+Introducing taxes in the consumer's problem is simple, since the tax
+rates are exogenous variables and, therefore, the basic structure of the
+problem is not altered. Below, we present a simple code in MATLAB to
+solve the consumer problem with three types of taxes: taxes on
+consumption, on salary income and on the profitability of financial
+assets. The main file, called "mc6.m", is as follows:
+
+%***************************************************
+
+% An Introduction to Computational Macroeconomics
+
+% A. Bongers, T. Gómez and J. L. Torres (2019)
+
+% Distorting taxes
+
+% Utility function: U=gamma*ln(C)+(1-gamma)*log(1-L)
+
+% File: m6.m. Function file: m6foc.m
+
+%***************************************************
+
+clear all
+
+% Model parameters
+
+T = 30; % Individual's life time
+
+beta = 0.97; % Intertemporal discount factor
+
+gamma = 0.40; % Weight of consumption in profit
+
+% Exogenous variables
+
+R = 0.05; % Real interest rate
+
+tauw = 0.35;
+
+taur = 0.25;
+
+tauc = 0.15;
+
+for t=1:T;
+
+W(t) = 100; % Salary income
+
+end
+
+par = T beta R gamma tauw taur tauc W];
+
+save par par;
+
+% Initial values
+
+x0 = 10*ones(size(1:T)), 0.3*ones(size(1:T))]';
+
+% Zeros Search Algorithm
+
+sol = fsolve('m6foc', x0);
+
+% Solution
+
+for t=1:T
+
+C(t) = sol(t);
+
+L(t) = sol(t+T);
+
+end
+
+for t=2:T;
+
+B(1) = (1-tauw)*W(1)*L(1)-(1+tauc)*C(1);
+
+B(t) = (1+(1-taur)*R)*B(t-1)+(1-tauw)*W(t)*L(t)-(1+tauc)*C(t);
+
+% G(t) = tauc*C(t)+tauw*W(t)*L(t)+taur*R*B(t-1);
+
+end
+
+% Change in tax rates
+
+tauw1 = 0.30;
+
+taur1 = 0.25;
+
+tauc1 = 0.15;
+
+par = T beta R gamma tauw1 taur1 tauc1 W];
+
+save par par;
+
+% Initial values
+
+x0 = 10*ones(size(1:T)), 0.3*ones(size(1:T))]';
+
+% Zeros Search Algorithm
+
+sol=fsolve(‘m6foc’,x0);
+
+% Solution
+
+for t=1:T
+
+C1(t) = sol(t);
+
+L1(t) = sol(t+T);
+
+end
+
+W1=W;
+
+for t=2:T;
+
+B1(1) = (1-tauw1)*W(1)*L1(1)-(1+tauc1)*C1(1);
+
+B1(t) = (1+(1-taur1)*R)*B1(t-1)+(1-tauw1)*W(t)*L1(t)
+
+-(1+tauc1)*C1(t);
+
+end
+
+% Graphics
+
+i=1:T;
+
+subplot(2,2,1)
+
+plot(i,C,'--',i,C1,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Consumption')
+
+subplot(2,2,2)
+
+plot(i,B,'--',i,B1,'-','Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Savings (Stock of financial assets)')
+
+subplot(2,2,3)
+
+plot(i,(1-tauw).*W.*L,'--',i,(1-tauw1).*W1.*L1,
+
+'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Salary income (after taxes)')
+
+subplot(2,2,4)
+
+plot(i,L,'--',i,L1,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Work (Time Fraction)')
+
+The associated function file, called "m6foc.m" is as follows:
+
+%*************************************************
+
+% An Introduction to Computational Macroeconomics
+
+% A. Bongers, T. Gómez and J. L. Torres (2019)
+
+% Distorting taxes
+
+% Utility function: U=gamma*ln(C)+(1-gamma)*ln(1-L)
+
+% Function file: m6foc.m. Script file: m6.m
+
+%**************************************************
+
+function f=m6foc(x0, par)
+
+% Load parameters
+
+load par
+
+T = par(1);
+
+beta = par(2);
+
+R = par(3);
+
+gamma = par(4);
+
+tauw = par(5);
+
+taur = par(6);
+
+tauc = par(7);
+
+for i=1:T;
+
+W(i) = par(7+i);
+
+end;
+
+% Assignment of variables
+
+for t=1:T
+
+C(t) = x0(t);
+
+L(t) = x0(t+T);
+
+end
+
+% Calculation of savings
+
+for t=2:T;
+
+B(1) = (1-tauw)*W(1)*L(1)-(1+tauc)*C(1);
+
+B(t) = (1+(1-taur)*R)*B(t-1)+(1-tauw)*W(t)*L(t)-(1+tauc)*C(t);
+
+end
+
+% Optimum consumption path
+
+f(1) = (1+tauc)*C(2)-beta*(1+(1-taur)*R)*(1+tauc)*C(1);
+
+f(2) = (1-tauw)*W(1)*(1-L(1))-((1+tauc)*C(1))*(1-gamma)/gamma;
+
+for t=2:T-1
+
+f(2*t-1) = (1+tauc)*C(t+1)-beta*(1+(1-taur)*R)*(1+tauc)*C(t);
+
+f(2*t) = (1-tauw)*W(t)*(1-L(t))-((1+tauc)*C(t))*(1-gamma)/gamma;
+
+end
+
+f(2*T-1) = (1+tauc)*C(T)-(1+(1-taur)*R)*B(T-1)-(1-tauw)*W(T)*L(T);
+
+f(2*T) = (1-tauw)*W(T)*(1-L(T))-((1+tauc)*C(T))*(1-gamma)/gamma;
+
+Appendix K: The Tobin Q model in DYNARE
+
+Tobin's Q model can be solved in a very simple way using DYNARE. As we
+have seen in previous appendices, DYNARE is very easy to use, with a
+very simple language, specially designed to solve dynamic general
+equilibrium models. Tobin's Q model appears as an integral part of the
+dynamic general equilibrium model.
+
+// ***********************************************
+
+// An Introduction to Computational Macroeconomics
+
+// A. Bongers, T. Gómez and J. L. Torres (2019)
+
+// The Tobin Q model in DYNARE
+
+// File: m7d.mod
+
+// ***********************************************
+
+// Endogenous variables
+
+var q k dq dk;
+
+// Exogenous variables
+
+varexo R, delta;
+
+// Parameters
+
+parameters alpha, phi;
+
+// Calibration
+
+alpha = 0.35;
+
+phi = 10;
+
+// Defining the capital stock as the predetermined variable
+
+predetermined_variables k;
+
+// Model equations
+
+model;
+
+(1-delta)*q(+1)=(1+R)*q-alpha*k(+1)^(alpha-1)
+
++phi/2*(((k(+2)-k(+1))/k(+1)))^2
+
+-phi*((k(+2)-k(+1))/k(+1))*(k(+2)-(1-delta)*k(+1))/k(+1);
+
+k(+1)-k=(q-1)*k/phi;
+
+dk=k(+1)-k;
+
+dq=q(+1)-q;
+
+end;
+
+// Initial values
+
+initval;
+
+q = 1;
+
+k = 10;
+

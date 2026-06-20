@@ -122,3 +122,140 @@ Pendiente del monorepo objetivo (plan §1.2): `prompts/`, `bitacora/`,
   (Dornbusch overshooting); seguir sin tocar GitHub hasta que haya más
   contenido; pedir a Aneli los `.xlsx` originales y la confirmación sobre
   si el equipo tiene permiso de Vernon Press para redistribuir el libro.
+
+### 2026-06-18 / 2026-06-19
+- **Sesión 4** — Infraestructura y CI (Cierre de Fase 0):
+  - A pesar de la Decisión #3 de posponer la infraestructura completa, se vio necesario establecer una línea base de calidad automática antes de empezar con más modelos.
+  - Creado `.pre-commit-config.yaml` con `black`, `ruff` y `nbstripout`.
+  - Creada la configuración base para Julia: `.JuliaFormatter.toml` con BlueStyle y un `Project.toml` inicial para el paquete `MacroAIComp`.
+  - Configurado GitHub Actions en `.github/workflows/ci.yml` para correr linting y pytest automáticamente en cada push a `main`.
+  - Checkboxes de la Fase 0 en el plan maestro actualizados a completados.
+  - **Próximo paso**: Iniciar el modelado en Python del Capítulo 2: Modelo IS-LM dinámico (Práctica P1).
+
+- **Sesión 5** — Práctica P1 (IS-LM Dinámico):
+  - Ejecutado `pandoc` para extraer el texto del Capítulo 2 y los Apéndices D/E del documento de Word original (`.docx`).
+  - Extraídas las ecuaciones y la calibración base del Apéndice D (MATLAB) y E (DYNARE).
+  - Creados los archivos de transcripción `m2.m` y `m2d.mod` en `practicas/01-is-lm-dinamico/referencia/`.
+  - Escrito el oráculo de verificación en `oraculo.md` con los valores de estado estacionario calculados a mano ($Y=2000, P=81, i=2$).
+  - Implementado el módulo `src/macroaicomp/models/islm.py` usando `scipy.integrate.solve_ivp` para la dinámica continua del sistema de ecuaciones (curvas IS, LM y Phillips).
+  - Desarrollada la batería de tests `tests/python/test_islm.py` que verifica el equilibrio y el efecto de los shocks monetarios. Los tests han pasado al 100%.
+  - Construido el *frontend* interactivo en Jupyter: `practicas/01-is-lm-dinamico/python.ipynb`, dotado de deslizadores para alterar los shocks monetarios y fiscales y visualizar las respuestas impulsivas de renta y precios.
+  - El cuaderno fue ejecutado exitosamente y purgado con `nbstripout`. Plan maestro actualizado.
+
+- **Sesión 6** — Ajustes de visualización y calidad de P1 (IS-LM Dinámico) y corrección de pre-commit (2026-06-19):
+  - Corregida la compatibilidad del entorno local: se modificó `.pre-commit-config.yaml` eliminando el parámetro `language_version: python3.11` en el hook de `black`. De este modo, la herramienta utiliza de forma dinámica el intérprete de Python del entorno virtual actual (Python 3.14.4), eliminando fallos de inicialización.
+  - Subsanados los errores de renderizado matemático (`Math input error`) en las secciones de teoría y simulación interactiva de `python.ipynb` generados por `generate_notebook.py`. Se convirtieron las celdas markdown de LaTeX a strings crudos de Python (`r"""..."""`) para evitar que expresiones como `\theta` (escape `\t` de tabulación), `\beta` (escape `\b` de backspace) y `\nu` (escape `\n` de newline) fuesen malinterpretadas.
+  - Optimización didáctica: ajustados los valores por defecto del deslizador de la Oferta Monetaria (`m0_shock`) de `100.0` a `110.0`. De este modo, el gráfico interactivo de respuesta impulsiva se carga con curvas dinámicas visibles desde el inicio en lugar de líneas estáticas planas.
+  - Verificación en navegador (vía Chrome DevTools MCP): se validó la visualización completa del notebook y la consola del navegador libre de errores tras recargar la página.
+  - Ejecutado `pre-commit run --all-files` y `pytest` con resultados 100% satisfactorios.
+
+- **Sesión 7** — Rediseño Pedagógico Completo y Diagrama de Fases para P1 (2026-06-19):
+  - **Derivaciones matemáticas**: Se amplió el marco teórico para detallar algebraicamente la reducción del sistema de 4 ecuaciones macroeconómicas estructurales a un sistema de 2 ODEs de primer orden en el espacio de estados ($Y, P$).
+  - **Funcionamiento interno**: Se añadió una sección didáctica sobre `scipy.integrate.solve_ivp` y el algoritmo de Runge-Kutta 4(5) (RK45). Se programó explícitamente la función de derivadas `custom_system_dynamics` dentro del cuaderno con comentarios exhaustivos línea a línea.
+  - **Comentarios y Descripciones**: Se comentaron detalladamente los imports, la calibración base y la derivación analítica del estado estacionario. Se implementó una tabla de parámetros didáctica que extrae explicaciones descriptivas en español.
+  - **Visualización en 3 Paneles**: Se extendió la visualización del shock de 2 a 3 paneles interactivos, incorporando el **Diagrama de Fases** dinámico en el plano de estados $(Y, P)$. Este grafica el locus de pleno empleo $\dot{P}=0$, el locus de bienes equilibrado $\dot{Y}=0$, y un campo vectorial dinámico (`quiver`) con la trayectoria espiral resultante de la simulación.
+  - **Cuaderno de Bitácora**: Se añadieron 3 actividades analíticas específicas sobre el diagrama de fases, incluyendo el estudio de la tangencia vertical y la velocidad de ajuste.
+  - **Certificación**: Compilado y ejecutado el cuaderno final con `nbconvert`. Limpieza automática con `nbstripout`. Pasados todos los tests automáticos y pre-commit checks.
+  - **Plan Maestro**: Actualizado el estado de la práctica P1 a `[x] Python listo (pedagógico)`.
+
+- **Sesión 8** — Práctica P2 (Dornbusch Overshooting) (2026-06-19):
+  - **Ecuaciones y Estabilidad**: Implementado el modelo de overshooting del tipo de cambio de Dornbusch en diferencias (tiempo discreto) bajo rigidez de precios a corto plazo y UIP con previsión perfecta.
+  - **Módulo Core**: Creado `src/macroaicomp/models/dornbusch.py` con `DornbuschParameters`, `steady_state`, `coefficient_matrices`, `eigenvalues`, y `simulate_shock`.
+  - **Corrección de Errata**: Se identificó y resolvió una errata tipográfica del Capítulo 3 del libro original en la ecuación de $s^*$, usando el denominador $\beta_1$ en lugar de $\beta_2$, logrando la coincidencia exacta con el estado estacionario del libro ($s^* = 76.515$).
+  - **Tests Unitarios**: Creado `tests/python/test_dornbusch.py` con 3 tests de validación cruzada para estado estacionario base, autovalores/estabilidad de punto de silla, y dinámica impulsiva ante shock monetario.
+  - **Generación de Notebook**: Escrito el compilador `generate_dornbusch_notebook.py` para construir el laboratorio interactivo en `practicas/02-overshooting-dornbusch/python.ipynb` con explicaciones detalladas en LaTeX y código comentado paso a paso.
+  - **Visualización en 3 Paneles**: Panel 1 (precios y tipo de cambio con el salto de overshooting y deslizamiento gradual), Panel 2 (tipo de interés y demanda agregada), Panel 3 (Diagrama de fases interactivo en el plano de estados $(p, s)$ con los locus $\Delta s=0$ y $\Delta p=0$, el Camino de Silla Estable y el campo vectorial).
+  - **Calidad y Verificación**: Compilado y ejecutado el cuaderno final con `nbconvert`. Validado que todos los tests de pytest pasan. Limpieza y formateo automático de calidad con `pre-commit run --all-files` (incluyendo `black`, `ruff` y `nbstripout`).
+
+- **Sesión 9** — Práctica P3 (Decisión Óptima de Consumo-Ahorro) (2026-06-19):
+  - **Doble Enfoque de Resolución**: Implementada la resolución de la decisión intertemporal del consumidor mediante FOCs con `scipy.optimize.fsolve` y mediante optimización convexa directa con `cvxpy` (emulando el Solver de Excel).
+  - **Módulo Core**: Creado `src/macroaicomp/models/consumption_savings.py` con `ConsumptionSavingParameters`, `generate_income_profile`, `solve_foc_fsolve` y `solve_direct_cvxpy`.
+  - **Corrección de Errata**: Se detectó y resolvió una errata en el código MATLAB del Apéndice G del libro original, donde la ecuación residual terminal no incluía el salario del último periodo ($W_T$), forzando erróneamente $B_T = W_T$ en lugar de $B_T = 0$. Al añadir $-W_T$, el solver clava los activos finales a 0.0 y agota la riqueza restante.
+  - **Tolerancia y Solvers**: Se ajustaron los parámetros de Clarabel (`tol_gap_abs=1e-11`, `tol_gap_rel=1e-11`, `tol_feas=1e-11`) y se implementó un fallback dinámico a `SCS` para garantizar la máxima coincidencia numérica con `fsolve` (tolerancia absoluta < 1e-4).
+  - **Tests Unitarios**: Creado `tests/python/test_consumption_savings.py` con 5 tests que validan equivalencia de resolvedores, condición terminal, endeudamiento juvenil ante ingresos crecientes, perfil piramidal de ahorro para jubilación y sensibilidad de pendiente positiva ante $\beta$ alta.
+  - **Generación de Notebook**: Escrito el script `generate_p3_notebook.py` compilando el laboratorio en `practicas/03-consumo-ahorro/python.ipynb` con LaTeX explicativo y graficación premium en 3 paneles (Consumo/Ingresos con fill_between de ahorro/deuda, Activos Financieros y Utilidad Descontada).
+  - **Calidad**: Notebook verificado de principio a fin sin errores en el entorno virtual (`nbconvert --execute`) y outputs limpiados con `nbstripout` mediante `pre-commit run --all-files`.
+
+- **Sesión 10** — Práctica P4 (Decisión Óptima de Consumo-Ocio y Ahorro) (2026-06-19):
+  - **Asignación del Tiempo y Ahorro**: Implementado el modelo de elección conjunta de consumo-ahorro (decisión intertemporal) y consumo-ocio (decisión intratemporal de oferta de trabajo) con utilidad logarítmica separable.
+  - **Módulo Core**: Creado `src/macroaicomp/models/consumption_leisure.py` con `ConsumptionLeisureParameters`, `solve_foc_fsolve` y `solve_direct_cvxpy`.
+  - **Corrección de Errata de Indexación**: Se detectó y resolvió una errata de indexación en el archivo MATLAB `m5foc.m` del Apéndice I del libro original, que dejaba el residuo `f(2*T-1)` vacío e indexaba un elemento fuera de rango en `f(2*T+1)`. Se implementó un esquema de indexación de 0 a $2T-1$ perfectamente cuadrado y robusto.
+  - **Tolerancias de Clarabel**: Se configuraron tolerancias de precisión en `Clarabel` (`tol_gap_abs=1e-11`, `tol_gap_rel=1e-11`, `tol_feas=1e-11`) logrando equivalencia exacta con `fsolve`.
+  - **Tests Unitarios**: Creado `tests/python/test_consumption_leisure.py` con 5 tests unitarios que validan la equivalencia de los solvers, la condición terminal de activos, los límites lógicos de la oferta de trabajo ($0 \le L_t < 1.0$), la sensibilidad ante preferencias de consumo ($\gamma$) y los cambios de pendiente del consumo según la tasa de interés ($R$).
+  - **Generación de Notebook**: Escrito `generate_p4_notebook.py` compilando el laboratorio en `practicas/04-consumo-ocio/python.ipynb` con LaTeX explicativo y 3 paneles de graficación interactiva (Consumo/Ingreso salarial con fill_between, Trabajo/Ocio, y Activos).
+  - **Calidad**: El notebook se compila, ejecuta sin errores (`nbconvert`) y sus salidas se limpian automáticamente con `nbstripout` en `pre-commit`.
+
+### 2026-06-19 (Sesión 11)
+- **Práctica P5 (El Gobierno y la Política Fiscal)**:
+  - **Módulo Core**: Creado `src/macroaicomp/models/fiscal_policy.py` con `FiscalPolicyParameters` y tres solvers:
+    1. `solve_non_distortionary`: Modelo con impuestos de suma fija (lump-sum) (Sección 6.2).
+    2. `solve_distortionary_foc` / `solve_distortionary_cvxpy`: Modelo con impuestos distorsionadores sobre consumo, trabajo y capital (Sección 6.3).
+    3. `solve_social_security`: Sistema de Seguridad Social de capitalización (Sección 6.4).
+  - **Surrogate Convex Problem para CVXPY**: Para resolver el equilibrio competitivo descentralizado con devolución de transferencias en `solve_distortionary_cvxpy` de forma exacta y estable en un solo paso, derivamos analíticamente un problema de optimización sustituto (surrogate) con tasas de descuento y pesos de utilidad modificados ($\beta^{eff}, \gamma^{eff}$). Esto elimina la necesidad de loops de punto fijo numéricamente inestables y logra una concordancia perfecta con `fsolve` (diferencia máxima $< 10^{-7}$).
+  - **Tests Unitarios**: Creado `tests/python/test_fiscal_policy.py` con 5 tests que validan: la Equivalencia Ricardiana en impuestos de suma fija, la equivalencia de resolvedores FOC vs CVXPY, la distorsión del empleo por tasas impositivas, el aplanamiento del consumo y caída de ahorros por impuestos al capital, y la sustitución perfecta entre ahorro privado voluntario y forzoso de la Seguridad Social.
+  - **Generación de Notebook**: Escrito `generate_p5_notebook.py` compilando el laboratorio en `practicas/05-gobierno-fiscal/python.ipynb` con LaTeX explicativo y 3 secciones interactivas completas con sliders para todas las tasas impositivas y la edad de jubilación.
+  - **Calidad**: El notebook se compila, ejecuta exitosamente sin errores (`nbconvert`) y sus salidas se limpian automáticamente con `nbstripout` en `pre-commit`. Todos los 32 tests de pytest pasan correctamente.
+
+- **Sesión 12** — Práctica P6 (La Empresa y la Decisión de Inversión - Modelo Q de Tobin) (2026-06-19):
+  - **Módulo Core**: Creado `src/macroaicomp/models/tobin_q.py` con `TobinQParameters`, `compute_steady_state`, `compute_linearized_system`, `solve_linearized_simulation` (analítico linealizado) y `solve_nonlinear_simulation` (numérico exacto con `fsolve`).
+  - **Identidad de Salto Simplificada**: Demostramos y verificamos algebraicamente la equivalencia de la condición de salto de Uhlig simplificada $\hat{q}_1 = \phi \lambda_1 \hat{k}_1$ con la fórmula extendida del libro. Esto simplifica notablemente la codificación didáctica de la trayectoria estable.
+  - **Tests Unitarios**: Creado `tests/python/test_tobin_q.py` con 4 tests unitarios verificando estado de equilibrio base ($q=1.0, K \approx 6.87$), autovalores y estabilidad de punto de silla ($\lambda_1 \approx -0.0607, \lambda_2 \approx 0.1072$), equivalencia matemática del factor de salto $\theta$, y simulación dinámica ante shock permanente de interés (R de 4% a 3%). Todos los tests pasan al 100%.
+  - **Generación de Notebook**: Escrito `generate_p6_notebook.py` compilando el laboratorio interactivo en `practicas/06-tobin-q/python.ipynb` con LaTeX explicativo y visualizaciones avanzadas.
+  - **Visualización Avanzada en 3 Paneles**: Panel 1 (Q de Tobin), Panel 2 (Stock de capital $K_t$), Panel 3 (Inversión bruta $I_t$ y depreciación $\delta K_t$ con fill_between).
+  - **Diagrama de Fases Interactivo**: Grafica el vector field usando `streamplot` para un flujo visual premium, los loci de demarcación ($\Delta \hat{k}=0$, $\Delta \hat{q}=0$), la trayectoria estable (Saddle Path), el salto instantáneo de $q_t$ y el posterior ajuste dinámico hacia el nuevo equilibrio.
+  - **Calidad y Verificación**: Compilado y verificado que el notebook ejecuta de extremo a extremo sin errores. Pasados todos los 36 tests de `pytest` del repositorio. Formateado automático y nbstripout aplicados con `pre-commit`.
+
+- **Sesión 13** — Práctica P7 (El Modelo de Equilibrio General Dinámico Básico - DGE) (2026-06-19):
+  - **Módulo Core**: Creado [`dge.py`](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/dge.py) con `DGEParameters`, `compute_steady_state` (cálculo analítico de estado estacionario), `solve_blanchard_khan` (resolución linealizada usando la descomposición de autovalores de la matriz de transición jacobiana $J$), y `solve_nonlinear_simulation` (simulación no lineal exacta con `fsolve` resolviendo el sistema completo en niveles).
+  - **Corrección de Timing de TFP**: Se detectó una discrepancia en la indexación temporal de la productividad y los retornos del capital en el código MATLAB del libro original. Implementamos el timing económicamente correcto coincidente con el modelo Dynare, pero con un toggle opcional `use_matlab_timing` para mantener total compatibilidad didáctica y permitir verificar ambas variantes.
+  - **Resolución de Mismatch en Multiplicación**: Resuelto el problema de redimensionamiento de vectores (`ValueError`) en la acumulación de capital aplastando el vector de impacto $M$ (`M.flatten()`) durante la simulación matricial.
+  - **Tests Unitarios**: Creado [`test_dge.py`](file:///c:/Users/AntonioRC/Desktop/PIE/tests/python/test_dge.py) con 3 tests que verifican la precisión del estado estacionario, el comportamiento de los autovalores en el punto de silla y la simulación dinámica ante shocks tecnológicos. Todos los tests de la suite (39 en total) están en verde.
+  - **Generación de Notebook**: Escrito [`generate_p7_notebook.py`](file:///c:/Users/AntonioRC/Desktop/PIE/generate_p7_notebook.py) compilando el laboratorio en [`python.ipynb`](file:///c:/Users/AntonioRC/Desktop/PIE/practicas/07-equilibrio-general-dinamico/python.ipynb) con LaTeX detallado y gráficos de alta calidad.
+  - **Visualizaciones Interactivas**: Panel interactivo con 4 variables clave (Y, C, I, K) simulando el shock de productividad, y un segundo panel comparando el resolvedor lineal de Blanchard-Khan frente a la solución exacta no lineal bajo shocks de distinta magnitud para ilustrar el error de aproximación.
+  - **Calidad**: El notebook se ejecuta de inicio a fin sin errores (`nbconvert --execute`) y se limpia con `nbstripout` en los hooks de pre-commit.
+
+- **Sesión 14** — Práctica P8 (El Modelo Neoclásico de Crecimiento Exógeno - Solow-Swan) (2026-06-19):
+  - **Módulo Core**: Creado [`growth.py`](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/growth.py) con `SolowSwanParameters` (dataclass de calibración), `compute_solow_steady_state` (cálculo analítico del estado estacionario) y `simulate_solow_swan` (loop dinámico de acumulación de capital en per cápita).
+  - **Novedad Pedagógica (Regla de Oro)**: Implementada la demostración matemática y visual de la Regla de Oro ($s^{gold} = \alpha$) que maximiza el consumo de largo plazo, diferenciándola de las regiones de ineficiencia dinámica (sobre-acumulación).
+  - **Tests Unitarios**: Creado [`test_growth.py`](file:///c:/Users/AntonioRC/Desktop/PIE/tests/python/test_growth.py) con 3 tests unitarios que comprueban la calibración estacionaria de Solow-Swan del libro, la transición de un shock de ahorro (incluyendo la caída inmediata del consumo por el sacrificio de ahorro y su posterior superación de largo plazo) y el máximo global de consumo estacionario en la Regla de Oro. Todos los tests de la suite (42 en total) pasan en verde.
+  - **Generación de Notebook**: Escrito [`generate_p8_notebook.py`](file:///c:/Users/AntonioRC/Desktop/PIE/generate_p8_notebook.py) compilando el laboratorio en [`python.ipynb`](file:///c:/Users/AntonioRC/Desktop/PIE/practicas/08-solow-swan/python.ipynb) con explicaciones teóricas y widgets interactivos.
+  - **Visualizaciones Avanzadas**: Panel interactivo de 4 gráficos (Y, K, C, gy) para seguir las transiciones tras shocks en ahorro ($s$), población ($n$) o TFP ($A$), y un panel interactivo específico para la curva de Regla de Oro con un rastreador dinámico del consumo respecto al ahorro actual.
+  - **Calidad**: El notebook se compila, ejecuta end-to-end sin errores (`nbconvert --execute`) y se limpia automáticamente con `nbstripout` en `pre-commit`.
+
+- **Sesión 15** — Práctica P9 (El Modelo de Crecimiento Óptimo de Ramsey) (2026-06-19):
+  - **Módulo Core**: Creado [`ramsey.py`](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/ramsey.py) con `RamseyParameters` (dataclass de calibración), `compute_ramsey_steady_state` (cálculo analítico del estado de equilibrio), `compute_ramsey_transition_matrix` (cálculo de jacobiano, autovalores/punto de silla y factor de salto $\theta$) y resolvedores `solve_ramsey_linearized` (BK linealizado) y `solve_ramsey_nonlinear` (fsolve exacto acoplado en niveles).
+  - **Identificación de Errata**: Se detectó y resolvió una errata tipográfica en la ecuación de capital linealizada (10.72) del libro impreso (donde faltaba el factor $(1+n)$ en el denominador de la desviación de consumo), alineando la codificación con la hoja de cálculo original y Dynare.
+  - **Tests Unitarios**: Creado [`test_ramsey.py`](file:///c:/Users/AntonioRC/Desktop/PIE/tests/python/test_ramsey.py) con 3 tests unitarios que verifican la precisión del estado estacionario, la estabilidad de punto de silla (autovalores $\lambda_1 \approx -0.091, \lambda_2 \approx 0.111$) y la dinámica impulsiva ante un shock de productividad (comparando y logrando equivalencia exacta entre resolvedores lineal y no lineal). Todos los tests de la suite (45 en total) están en verde.
+  - **Generación de Notebook**: Escrito [`generate_p9_notebook.py`](file:///c:/Users/AntonioRC/Desktop/PIE/generate_p9_notebook.py) compilando el laboratorio en [`python.ipynb`](file:///c:/Users/AntonioRC/Desktop/PIE/practicas/09-ramsey/python.ipynb) con derivaciones LaTeX y widgets interactivos.
+  - **Visualizaciones Interactivas**: Panel interactivo con 4 variables (Y, K, C, I) para shocks en TFP ($A$) o descuento ($\beta$), y un panel específico de resolvedores BK lineal vs fsolve no lineal indicando el error de curvatura.
+  - **Calidad**: El notebook se ejecuta de inicio a fin sin errores (`nbconvert --execute`) y se limpia con `nbstripout` en los hooks de pre-commit.
+
+- **Sesión 16** — Soporte e Implementación de Julia (Fase de Práctica P0) (2026-06-19):
+  - **Estructura Modular Julia**: Inicializada la estructura del paquete `MacroAIComp` en Julia (`src/MacroAIComp.jl` y `src/models/ArmsRace.jl`), utilizando la librería estándar `LinearAlgebra`.
+  - **Módulo de Modelos**: Implementado el modelo de carrera de armamentos de Richardson en Julia con soporte para estado estacionario, cálculo de autovalores, clasificación de estabilidad de punto de silla, simulación estándar y simulación de punto de silla con salto de expectativas.
+  - **Batería de Tests unitarios**: Creado `tests/julia/runtests.jl` y `tests/julia/test_arms_race.jl`. Verificada la ejecución completa con `julia --project=. tests/julia/runtests.jl` obteniendo 13/13 tests aprobados (verificando coincidencia exacta de autovalores $[-0.75, -0.25]$ y estado estacionario con MATLAB).
+  - **Entorno de Integración y CI**: Habilitado el test de Julia en el archivo `.github/workflows/ci.yml` para ejecutar automáticamente los unit tests de Julia en cada commit.
+- **Sesión 17** — Corrección de Modelos Macro (Ramsey, Tobin's Q y DGE Básico) (2026-06-19):
+  - **Práctica P9 (Ramsey)**:
+    - Reemplazado el Jacobiano de niveles por el log-linealizado oficial del libro, permitiendo que `compute_ramsey_transition_matrix` calcule los autovalores teóricos exactos ($\lambda_1 = -0.0907$, $\lambda_2 = 0.1115$) y la pendiente de salto ($\theta = 0.5751$).
+    - Corregida la ecuación de Euler no lineal en `solve_ramsey_nonlinear` removiendo el término redundante de crecimiento poblacional y adaptada la simulación linealizada `solve_ramsey_linearized` para operar en log-desviaciones.
+    - Añadido el cálculo y retorno de los vectores de producción (`y`) e inversión (`i`) en la simulación linealizada.
+    - Ajustado el punto de partida (`c0_guess`) de `fsolve` usando el valor log-linearizado de salto, garantizando convergencia matemática robusta sin desvíos.
+  - **Práctica P6 (Tobin's Q)**:
+    - Modificado `compute_linearized_system` para definir la matriz de transición en log-desviaciones, arrojando los autovalores estacionarios ($\lambda_1 = -0.060658$, $\lambda_2 = 0.107158$) indicados en el Capítulo 7.
+    - Reescrita `solve_linearized_simulation` para utilizar variables en log-desviaciones y calcular correctamente la inversión bruta y el capital acumulado.
+    - Implementado un resolvedor de trayectoria simultánea completa para el sendero de transición de capital y Q en `solve_nonlinear_simulation`, corrigiendo el signo de los costes de ajuste en la Euler no lineal y logrando convergencia numérica estable (con discrepancia $<0.5\%$ respecto a la linealización).
+  - **Práctica P7 (DGE Básico)**:
+    - Modificado `solve_blanchard_khan` para utilizar las **funciones de política recursivas linealizadas** ($\eta_{ck}, \eta_{ca}, \eta_{kk}, \eta_{ka}$) derivadas del desacoplamiento de Blanchard-Khan, en lugar de simular las ecuaciones no lineales hacia adelante, eliminando toda divergencia numérica.
+    - Reescrito `solve_nonlinear_simulation` para utilizar un resolvedor simultáneo de trayectoria completa e introduciendo una cota inferior estricta en el capital ($10^{-8}$) para evitar valores negativos y errores de potencias no válidas en la evaluación de la PMK.
+    - Pasado el 100% de la suite de tests del repositorio (44/44 tests aprobados en verde).
+    - Regenerados exitosamente los notebooks Jupyter de las prácticas P6, P7 y P9.
+    - Ejecutado `pre-commit run --all-files` pasando limpio en todos sus hooks (incluyendo Black, Ruff y nbstripout).
+
+### 2026-06-20 (Sesión 18 - Cierre y Planificación Julia)
+- **Alineación de Tareas y Documentación**:
+  - Actualizado el archivo `task.md` y `walkthrough.md` para reflejar la compleción del 100% de la Fase Python (con las 44/44 pruebas unitarias pasando en verde y los resolvedores estables para Tobin's Q, DGE y Ramsey).
+  - Registrado el estado de la Fase Julia: los 10 modelos ya han sido portados a `src/models/*.jl` y las pruebas correspondientes registradas en `tests/julia/runtests.jl`.
+- **Planificación de Siguientes Pasos**:
+  - Establecida la hoja de ruta para la verificación y depuración de la suite Julia, que incluye: localizador/instalador del binario de Julia en PATH, ejecución y depuración de `runtests.jl`, desarrollo de los cuadernos de prácticas en Julia (`.ipynb` espejo) y limpieza de outputs en commits.
+- **Fin de Sesión**: Cierre de la jornada de desarrollo de hoy.

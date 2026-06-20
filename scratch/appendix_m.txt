@@ -1,0 +1,160 @@
+Appendix M: The dynamic general equilibrium model in DYNARE
+
+In this appendix, we present the code in DYNARE to solve the basic
+general equilibrium model developed in Chapter 8. As we have commented
+previously, DYNARE is a tool specially designed to solve these types of
+models, both in a deterministic and stochastic environment. In practice,
+DYNARE solves an initial non-linear system approximation, and although
+this approximation does not have to be linear, as DYNARE can use higher
+orders in Taylor's expansion to approximate the original equations. One
+of the advantages of the DYNARE tool is that it allows to obtain the
+log-linearized dynamic equations of a dynamic general equilibrium model
+without having to calculate them by hand, as we had to do to build the
+spreadsheet "ICM-8.2. xls".
+
+// ***********************************************
+
+// An Introduction to Computational Macroeconomics
+
+// A. Bongers, T. Gómez and J. L. Torres (2019)
+
+// Dynamic General Equilibrium Model in DYNARE
+
+// File: m8d.mod
+
+// ***********************************************
+
+// Definition of endogenous variables
+
+var Y, C, I, K, R, A;
+
+// Definition of exogenous variables
+
+varexo e;
+
+// Parameter definition
+
+parameters alpha, beta, delta, rho;
+
+// Calibration
+
+alpha = 0.35;
+
+beta = 0.96;
+
+delta = 0.06;
+
+rho = 0.80;
+
+// Defining capital stock as predetermined variable
+
+predetermined_variables K;
+
+// Model equations
+
+model;
+
+1 = beta*((C/C(+1))*(R(+1)+(1-delta)));
+
+Y = A*K^alpha;
+
+K(+1) = (1-delta)*K+I;
+
+Y = C+I;
+
+R = alpha*A*K^(alpha-1);
+
+A = A(-1)^rho+e;
+
+end;
+
+// Initial values
+
+initval;
+
+Y = 1;
+
+C = 0.8;
+
+K = 3.5;
+
+I = 0.2;
+
+R = alpha*Y/K;
+
+A = 1;
+
+e = 0;
+
+end;
+
+// Calculation of steady state
+
+steady;
+
+// Verification of compliance with the BK condition
+
+check;
+
+ybar=oo_.steady_state(1);
+
+cbar=oo_.steady_state(2);
+
+ibar=oo_.steady_state(3);
+
+kbar=oo_.steady_state(4);
+
+Rbar=oo_.steady_state(5);
+
+Abar=oo_.steady_state(6);
+
+shocks;
+
+var e;
+
+stderr 0.01;
+
+end;
+
+stoch_simul(order=1);
+
+% Graphics
+
+figure;
+
+T=40;
+
+j=1:T;
+
+subplot(2,2,1)
+
+plot(j,Y_e+ybar,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Output')
+
+subplot(2,2,2)
+
+plot(j,K_e+kbar,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Capital stock')
+
+subplot(2,2,3)
+
+plot(j,C_e+cbar,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Consumption')
+
+subplot(2,2,4)
+
+plot(j,I_e+ibar,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Investment')
+

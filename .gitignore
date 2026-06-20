@@ -16,3 +16,11 @@ dist/
 # en un repo que aspira a ser MIT/CC BY-SA en abierto). Se usa solo como
 # fuente local para portar capitulos; no se versiona.
 An_Introduction_to_Computational_Macroeconomics*.docx
+
+# MkDocs build directory
+site/
+
+# Temp scratch files
+scratch/recovered/
+
+

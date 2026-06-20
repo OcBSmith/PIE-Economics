@@ -11,22 +11,22 @@ import numpy as np
 
 @dataclass
 class ArmsRaceParams:
-    """Calibration of Richardson's arms race model (eq. 1.9-1.11).
+    """Calibración del modelo de carrera armamentística de Richardson (eq. 1.9-1.11).
 
-    Parameters
+    Parámetros
     ----------
     alpha : float
-        Elasticity of dx1 with respect to x1.
+        Elasticidad de dx1 respecto a x1 (coeficiente de fatiga/gasto).
     beta : float
-        Elasticity of dx1 with respect to x2.
+        Elasticidad de dx1 respecto a x2 (coeficiente de defensa/reacción).
     gamma : float
-        Elasticity of dx2 with respect to x1.
+        Elasticidad de dx2 respecto a x1 (coeficiente de defensa/reacción).
     delta : float
-        Elasticity of dx2 with respect to x2.
+        Elasticidad de dx2 respecto a x2 (coeficiente de fatiga/gasto).
     theta : float
-        Elasticity of dx1 with respect to z1.
+        Elasticidad de dx1 respecto a z1 (coeficiente de agravio/hostilidad).
     eta : float
-        Elasticity of dx2 with respect to z2.
+        Elasticidad de dx2 respecto a z2 (coeficiente de agravio/hostilidad).
     """
 
     alpha: float
@@ -38,18 +38,18 @@ class ArmsRaceParams:
 
 
 def coefficient_matrices(params: ArmsRaceParams) -> tuple[np.ndarray, np.ndarray]:
-    """Build the A and B matrices of the dynamic system (eq. 1.7-1.8).
+    """Construye las matrices de coeficientes A y B del sistema dinámico (eq. 1.7-1.8).
 
     Parameters
     ----------
     params : ArmsRaceParams
-        Model calibration.
+        Calibración del modelo.
 
     Returns
     -------
     tuple[np.ndarray, np.ndarray]
-        Matrix A (2x2, coefficients of the endogenous variables) and
-        matrix B (2x2, coefficients of the exogenous variables).
+        Matriz A (2x2, coeficientes de las variables endógenas) y
+        matriz B (2x2, coeficientes de las variables exógenas).
     """
     a = np.array([[-params.alpha, params.beta], [params.gamma, -params.delta]])
     b = np.array([[params.theta, 0.0], [0.0, params.eta]])
@@ -57,70 +57,57 @@ def coefficient_matrices(params: ArmsRaceParams) -> tuple[np.ndarray, np.ndarray
 
 
 def steady_state(params: ArmsRaceParams, z: np.ndarray) -> np.ndarray:
-    """Compute the steady state of the system (eq. 1.14).
+    """Calcula el estado estacionario del sistema (eq. 1.14).
 
     Parameters
     ----------
     params : ArmsRaceParams
-        Model calibration.
+        Calibración del modelo.
     z : np.ndarray
-        Exogenous variables (z1, z2).
+        Variables exógenas (z1, z2).
 
     Returns
     -------
     np.ndarray
-        Steady-state values (x1_bar, x2_bar).
-
-    Examples
-    --------
-    >>> params = ArmsRaceParams(0.5, 0.25, 0.25, 0.5, 1.0, 1.0)
-    >>> steady_state(params, np.array([1.0, 1.0]))
-    array([4., 4.])
+        Valores de estado estacionario (x1_bar, x2_bar).
     """
     a, b = coefficient_matrices(params)
     return -np.linalg.inv(a) @ b @ z
 
 
 def eigenvalues(params: ArmsRaceParams) -> np.ndarray:
-    """Compute the eigenvalues of matrix A (eq. 1.20-1.25).
+    """Calcula los autovalores de la matriz A (eq. 1.20-1.25).
 
     Parameters
     ----------
     params : ArmsRaceParams
-        Model calibration.
+        Calibración del modelo.
 
     Returns
     -------
     np.ndarray
-        Eigenvalues (lambda1, lambda2) of matrix A.
-
-    Examples
-    --------
-    >>> params = ArmsRaceParams(0.5, 0.25, 0.25, 0.5, 1.0, 1.0)
-    >>> sorted(np.round(eigenvalues(params), 2))
-    [-0.75, -0.25]
+        Autovalores (lambda1, lambda2) de la matriz A.
     """
     a, _ = coefficient_matrices(params)
     return np.linalg.eigvals(a)
 
 
 def is_saddle_path(params: ArmsRaceParams) -> bool:
-    """Classify the steady state as a saddle point or globally stable.
+    """Clasifica el estado estacionario como un punto de silla o globalmente estable.
 
-    Following the stability criterion of Appendix A, a real eigenvalue
-    lambda is stable if |lambda + 1| < 1. The steady state is a saddle
-    point if exactly one of the two eigenvalues is stable.
+    Siguiendo el criterio de estabilidad del Apéndice A, un autovalor real
+    lambda es estable si |lambda + 1| < 1. El estado estacionario es un punto
+    de silla si exactamente uno de los dos autovalores es estable.
 
     Parameters
     ----------
     params : ArmsRaceParams
-        Model calibration.
+        Calibración del modelo.
 
     Returns
     -------
     bool
-        True if the steady state is a saddle point, False if it is
-        globally stable (or globally unstable).
+        True si el estado estacionario es un punto de silla, False en caso contrario.
     """
     moduli = np.abs(eigenvalues(params) + 1)
     return bool((moduli < 1).sum() == 1)
@@ -133,38 +120,38 @@ def simulate(
     periods: int = 30,
     shock_period: int = 1,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Simulate the transition dynamics after a shock (Section 1.5).
+    """Simula la dinámica de transición tras un shock (Sección 1.5).
 
-    Reproduces the recursion used in the spreadsheet "ICM-1-1.xls":
-    starting from the initial steady state, x_(t+1) = x_t + dx_t, where
-    dx_t is evaluated with z_initial for t < shock_period and with
-    z_final from shock_period onward. Valid for globally stable
-    calibrations; for saddle-point calibrations use
-    `simulate_saddle_path` instead.
+    Reproduce la recursión de la hoja de cálculo "ICM-1-1.xls":
+    comenzando desde el estado estacionario inicial, x_(t+1) = x_t + dx_t, donde
+    dx_t se evalúa con z_initial para t < shock_period y con z_final
+    a partir de shock_period en adelante. Válido para calibraciones globalmente
+    estables.
 
     Parameters
     ----------
     params : ArmsRaceParams
-        Model calibration.
+        Calibración del modelo.
     z_initial : np.ndarray
-        Exogenous variables before the shock.
+        Variables exógenas antes del shock.
     z_final : np.ndarray
-        Exogenous variables from the shock period onward.
+        Variables exógenas a partir del shock.
     periods : int
-        Number of periods to simulate (the book uses 30).
+        Número de períodos a simular (el libro usa 30).
     shock_period : int
-        Period at which z switches from z_initial to z_final.
+        Período en el que z cambia de z_initial a z_final.
 
     Returns
     -------
     tuple[np.ndarray, np.ndarray]
-        Time paths (x1, x2), each of length `periods`.
+        Trayectorias temporales (x1, x2), ambas de longitud `periods`.
     """
     a, b = coefficient_matrices(params)
     x = np.zeros((periods, 2))
     x[0] = steady_state(params, z_initial)
     for t in range(periods - 1):
         z_t = z_final if t + 1 >= shock_period else z_initial
+        # Ecuación de recurrencia exacta periodo a periodo:
         x[t + 1] = x[t] + (a @ x[t] + b @ z_t)
     return x[:, 0], x[:, 1]
 
@@ -177,47 +164,39 @@ def simulate_saddle_path(
     shock_period: int = 1,
     jump_variable: int = 0,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Simulate transition dynamics when the steady state is a saddle point.
+    """Simula la dinámica de transición cuando el estado estacionario es un punto de silla.
 
-    Reproduces the spreadsheet "ICM-1-2.xls": the forward-looking
-    `jump_variable` readjusts instantaneously, at `shock_period`, onto
-    the stable saddle path (eq. 1.39), while the other variable still
-    evolves through the standard backward recursion for that period.
-    From `shock_period` onward both variables follow the model's
-    difference equations evaluated at z_final.
+    Reproduce la hoja de cálculo "ICM-1-2.xls": la variable de expectativa
+    (jump_variable) se reajusta instantáneamente en el periodo del shock para
+    situarse sobre la senda estable, mientras que la otra variable continúa su
+    dinámica histórica en ese periodo.
 
     Parameters
     ----------
     params : ArmsRaceParams
-        Model calibration. Must produce a saddle-point steady state
-        (check with `is_saddle_path`).
+        Calibración del modelo (debe producir un punto de silla).
     z_initial : np.ndarray
-        Exogenous variables before the shock.
+        Variables exógenas antes del shock.
     z_final : np.ndarray
-        Exogenous variables from the shock period onward.
+        Variables exógenas a partir del shock.
     periods : int
-        Number of periods to simulate.
+        Número de períodos a simular.
     shock_period : int
-        Period at which the disturbance occurs and the jump variable
-        readjusts onto the stable path.
+        Período en el que ocurre la perturbación.
     jump_variable : int
-        Index (0 or 1) of the forward-looking variable that jumps.
+        Índice (0 o 1) de la variable flexible que salta.
 
     Returns
     -------
     tuple[np.ndarray, np.ndarray]
-        Time paths (x1, x2), each of length `periods`.
-
-    Raises
-    ------
-    ValueError
-        If the calibration does not produce a saddle-point steady state.
+        Trayectorias temporales (x1, x2), ambas de longitud `periods`.
     """
     if not is_saddle_path(params):
-        raise ValueError("Calibration does not produce a saddle-point steady state.")
+        raise ValueError("La calibración no produce un estado estacionario de punto de silla.")
 
     a, b = coefficient_matrices(params)
     lambdas = eigenvalues(params)
+    # Encontramos el autovalor estable (el más cercano al límite de estabilidad)
     stable_lambda = lambdas[np.argmin(np.abs(lambdas + 1))]
     other_variable = 1 - jump_variable
     x_bar_final = steady_state(params, z_final)
@@ -226,9 +205,11 @@ def simulate_saddle_path(
     x[0] = steady_state(params, z_initial)
     for t in range(periods - 1):
         if t + 1 == shock_period:
+            # 1. La variable predeterminada evoluciona hacia atrás con las variables previas
             x[t + 1, other_variable] = x[t, other_variable] + (
                 a[other_variable] @ x[t] + b[other_variable] @ z_initial
             )
+            # 2. La variable flexible (jump) da un salto inmediato para caer en la senda estable (saddle path)
             row = a[jump_variable]
             x[t + 1, jump_variable] = (
                 row[other_variable] * x[t + 1, other_variable]
@@ -236,6 +217,7 @@ def simulate_saddle_path(
                 + stable_lambda * x_bar_final[jump_variable]
             ) / (stable_lambda - row[jump_variable])
         else:
+            # 3. Resto de periodos: evolución normal según el nuevo estado de la economía
             z_t = z_final if t + 1 > shock_period else z_initial
             x[t + 1] = x[t] + (a @ x[t] + b @ z_t)
     return x[:, 0], x[:, 1]

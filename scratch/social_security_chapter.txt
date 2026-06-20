@@ -1,0 +1,260 @@
+
+By solving from the first-order condition (6.28) and substituting it in
+the second first-order condition (6.29) we obtain:
+
+$\beta^{t}\frac{1}{C_{t}} = \beta^{t + 1}\frac{1}{C_{t + 1}}(1 + R_{t + 1})$
+(6.31)
+
+and by operating it results that:
+
+C_(t + 1) = β(1 + R_(t + 1))C_(t) (6.32)
+
+As we can see, the optimal path of consumption of the individual is
+totally independent of both the social security contribution tax and the
+amount of the pension once he is retired. The explanation is simple. In
+a context of perfect foresight, where the agent knows all the future
+variables, the social security contributions are perfect substitutes for
+private savings. This means that if the government changes social
+security contributions, agents react by altering their private saving
+decision, in order to maintain their consumption at their optimum level.
+However, if leisure is considered in the utility function, changes in
+the social security contributions would be distortionary, as the social
+security tax will affect the optimal labor supply decision.
+
++:-----------------------------------:+:------------------------------------------------------------------------:+
+| Solution to the problem of the consumer with social security                                                   |
+|                                                                                                                |
+| Logarithmic utility function                                                                                   |
++-------------------------------------+--------------------------------------------------------------------------+
+| Optimal consumption path            | C_(t + 1) = β(1 + R_(t))C_(t)                                            |
++-------------------------------------+--------------------------------------------------------------------------+
+| Financial assets                    | B_(t) = (1 + R_(t − 1))B_(t − 1) + (1 − τ_(t)^(ss))W_(t) + D_(t) − C_(t) |
++-------------------------------------+--------------------------------------------------------------------------+
+
+6.4.1. Numerical solution
+
+Next, we proceed to the numerical resolution of the previous exercise.
+Figure 6.5 shows the spreadsheet "ICM-6-3.xls", in which we have solved
+the previous problem. For this, as previously, we have to give values to
+the parameters and exogenous variables of the model. The model has only
+one parameter: the discount rate. Additionally, the model has four
+exogenous variables: real interest rate, wage income, type of social
+security contributions and retirement pension.
+
+Let's assume that β = 0.97 appears in cell "B4". The interest rate is
+fixed to be 5% (R = 0.05) and the tax rate for social security is 36%
+(τ_(t)^(ss) = 0.36), which are in cells "B7" and "B8", respectively. On
+the other hand, we have to decide how the individual receives his
+pension. Once the individual retires, they have access to the pension
+fund. We can make two assumptions. That the individual charges in full
+the amount of the pension fund at the moment of retirement, or that the
+pension fund is distributed in some way throughout the remaining life of
+the individual. In our case, we are going to choose the first option.
+Thus, we observe that when the agent retires, with the used data, the
+pension fund has a total of 246.3 consumption units.
+
+[]
+
+Figure 6.5. Structure of the spreadsheet "ICM-6-3.xls". Social Security
+system.
+
+Figure 6.6 shows the time path of the relevant variables (dash line). In
+the first place, we observe that the consumption path continues to have
+a positive slope. This is so, because as we have seen previously, the
+optimal path of consumption of the individual is not affected either by
+social security contributions or by the way in which pensions are
+received. This means that a social security system of capitalization has
+no effect on the individual's decisions regarding consumption period by
+period. This is due to the fact that social security contributions imply
+the existence of forced saving, which is a perfect substitute for
+voluntary savings. Therefore, changes in the social security system only
+cause changes in the voluntary savings of the individual, without
+affecting their level of consumption. The optimal path of savings is now
+different as a result of the social security scheme. As we can see, the
+savings now are negative, and of a very high amount, during the working
+life of the agent. This is because the individual is replacing voluntary
+savings with the mandatory savings derived from social security
+contributions. Given the optimal path of consumption that the individual
+wants to follow, social security contributions represent a very large
+volume of savings, which will compensate through changes in voluntary
+savings. At the time of retirement, there is a balance in the stock of
+financial assets, because we are assuming that the individual receives
+all the pension once and only devotes a small fraction of it to
+consumption in that period. As of this moment, the stock of financial
+assets is decreasing (the agent is consuming the pension received, until
+in the final period, the stock of financial assets is zero.) The pension
+fund shows the contributions that the individual makes period by period
+during their working time, together with the profitability that is
+generated. This fund is increased until the moment in which the
+retirement takes place. From that moment, and given the assumption that
+we have made, the pension fund is null. In summary, in this social
+security system, we see that the compulsory savings of the system are a
+perfect substitute for the private savings, indicating that given a
+certain level of mandatory savings, the individual will adjust their
+private savings so that the path of consumption is the one that
+maximizes their welfare.
+
+6.4.2. Change in social security contributions
+
+Suppose now that the government increases the social security
+contributions. For example, let's assume that quotes increase up to 40%.
+What implications does this change have on the agent's decisions? The
+results are shown in Figure 6.6, by the continuous line. As we can see,
+the optimal path of consumption of the individual remains the same,
+since it is not affected by this tax in terms of social security
+contributions. However, now the level of savings (voluntary) is
+different, adjusting to the new level of mandatory savings. Thus, while
+the pension fund increases with respect to the previous situation,
+voluntary savings decrease, so that given the new disposable income, the
+social security contributions’ net, the level of consumption will be the
+same. What we are observing in this exercise is a perfect substitution
+between voluntary savings and forced savings derived from a social
+security system. Given the assumption that the return on both financial
+assets is the same, both types of savings are perfectly substitutes.
+
+Different would be the case of a pay-as-you-go social security system,
+where contributions to social security go directly to pay the pensions
+of those who are retired, and the future pension of an agent who is in
+his working life depends on the contributions to the system made by
+future workers. In this type of system, the future pension will depend
+on the population dynamics and the evolution of labor productivity, so
+that voluntary savings would not be a substitute for social security
+contributions.
+
+[]
+
+Figure 6.6. Optimal consumption-saving decision with social security
+system. Effects of an increase in social security contributions (solid
+line).
+
+Exercises
+
+1.  Using the "ICM-6-2.xls" spreadsheet, study the effects of an
+    increase in the consumption tax to 20%. How the optimal household
+    decisions are affected by this tax change?
+
+2.  Analyze the effects of a change in the parameter γ, using the
+    "ICM-6-2.xls" spreadsheet. How the different fiscal revenues change?
+    How is the sensitivity of the optimal decisions by the households to
+    the tax rates depending on the value of this parameter.
+
+3.  Suppose that the interest rate changes to a 3 percent, R = 0.03.
+    What consequences does it have on the distortionary effects of
+    taxation on the consumption-savings decision and the
+    consumption-leisure decision?
+
+4.  Using the "ICM-6-2.xls" spreadsheet, study the effects of a decline
+    in the labor income tax.
+
+5.  Using the "ICM-6-3.xls" spreadsheet, study how changes in the
+    discount factor affects the incidence of the social security system
+    on the household consumption-saving optimal decision.
+
+6.  Introduce the optimal labor supply decision into the household’s
+    utility function and study how are the distortionary effects on
+    labor supply by the social security system.
+
+7. The firm and the investment decision: The Tobin’s Q model
+
+7.1. Introduction
+
+Another fundamental economic agent that is included in dynamic general
+equilibrium models is the firm. Firms, together with households, make up
+the two main economic agents which determine the behavior of an economy
+through in micro-based macroeconomic models. The firms represent the
+productive sector of the economy, that is, they are the economic agents
+that produce the final goods that are consumed or invested, by taking
+decisions about the demand of productive factors. To produce the final
+good, firms use a certain number of productive factors, given a
+technology function, which allows their transformation into final
+production. We consider the existence of two types of productive
+factors: physical capital and labor. Physical capital arises as a
+consequence of consumers savings decisions. In its simplest and
+traditional version, this saving is supposed to be equal to investment,
+which is transformed directly into physical capital, and in general it
+is assumed that the owner of the capital stock is the household, who
+rent production factors to the firms. On the other hand, the labor
+factor is derived from the time endowment of households. Households have
+an initial discretionary time endowment that can be used either for
+leisure activities or for working activities. Labor is just the time
+that households rent to firms. In the standard framework, firms rent
+productive factors to the households, which we assume are the owners of
+them, receiving a return. This makes the decision problem of firms very
+simple, since it is the households who make the decisions of labor
+supply and investment. This is the treatment that is given to firms in
+the majority of micro-based dynamic macroeconomic models, in which the
+existence of perfect competition is assumed. If the existence of
+imperfect competition (monopolistic competition) is introduced, the
+problem of the companies is more complex since they have some market
+power to influence the price of the produced goods.
+
+In studying optimal decisions by the firms, we assume that their
+objective function is profits maximization, subject to the technological
+restriction that is defined by the production function. Thus, the
+behavior of firms will be represented by an optimization problem in
+which a vector of quantities (demand) of productive factors is
+determined, given their prices and, through the technological function,
+determines the level of production of the economy. The key variable we
+analyze in this chapter is the investment decision. Along with
+consumption, investment is the other fundamental variable of an economic
+system. As we have seen in the study of households decisions, they
+determine the level of optimal savings in each period, savings that we
+assume are transformed directly into investment and physical capital.
+Investment is important since it determines both the level of employment
+and the possibilities of growth of the economy. In the classical
+analysis, firms do not own the capital whose accumulation process is
+determined by savings, which is the instrument that consumers use to
+determine their optimal consumption path. In this sense, saving is
+simply production not consumed, so that investment decisions are derived
+directly from savings decisions. This is the assumption generally
+adopted by most micro-based models. However, this means that we cannot
+adequately define an investment function for physical capital, or define
+what are its determinants independently of the optimal saving decision
+in the form of financial assets.
+
+In this chapter, we analyze the investment from the point of view of the
+firms. Thus, we assume that firms own their physical capital and,
+therefore, are the ones that make investment decisions using consumer
+savings as a source of financing. In this case, we would distinguish
+between consumers, on the one hand, and entrepreneurs, on the other, the
+latter being the owners of the firms and, therefore, the owner of the
+physical capital, representing the economic agent that makes the
+investment decisions. By using this alternative specification, we can
+separate the saving decision from the investment decision and thus,
+obtain the investment demand in a dynamic environment, since the
+investment decision today, will affect the future flow of profits of the
+firms, in a way equivalent to how consumers determine their level of
+savings today and their future level of consumption.
+
+In the standard neoclassical model, the optimal capital stock is
+determined as a function of the relative prices of the productive
+factors. However, we expand this basic analysis considering the
+existence of adjustment costs associated with the investment process.
+Based on this analysis, we will develop the Tobin’s Q model, which will
+constitute the framework of reference that we will use to describe
+investment decisions in an economy. In Tobin’s Q model, the optimal
+investment rate depends on a ratio, called Q, defined as the ratio of
+the market value of the company to the replacement cost of installed
+capital. The resulting model will consist of a discrete-time system
+composed of two difference equations, which determine the behavior of
+that ratio and the stock of capital. However, these equations have a
+non-linear nature, so analyzing the behavior of the system directly is
+more complex because it cannot be written in matrix notation. In this
+case, we proceed in the first place to obtain a linear approximation to
+the non-linear equations of the same, rewriting the model in terms of
+the deviations of each variable with respect to its steady-state value,
+which will allow analyzing its behavior through the eigenvalues
+associated with the system and obtain the corresponding stable saddle
+path.
+
+The structure of the rest of the chapter is as follows. In Section 2, we
+solve analytically Tobin’s Q model, describing the intertemporal problem
+of profit maximization of the firms, the definition of the profit
+function to be used, as well as the description of the adjustment costs
+associated with the investment process. Section 3 performs the
+calibration of the model, as well as the calculation of its steady
+state. Section 4 carries out the log-linearization of the model, a
+necessary step to proceed with its numerical resolution. Section 5
+presents the numerical resolution of the model, as well as the
+calculation of the readjustment in the expectations on the ratio Q.
+Section 6 carries out a disturbance analysis, while in Section 7 a

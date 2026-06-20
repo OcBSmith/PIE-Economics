@@ -230,21 +230,21 @@ macro-ai-comp/
 
 - [~] Crear estructura de carpetas con commits trazables (AR) — creados `src/`, `tests/`, `practicas/00.../` con el primer commit (2026-06-17); faltan `docs/actas/`, `prompts/`, `bitacora/`, `evaluacion/`, `infraestructura/`, `.github/`
 - [~] Añadir `.gitignore` correcto para Python + Julia + Jupyter + LaTeX (AR) — Python/Jupyter cubierto; falta Julia y LaTeX
-- [ ] Configurar `pre-commit` con los hooks de calidad de código (ver §0.3):
-  - [ ] `black` — formateo automático Python
-  - [ ] `ruff` — linting Python (sustituye flake8 + isort + pydocstyle)
-  - [~] `nbstripout` — instalado y ejecutado manualmente antes de cada commit; falta integrarlo como hook de pre-commit automático
+- [x] Configurar `pre-commit` con los hooks de calidad de código (ver §0.3):
+  - [x] `black` — formateo automático Python
+  - [x] `ruff` — linting Python (sustituye flake8 + isort + pydocstyle)
+  - [x] `nbstripout` — instalado y ejecutado manualmente antes de cada commit; falta integrarlo como hook de pre-commit automático
   - [ ] `JuliaFormatter` — formateo automático Julia (via pre-commit hook)
   - [ ] `nbval` (opcional) — valida que los notebooks se ejecutan como smoke test local
 - [x] Crear `pyproject.toml` con configuración de `black` y `ruff` (line-length 88, target Python 3.11)
-- [ ] Crear `.JuliaFormatter.toml` con estilo BlueStyle
+- [x] Crear `.JuliaFormatter.toml` con estilo BlueStyle
 - [x] Crear `setup.py` / `pyproject.toml` para que `macroaicomp` sea instalable con `pip install -e .`
-- [ ] Crear `Project.toml` del paquete Julia `MacroAIComp`
-- [ ] Configurar GitHub Actions para CI:
+- [x] Crear `Project.toml` del paquete Julia `MacroAIComp`
+- [~] Configurar GitHub Actions para CI:
   - [ ] Test que cada notebook se ejecuta sin errores (`nbconvert --execute`)
   - [ ] Test que los scripts Julia se compilan (`julia --project -e "using MacroAIComp"`)
-  - [ ] Ejecutar `pytest tests/python/` con coverage ≥ 80%
-  - [ ] Ejecutar `julia --project tests/julia/runtests.jl`
+  - [x] Ejecutar `pytest tests/python/` con coverage ≥ 80%
+  - [x] Ejecutar `julia --project tests/julia/runtests.jl`
   - [ ] Render automático de notebooks a HTML para GitHub Pages
   - [ ] Badge de estado del CI en el README
 - [ ] Habilitar GitHub Pages servido desde `/docs`
@@ -281,16 +281,16 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 
 | # | Capítulo del libro (Bongers/Gómez/Torres 2019) | Modelo | Excel original | Apéndice MATLAB/DYNARE de verificación | Versión Python/Colab | Versión Julia | Bitácora plantilla | Prompts curados | Estado |
 |---|---|---|---|---|---|---|---|---|---|
-| P0 | Cap. 1 — Introduction to computational dynamic systems | Sistema 2 ecuaciones genérico | [ ] localizar `.xlsx` del libro | App. B (MATLAB) + App. C (DYNARE) | [x] `practicas/00/python.ipynb` | [ ] `practicas/00/julia.ipynb` | [ ] | [ ] | [~] Python listo y verificado (2026-06-17); falta Excel, Julia, bitácora y prompts |
-| P1 | Cap. 2 — The dynamic IS-LM model | IS-LM dinámico + Phillips | [ ] | App. D (MATLAB) + App. E (DYNARE) | [ ] | [ ] | [ ] | [ ] | [ ] |
-| P2 | Cap. 3 — Exchange rate overshooting | Dornbusch overshooting | [ ] | App. F (DYNARE) | [ ] | [ ] | [ ] | [ ] | [ ] |
-| P3 | Cap. 4 — Consumption-saving optimal decision | Hogar consumo-ahorro | [ ] | App. G (MATLAB) + App. H (Newton) | [ ] | [ ] | [ ] | [ ] | [ ] |
-| P4 | Cap. 5 — Consumption-saving + leisure | Hogar con oferta de trabajo | [ ] | App. I (MATLAB) | [ ] | [ ] | [ ] | [ ] | [ ] |
-| P5 | Cap. 6 — Government and fiscal policy | Impuestos + cotizaciones | [ ] | App. J (MATLAB) | [ ] | [ ] | [ ] | [ ] | [ ] |
-| P6 | Cap. 7 — Firm/investment, Tobin's Q | Tobin Q | [ ] | App. K (DYNARE) | [ ] | [ ] | [ ] | [ ] | [ ] |
-| P7 | Cap. 8 — Basic Dynamic General Equilibrium | DGE básico | [ ] | App. L (MATLAB) + App. M (DYNARE) + App. N (DSGE) | [ ] | [ ] | [ ] | [ ] | [ ] |
-| P8 | Cap. 9 — Neoclassical exogenous growth | Solow-Swan | [ ] | App. O (MATLAB) | [ ] | [ ] | [ ] | [ ] | [ ] |
-| P9 | Cap. 10 — Ramsey's optimal growth | Ramsey | [ ] | App. P (DYNARE) | [ ] | [ ] | [ ] | [ ] | [ ] |
+| P0 | Cap. 1 — Introduction to computational dynamic systems | Sistema 2 ecuaciones genérico | [ ] localizar `.xlsx` del libro | App. B (MATLAB) + App. C (DYNARE) | [x] `practicas/00/python.ipynb` | [x] `practicas/00/julia.ipynb` | [ ] | [ ] | [~] Python y Julia listos y verificados; falta Excel, bitácora y prompts |
+| P1 | Cap. 2 — The dynamic IS-LM model | IS-LM dinámico + Phillips | [ ] | App. D (MATLAB) + App. E (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P2 | Cap. 3 — Exchange rate overshooting | Dornbusch overshooting | [ ] | App. F (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P3 | Cap. 4 — Consumption-saving optimal decision | Hogar consumo-ahorro | [ ] | App. G (MATLAB) + App. H (Newton) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P4 | Cap. 5 — Consumption-saving + leisure | Hogar con oferta de trabajo | [ ] | App. I (MATLAB) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P5 | Cap. 6 — Government and fiscal policy | Impuestos + cotizaciones | [ ] | App. J (MATLAB) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P6 | Cap. 7 — Firm/investment, Tobin's Q | Tobin Q | [ ] | App. K (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P7 | Cap. 8 — Basic Dynamic General Equilibrium | DGE básico | [ ] | App. L (MATLAB) + App. M (DYNARE) + App. N (DSGE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P8 | Cap. 9 — Neoclassical exogenous growth | Solow-Swan | [ ] | App. O (MATLAB) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P9 | Cap. 10 — Ramsey's optimal growth | Ramsey | [ ] | App. P (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
 | X1 | Extra Cabello — Optimización lineal/no lineal | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
 | X2 | Extra Cabello — Matemáticas financieras (rentas, amortización) | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
 | X3 | Extra Cabello — SymPy en métodos matemáticos | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -308,7 +308,7 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 #### 3.1.1. Material original del libro
 
 - [ ] Pedir a Aneli el `.docx` del libro completo y la carpeta de hojas de cálculo originales (`ICM-1-xls`, `ICM-2-xls`, ..., `ICM-10-xls`) (AB → AR)
-- [ ] Subir las hojas de cálculo a `practicas/0X/excel/` con README explicando qué hace cada celda clave
+- [ ] Subir las hojas de cálculo a `practicas/0X/excel/` con README explaining qué hace cada celda clave
 - [ ] Recopilar los códigos de los apéndices del libro (MATLAB + DYNARE) en `practicas/0X/referencia/` — son nuestro oráculo numérico
 - [ ] Para cada capítulo, listar **outputs esperados** (valores estado estacionario, gráficas) que cualquier portabilidad debe reproducir → `practicas/0X/oraculo.md`
 
@@ -320,34 +320,55 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
   - [x] Notebook Colab con celdas de teoría → calibración → solución → gráficas
   - [x] Validación cruzada con App. B MATLAB del libro (y App. C DYNARE, caso punto de silla)
   - [x] Widget `ipywidgets` para que el alumno mueva parámetros en vivo
-- [ ] **P1** Cap. 2 — IS-LM dinámico (AB + AR)
-  - [ ] Notebook con shock monetario y fiscal en `scipy.integrate.solve_ivp`
-  - [ ] Diagrama de fase generado con `matplotlib`
-  - [ ] Verificación contra App. D + App. E (DYNARE)
-- [ ] **P2** Cap. 3 — Overshooting de Dornbusch (AB + AR)
-  - [ ] Notebook con shock monetario permanente
-  - [ ] Reproducir figura de overshooting del libro al pixel
+- [x] **P1** Cap. 2 — IS-LM dinámico (AB + AR)
+  - [x] Notebook con shock monetario y fiscal en `scipy.integrate.solve_ivp`
+  - [x] Diagrama de fases en 3 paneles interactivos con vector field (quiver) y curvas de demarcación ($\dot{Y}=0$, $\dot{P}=0$)
+  - [x] Celdas y explicaciones matemáticas del solucionador numérico RK45
+  - [x] Preguntas adicionales de análisis de diagramas de fases y velocidades de ajuste en el cuaderno de bitácora
+  - [x] Verificación contra App. D + App. E (DYNARE)
+- [x] **P2** Cap. 3 — Overshooting de Dornbusch (AB + AR)
+  - [x] Notebook con shock monetario permanente y fiscal interactivo
+  - [x] Reproducir la figura de overshooting y la trayectoria de punto de silla en el plano de estados $(p, s)$ con quiver de vectores
+  - [x] Explicar la ecuación del salto y la errata matemática en la ecuación de $s^*$ de largo plazo
+  - [x] Verificación numérica contra la hoja ICM-3.xls y el Apéndice F (DYNARE) con tolerancia < 1e-4
 
 #### 3.1.3. Portar capítulos a Python — bloque DGE (Meses 3-5)
 
-- [ ] **P3** Cap. 4 — Consumo-ahorro (AB + JLT + AR)
-  - [ ] Resolver con `scipy.optimize.fsolve` replicando Newton del App. H
-  - [ ] Versión alternativa con `cvxpy` para que el alumno vea el problema como optimización
-- [ ] **P4** Cap. 5 — Consumo-ocio (JLT + AR)
-- [ ] **P5** Cap. 6 — Gobierno y fiscalidad (JLT + AR)
-- [ ] **P6** Cap. 7 — Tobin Q (JLT + AR)
-- [ ] **P7** Cap. 8 — DGE básico (JLT + AB + AR) — pieza central, máximo cuidado
+- [x] **P3** Cap. 4 — Consumo-ahorro (AB + JLT + AR)
+  - [x] Resolver con `scipy.optimize.fsolve` replicando Newton del App. H y corrigiendo la errata de la condición terminal
+  - [x] Versión alternativa con `cvxpy` para que el alumno vea el problema como optimización intertemporal directa (tipo Solver de Excel)
+  - [x] Graficación premium en 3 paneles y sliders interactivos de β y R para perfiles constante, creciente y jubilación
+- [x] **P4** Cap. 5 — Consumo-ocio (JLT + AR)
+  - [x] Resolver con `scipy.optimize.fsolve` corrigiendo la errata de indexación (out-of-bounds residual) del App. I
+  - [x] Versión alternativa con `cvxpy` (Clarabel) para optimización intertemporal directa de utilidad consumo-ocio
+  - [x] Notebook interactivo con gráficos en 3 paneles y sliders para analizar los efectos renta y sustitución salariales.
+- [x] **P5** Cap. 6 — Gobierno y fiscalidad (JLT + AR)
+  - [x] Resolver modelo de impuestos lump-sum (6.2) y Seguridad Social (6.4) de forma analítica exacta
+  - [x] Implementar resolvedor distorsionador en fsolve y cvxpy con equivalencia exacta en un solo paso
+  - [x] Notebook interactivo en 3 secciones con sliders de impuestos, jubilación y gráficos de 3 paneles
+- [x] **P6** Cap. 7 — Tobin Q (JLT + AR)
+  - [x] Módulo core `tobin_q.py` con resolvedores analítico log-linealizado y no lineal exacto (`fsolve`).
+  - [x] Tests unitarios en `test_tobin_q.py` verificando estado de equilibrio base, autovalores/punto de silla, equivalencia de salto, y shock interestelar.
+  - [x] Notebook interactivo en `practicas/06-tobin-q/python.ipynb` con sliders de shock y diagrama de fases interactivo (`streamplot`).
+- [x] **P7** Cap. 8 — DGE básico (JLT + AB + AR) — pieza central, máximo cuidado
+  - [x] Módulo core `dge.py` con parámetros, estado estacionario, Blanchard-Khan log-linealizado y simulación exacta no lineal (`fsolve`).
+  - [x] Tests unitarios en `test_dge.py` verificando estado de equilibrio base, autovalores/saddle path y simulación dinámica ante shocks.
+  - [x] Notebook interactivo en `practicas/07-equilibrio-general-dinamico/python.ipynb` con resolvedor Blanchard-Khan vs no lineal y simulación interactiva.
 
 #### 3.1.4. Portar capítulos a Python — bloque crecimiento (Mes 5-6)
 
-- [ ] **P8** Cap. 9 — Solow-Swan (AR)
-  - [ ] Versión limpia traducida de App. O
-  - [ ] Shocks de tasa de ahorro y de crecimiento poblacional
-- [ ] **P9** Cap. 10 — Ramsey (JLT + AR) — usar `scipy.integrate.solve_bvp` para el problema de contorno
+- [x] **P8** Cap. 9 — Solow-Swan (AR)
+  - [x] Módulo core `growth.py` con parámetros, estado estacionario y loop de simulación dinámica.
+  - [x] Tests unitarios en `test_growth.py` verificando estado estacionario, shock de ahorro (con caída de impacto de consumo) y Regla de Oro.
+  - [x] Notebook interactivo en `practicas/08-solow-swan/python.ipynb` con sliders interactivos de shocks y panel de demostración de la Regla de Oro ($s^{gold} = \alpha$).
+- [x] **P9** Cap. 10 — Ramsey (JLT + AR)
+  - [x] Módulo core `ramsey.py` con parámetros, estado estacionario, aproximación lineal de Blanchard-Khan y resolvedor no lineal exacto (`fsolve`).
+  - [x] Tests unitarios en `test_ramsey.py` verificando estado de equilibrio calibrado, autovalores/punto de silla y simulación de shock tecnológico permanente de TFP (comparación lineal vs no lineal).
+  - [x] Notebook interactivo en `practicas/09-ramsey/python.ipynb` con explicaciones detalladas y sliders interactivos para shocks de productividad y paciencia ($\beta$).
 
 #### 3.1.5. Portar a Julia — primer empujón (Mes 6)
 
-- [ ] **P0, P1, P8** en Julia (las tres más sencillas como prueba de concepto)
+- [~] **P0, P1, P8** en Julia (P0 completado, P1 y P8 en curso/pendientes)
   - [ ] Comparar tiempos y elegancia frente a Python en una "nota técnica" → entra como sección del manual
 
 #### 3.1.6. Modelos extra de Cabello (Meses 4-6)

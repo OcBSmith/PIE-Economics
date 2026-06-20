@@ -1,0 +1,202 @@
+
+subplot(1,2,2)
+
+plot(j,k(1:T),'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+title('Capital stock')
+
+xlabel('Periods')
+
+Appendix L: The dynamic general equilibrium model in MATLAB
+
+This appendix presents the code to solve the dynamic general equilibrium
+model in MATLAB and simulate a temporary productivity disruption, which
+would be the equivalent to the exercise proposed in the spreadsheet
+"ICM-8-1-xls".
+
+%************************************************
+
+% An Introduction to Computational Macroeconomics
+
+% A. Bongers, T. Gómez and J. L. Torres (2019)
+
+% Basic general equilibrium model
+
+% Logarithmic utility function: U=ln(C)
+
+% File: m8.m. Associated function: m8foc.m
+
+%************************************************
+
+clear all
+
+% Periods
+
+T = 100;
+
+% Parameter calibration
+
+Ass = 1.00;
+
+Alpha = 0.35;
+
+Delta = 0.06;
+
+Rho = 1;
+
+Beta = 0.96;
+
+% Steady State
+
+Kss = ((1-Beta+Delta*Beta)/(Ass*Alpha*Beta))^(1/(Alpha-1));
+
+Yss = Ass*Kss^Alpha;
+
+Iss = Delta*Kss;
+
+Css = Yss-Iss;
+
+% Disturbance
+
+Epsilon=0.01;
+
+A(1)=Ass^Rho+Epsilon;
+
+for i=2:T;
+
+A(i)=A(i-1)^Rho;
+
+end
+
+par =[Ass Alpha Delta Rho Beta Kss T A];
+
+save par par;
+
+% Initial values
+
+x0 = [Kss*ones(size(1:T)) 0.20*Kss*ones(size(1:T))]';
+
+% Algorithm
+
+sol = fsolve('m8foc',x0);
+
+% Solution
+
+for t=1:T;
+
+C(t) = sol(t);
+
+K(t) = sol(t+T);
+
+end
+
+Y = A.*K.^Alpha;
+
+K(T+1)=K(T);
+
+I = K(2:T+1)-(1-Delta)*K(1:T);
+
+T=60;
+
+% Graphics
+
+subplot(2,2,1)
+
+plot((C(1:T)-Css)/Css,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Consumption')
+
+subplot(2,2,2)
+
+plot((K(1:T)-Kss)/Kss,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Capital stock')
+
+subplot(2,2,3)
+
+plot((Y(1:T)-Yss)/Yss,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Output')
+
+subplot(2,2,4)
+
+plot((A(1:T)-Ass)/Ass,'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+xlabel('Periods')
+
+title('Total Factor Productivity')
+
+%************************************************
+
+% An Introduction to Computational Macroeconomics
+
+% A. Bongers, T. Gómez and J. L. Torres (2019)
+
+% Basic general equilibrium model
+
+% Logarithmic utility function: U=ln(C)
+
+% File: m8foc.m. Script function: m8.m
+
+%************************************************
+
+function f=m8foc(z,par)
+
+% Loading parameters
+
+load par
+
+Ass = par(1);
+
+Alpha = par(2);
+
+Delta = par(3);
+
+Rho = par(4);
+
+Beta = par(5);
+
+Kss = par(6);
+
+T = par(7);
+
+for i=1:T;
+
+A(i) = par(7+i);
+
+end;
+
+% Assignment of variables
+
+for t=1:T
+
+C(t) = z(t);
+
+K(t) = z(t+T);
+
+end
+
+C(T+1) = C(T);
+
+K0=Kss;
+
+% Equation to solve
+
+f(1) = C(2)-Beta*(Alpha*A(1)*K(1)^(Alpha-1)+(1-Delta))*C(1);
+
+f(2) = C(1)+K(1)-(1-Delta)*K0-A(1)*K0^Alpha;
+
+for t=2:T
+
+f(2*t-1) = C(t+1)-Beta*(Alpha*A(t)*K(t)^(Alpha-1)+(1-Delta))*C(t);
+
+f(2*t) = C(t)+K(t)-(1-Delta)*K(t-1)-A(t)*K(t-1)^Alpha;
+
+end
+

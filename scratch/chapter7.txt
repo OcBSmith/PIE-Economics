@@ -1,0 +1,1115 @@
+4.  Using the "ICM-6-2.xls" spreadsheet, study the effects of a decline
+    in the labor income tax.
+
+5.  Using the "ICM-6-3.xls" spreadsheet, study how changes in the
+    discount factor affects the incidence of the social security system
+    on the household consumption-saving optimal decision.
+
+6.  Introduce the optimal labor supply decision into the household’s
+    utility function and study how are the distortionary effects on
+    labor supply by the social security system.
+
+7. The firm and the investment decision: The Tobin’s Q model
+
+7.1. Introduction
+
+Another fundamental economic agent that is included in dynamic general
+equilibrium models is the firm. Firms, together with households, make up
+the two main economic agents which determine the behavior of an economy
+through in micro-based macroeconomic models. The firms represent the
+productive sector of the economy, that is, they are the economic agents
+that produce the final goods that are consumed or invested, by taking
+decisions about the demand of productive factors. To produce the final
+good, firms use a certain number of productive factors, given a
+technology function, which allows their transformation into final
+production. We consider the existence of two types of productive
+factors: physical capital and labor. Physical capital arises as a
+consequence of consumers savings decisions. In its simplest and
+traditional version, this saving is supposed to be equal to investment,
+which is transformed directly into physical capital, and in general it
+is assumed that the owner of the capital stock is the household, who
+rent production factors to the firms. On the other hand, the labor
+factor is derived from the time endowment of households. Households have
+an initial discretionary time endowment that can be used either for
+leisure activities or for working activities. Labor is just the time
+that households rent to firms. In the standard framework, firms rent
+productive factors to the households, which we assume are the owners of
+them, receiving a return. This makes the decision problem of firms very
+simple, since it is the households who make the decisions of labor
+supply and investment. This is the treatment that is given to firms in
+the majority of micro-based dynamic macroeconomic models, in which the
+existence of perfect competition is assumed. If the existence of
+imperfect competition (monopolistic competition) is introduced, the
+problem of the companies is more complex since they have some market
+power to influence the price of the produced goods.
+
+In studying optimal decisions by the firms, we assume that their
+objective function is profits maximization, subject to the technological
+restriction that is defined by the production function. Thus, the
+behavior of firms will be represented by an optimization problem in
+which a vector of quantities (demand) of productive factors is
+determined, given their prices and, through the technological function,
+determines the level of production of the economy. The key variable we
+analyze in this chapter is the investment decision. Along with
+consumption, investment is the other fundamental variable of an economic
+system. As we have seen in the study of households decisions, they
+determine the level of optimal savings in each period, savings that we
+assume are transformed directly into investment and physical capital.
+Investment is important since it determines both the level of employment
+and the possibilities of growth of the economy. In the classical
+analysis, firms do not own the capital whose accumulation process is
+determined by savings, which is the instrument that consumers use to
+determine their optimal consumption path. In this sense, saving is
+simply production not consumed, so that investment decisions are derived
+directly from savings decisions. This is the assumption generally
+adopted by most micro-based models. However, this means that we cannot
+adequately define an investment function for physical capital, or define
+what are its determinants independently of the optimal saving decision
+in the form of financial assets.
+
+In this chapter, we analyze the investment from the point of view of the
+firms. Thus, we assume that firms own their physical capital and,
+therefore, are the ones that make investment decisions using consumer
+savings as a source of financing. In this case, we would distinguish
+between consumers, on the one hand, and entrepreneurs, on the other, the
+latter being the owners of the firms and, therefore, the owner of the
+physical capital, representing the economic agent that makes the
+investment decisions. By using this alternative specification, we can
+separate the saving decision from the investment decision and thus,
+obtain the investment demand in a dynamic environment, since the
+investment decision today, will affect the future flow of profits of the
+firms, in a way equivalent to how consumers determine their level of
+savings today and their future level of consumption.
+
+In the standard neoclassical model, the optimal capital stock is
+determined as a function of the relative prices of the productive
+factors. However, we expand this basic analysis considering the
+existence of adjustment costs associated with the investment process.
+Based on this analysis, we will develop the Tobin’s Q model, which will
+constitute the framework of reference that we will use to describe
+investment decisions in an economy. In Tobin’s Q model, the optimal
+investment rate depends on a ratio, called Q, defined as the ratio of
+the market value of the company to the replacement cost of installed
+capital. The resulting model will consist of a discrete-time system
+composed of two difference equations, which determine the behavior of
+that ratio and the stock of capital. However, these equations have a
+non-linear nature, so analyzing the behavior of the system directly is
+more complex because it cannot be written in matrix notation. In this
+case, we proceed in the first place to obtain a linear approximation to
+the non-linear equations of the same, rewriting the model in terms of
+the deviations of each variable with respect to its steady-state value,
+which will allow analyzing its behavior through the eigenvalues
+associated with the system and obtain the corresponding stable saddle
+path.
+
+The structure of the rest of the chapter is as follows. In Section 2, we
+solve analytically Tobin’s Q model, describing the intertemporal problem
+of profit maximization of the firms, the definition of the profit
+function to be used, as well as the description of the adjustment costs
+associated with the investment process. Section 3 performs the
+calibration of the model, as well as the calculation of its steady
+state. Section 4 carries out the log-linearization of the model, a
+necessary step to proceed with its numerical resolution. Section 5
+presents the numerical resolution of the model, as well as the
+calculation of the readjustment in the expectations on the ratio Q.
+Section 6 carries out a disturbance analysis, while in Section 7 a
+sensitivity analysis is carried out.
+
+7.2. Tobin’s Q model
+
+In this section, we will study the reference model that is used to
+analyze the determinants of investment. This is the so-called Tobin-Q
+model, developed by James Tobin (1918-2002) in the late 1960s[17], being
+a widely used model to analyze the behavior of firms in relation to
+investment and practical applications to fix the equilibrium value of
+the shares of a company, the value of a firm when it is acquired by
+another, or to fix the exchange rate of shares between companies in the
+case of a merger. This model is based on defining a ratio, which is
+called the Tobin’s Q, which is constructed as the market value of the
+company with respect to the replacement cost of installed capital. That
+is, compare what the firm is valued with respect to what it would cost
+to install again all the capital available to the firm, which is
+equivalent to comparing the profitability of an investment with the cost
+of it. In this context, the investment will be a function of the value
+of this ratio and, in this way, any factor that affects this ratio will
+also affect the investment decision.
+
+In the analysis that we will perform, we assume that firms’ objective
+function is profits maximization, subject to the technological
+restriction. Thus, we will represent the behavior of the companies
+through an optimization problem in which a vector of quantities of
+productive factors (demand for them) is determined, given their prices,
+and through the technological function, the determination of the level
+of production. In the neoclassical model, the optimal capital stock is
+determined based on the relative prices of the productive factors.
+However, we are going to expand this basic analysis considering the
+existence of adjustment costs associated with the investment process.
+Based on this analysis, we will develop the Tobin’s Q model, which will
+constitute the frame of reference that we will use to describe
+investment decisions in an economy, as a dynamic system with two
+equations: one that describes the dynamics of the ratio Q, and another
+that describes the dynamics of the capital stock. As we have done in the
+case of the consumer, we are going to assume that all the companies are
+identical (the technological restriction they face is the same, this
+presents constant returns to scale and we assume the existence of a
+competitive environment), so we can use the concept of representative
+firm.
+
+A differentiating element of the analysis that we are going to carry out
+with respect to those carried out previously regarding consumer
+decisions is that we now introduce the concept of physical capital
+(structures and equipment), K, in contrast to the financial capital
+generated by savings and given by the stock of financial assets, B.
+Although both variables, in equilibrium, would be equivalent in a model
+of a closed economy without government, the nature of both variables is
+very different, given that the stock of financial assets is a totally
+flexible variable, while the stock of physical capital is a very rigid
+variable (structures and equipment need time to be built).
+
+7.2.1. The technology function
+
+We begin with the definition of the technological restriction to which
+the process of profit maximization of the firm is subject. The aggregate
+production function is given by the expression:
+
+Y_(t) = F(K_(t), L_(t)) (7.1)
+
+where Y_(t) is output, K_(t) is the stock of physical capital, L_(t) is
+the level of employment and F(•) is a mathematical function that
+converts productive factors into production and that represents the
+technology that is applied in the productive process. This technological
+function fulfills the following properties:
+
+F_(K) > 0; F_(L) > 0
+
+F_(KK) < 0; F_(LL) < 0
+
+F_(KL) > 0
+
+that is, the function is increasing with respect to both productive
+factors. If we increase the amount of the productive factors, labor or
+physical capital, production increases. On the other hand, the second
+derivative with respect to each of the productive factors is negative,
+indicating that the production function is concave with respect to each
+productive factor, which implies that the marginal productivity is
+decreasing. As we increase the quantity of a productive factor,
+production increases but each time it does so in a smaller proportion.
+In addition, the production function has to be concave in K and L, so it
+has to be fulfilled that:
+
+F_(KK)F_(LL) − (F_(KL))² > 0
+
+On the other hand, the production function meets the Inada conditions:
+
+lim_(k → 0)F_(K) = ∞; lim_(K → ∞)F_(K) = 0
+
+lim_(L → 0)F_(L) = ∞; lim_(L → ∞)F_(L) = 0
+
+that imply that if the quantity of a productive factor tends to zero,
+its marginal productivity tends to infinity, whereas if the quantity of
+productive factors tends to infinity, its productivity tends to zero. We
+also assume that both productive factors are needed to produce, that is,
+F(0, L_(t))F(K_(t), 0) = 0.
+
+7.2.2. Firm’s profits
+
+The objective of the firm is to maximize profits for which the firm
+determines the demand for productive factors. Profits are defined as the
+difference between the total income and the total costs of the firm:
+
+Π_(t) = IT_(t) − CT_(t) (7.2)
+
+where Π_(t) are profits, IT are the total revenues and CT are the total
+costs. Total revenues are given by the produced quantity multiplied by
+the price:
+
+IT_(t) = P_(t)Y_(t) (7.3)
+
+On the other hand, the total costs are given by the costs of the
+productive factors labor and capital, calculated as the compensation to
+each unit of productive factor multiplied by the quantity of the factor:
+
+CT_(t) = W_(t)L_(t) + R_(t)K_(t) (7.4)
+
+here W_(t) is the salary per unit of work and R_(t) is the interest rate
+of the physical capital stock. By normalizing the price of the final
+good to 1 (P_(t) = 1), the profit function can be defined as:
+
+Π_(t) = Y_(t) − W_(t)L_(t) − R_(t)K_(t) (7.5)
+
+This standard definition of the firm’s profits is what we would use
+under the assumption that the owners of both productive factors are the
+consumers. This is always true in the case of labor. The labor factor is
+derived from the endowment of time, and therefore labor supply is a
+decision taken by households. On the contrary, the physical capital
+factor can be assumed to be determined by the household, or can be
+assumed to be owned by the firms (or by another economic agent that can
+be named as capitalist). In the case where the consumers are the owners
+of both productive factors, the problem of maximizing profits of the
+companies is very simple. In this context, companies rent both factors,
+period by period, so the problem of profit maximization can be solved in
+static terms (there is no intertemporal decision on the part of the
+firm). Thus, the problem of profit maximization would consist in
+maximizing (7.5) subject to technological restriction (7.1), a problem
+that we can specify as:
+
+max_(K_(t), L_(t))Π_(t) = F(K_(t), L_(t)) − W_(t)L_(t) − R_(t)K_(t)
+(7.6)
+
+being the first-order conditions:
+
+$\frac{\partial\Pi_{t}}{\partial K_{t}} = F_{K}\left( K_{t},L_{t} \right) - R_{t} = 0$
+(7.7)
+
+$\frac{\partial\Pi_{t}}{\partial L_{t}} = F_{L}\left( K_{t},L_{t} \right) - W_{t} = 0$
+(7.8)
+
+from which are obtained the standard conditions that the prices of the
+productive factors are equal to the (value) of their marginal
+productivity:
+
+R_(t) = F_(K)(K_(t), L_(t)) (7.9)
+
+W_(t) = F_(L)(K_(t), L_(t)) (7.10)
+
+However, in the context of Tobin's Q model, we are going to introduce a
+difference with respect to the previous analysis, since we will assume
+that the firms invest in physical capital instead of renting it period
+by period. This means that the physical capital is owned by the firm and
+hence is the firm the agent who decides how physical capital changes,
+that is, the investment decision. In this way, what the firm really
+decides is its gross investment volume period by period, which we define
+as:
+
+I_(t) = K_(t + 1) − (1 − δ)K_(t) (7.11)
+
+that is, gross investment, I_(t), is equal to the variation of the stock
+of capital plus what depreciates capital, where δ > 0 is the rate of
+physical depreciation of capital.
+
+In this case, we are introducing a distinction between consumers and
+entrepreneurs. Entrepreneurs are the owners of firms in the economy and,
+therefore, the owners of physical capital stock. In this way, the
+investment decision will be different from the saving decision. Given
+that the stock of physical capital is the result of investment
+decisions, the decision regarding this productive factor depends on the
+quantity of investment that entrepreneurs decide to make in each period.
+In this case, we obtain that the cost in each moment of time of the
+physical capital productive factor for the firm is the cost associated
+with the gross investment that is made. Under this assumption, firm’s
+profits can be defined as:
+
+Π_(t) = Y_(t) − W_(t)L_(t) − I_(t) (7.12)
+
+where now the production costs associated with capital are those that
+are derived from the investment made by the firm in each period, since
+the existing stock of physical capital at that time is already owned by
+the firm and does not have to be paid every period. Therefore, the
+assumption about who owns the capital gives rise to different
+definitions of the firm’s profits function, as well as resulting in a
+dynamic optimization problem, since investment decisions today affect
+the future profits stream.
+
+7.2.3. Investment adjustment costs
+
+One of the problems presented by the neoclassical model is that it is
+assumed that there is no restriction to the stock of physical capital to
+change instantaneously to a disturbance. In fact, the standard
+neoclassical model implies that any deviation of the physical capital
+stock from its optimal value gives rise to an equivalent investment
+flow, so that any deviation of the physical capital stock from its
+optimum value is covered instantaneously. However, the stock of physical
+capital of firms is a variable that presents a high rigidity in time (it
+takes a while to be built), which causes that its adjustment is not so
+fast and much less instantaneous. One way to introduce rigidities in the
+process of capital accumulation is to consider the existence of
+adjustment costs associated with the investment. In practice, firms face
+the existence of a series of adjustment costs when altering their
+physical capital stock. In this section, we will introduce the existence
+of adjustment costs in the investment process. These adjustment costs
+are higher, the faster the company intends to adjust its physical
+capital stock.
+
+The introduction of adjustment costs in the investment process has
+important consequences on the solution of the model, since it allows us
+to separate the optimality conditions for the stock of capital and for
+the investment. In a context without adjustment costs in the investment
+process, as in the neoclassical model, both conditions coincide, since
+the variation in the stock of capital is equivalent to the investment
+(net of depreciation). However, the adjustment costs introduce a
+distinction between the optimal condition of the capital stock and that
+corresponding to the investment. This differentiation will be
+fundamental when introducing the ratio defined by Tobin in the profit
+maximization problem of the firm.
+
+We can distinguish between two types of adjustment costs: internal and
+external. External adjustment costs arise when firms face a perfectly
+elastic supply of capital, which causes the price of capital to depend
+on the speed at which it is desired to dispose of it. The more quickly
+you want to have an additional unit of capital, the higher the price
+will be. On the other hand, internal adjustment costs are measured in
+terms of production or profit losses. When new capital is incorporated,
+it is necessary to allocate part of the productive resources of the firm
+(mainly labor) to its installation. In this way, these factors are not
+temporarily available to produce, so there is a decrease in the level of
+production, with the consequent loss of profits. In reality, these
+adjustment costs can be very high, especially in the case of large
+companies.
+
+We define the following adjustment cost function:
+
+C = C(I_(t), K_(t)) (7.13)
+
+where the adjustment costs depend on the volume of investment and the
+installed physical capital stock. This cost function fulfills a series
+of characteristics, such that:
+
+C(0, K_(t)) = 0, C(I_(t), 0) = 0
+
+C_(I)(I_(t), K_(t)) > 0, C_(K)(I_(t), K_(t)) > 0
+
+C_(II)(I_(t), K_(t)) > 0, C_(KK)(I_(t), K_(t)) > 0
+
+that is, adjustment costs depend positively on both the investment and
+the capital stock (its first derivative with respect to these variables
+is positive), being zero in the case where no investment occurs, or is
+reversed for the first time (stock of starting capital equal to zero).
+On the other hand, its second derivative with respect to each argument
+is also positive, indicating that they grow more than proportionally,
+that is, it is a growing and convex function.
+
+The existence of adjustment costs means a loss of capital or an
+additional cost to the price thereof, which occurs during the investment
+process. Thus, for every euro that is destined for investment, an amount
+less than a euro will be transformed into physical capital, due to the
+existence of these adjustment costs. That is, part of the resources
+destined for investment are lost in the process of transformation to
+physical capital. There are different ways to incorporate the existence
+of adjustment costs in the model. For instance, we can include these
+costs in the capital accumulation equation or as an additional cost in
+the profit function. Both forms give equivalent results. If we choose
+the first option, we must specify the amount of physical capital that
+obtain the firm per unit invested, which would also be a function of the
+arguments that define the function of adjustment costs, and would be
+given by:
+
+Ψ(I_(t), K_(t)) = I_(t) − C(I_(t), K_(t)) (7.14)
+
+where the net investment function of adjustment costs, Ψ(•), depends on
+both the volume of investment and the stock of physical capital. In this
+case, the dynamic equation of accumulation of capital stock can be
+defined as:
+
+K_(t + 1) = (1 − δ)K_(t) + I_(t) − C(I_(t, )K_(t)) = (1 − δ)K_(t) + Ψ(I_(t), K_(t))
+(7.15)
+
+Alternatively, we can assume that the adjustment costs are additional
+costs to the value of the investment and that they involve a cost in
+terms of production losses and, therefore, of benefits. In this case,
+the function of capital accumulation would be the standard, while the
+profit function of the firm would be:
+
+Π_(t) = Y_(t) − W_(t)L_(t) − I_(t) − C(I_(t), K_(t)) (7.16)
+
+In the analysis that we develop next, we will use this last
+specification, obtaining the same results as if we had opted for the
+introduction of adjustment costs in the equation of capital
+accumulation. The key issue in considering adjustment costs in the
+investing process is that it allows the investment decision to be
+separated from the capital stock decision. This separation will cause
+that, depending on how the adjustment costs are, the investment in a
+period is not equal to the difference between the stock of capital and
+its optimum level (the one that maximizes profits). On the contrary, the
+presence of adjustment costs will cause that, in the event of a
+difference between the stock of capital of the firm and its optimum
+level, it will not be covered instantaneously, but rather the investment
+process will be delayed in the time, with the aim of balancing the
+adjustment costs with the profits derived from the investment.
+
++:------------------------------:+:----------------------------------------------------:+
+| Structure of Tobin’s Q model                                                          |
++--------------------------------+------------------------------------------------------+
+| Profits                        | Π_(t) = Y_(t) − W_(t)L_(t) − I_(t) − C(I_(t), K_(t)) |
++--------------------------------+------------------------------------------------------+
+| Production function            | Y_(t) = F(K_(t), L_(t))                              |
++--------------------------------+------------------------------------------------------+
+| Capital accumulation process   | K_(t + 1) = (1 − δ)K_(t) + I_(t)                     |
++--------------------------------+------------------------------------------------------+
+| Adjustment costs               | C = C(I_(t), K_(t))                                  |
++--------------------------------+------------------------------------------------------+
+| Initial capital stock          | K₀ > 0                                               |
++--------------------------------+------------------------------------------------------+
+| Q ratio                        | $$Q_{t} = \frac{V_{t}}{K_{t}}\ $$                    |
++--------------------------------+------------------------------------------------------+
+
+7.2.4. Intertemporal profit maximization
+
+Next, we solve analytically the intertemporal profit maximization
+problem that firms face. If we assume that time is a discrete variable,
+and that the life cycle of the firm is finite (from t = 0 up to T),[18]
+the problem of maximizing intertemporal benefits would be given by:
+
+$\max{E_{t}\sum_{t = 0}^{T}{\frac{1}{{(1 + R_{t})}^{t}}\Pi_{t}}}$ (7.17)
+
+subject to the technological restriction and to the restriction given by
+the equation of capital accumulation:
+
+Y_(t) = F(K_(t), L_(t)) (7.18)
+
+K_(t + 1) = (1 − δ)K_(t) + I_(t) (7.19)
+
+being the discount factor the real interest rate, R_(t), $E_{t}\$is the
+mathematical expectation operator, being K₀ > 0, and known. In addition,
+it is also going to fulfill that:
+
+$\lim_{T \rightarrow \infty}{K_{T} =}\overline{K}$ (7.20)
+
+where $\overline{K}$ is the steady-state capital stock. We use this
+condition as equivalent to the transversality condition to guarantee the
+stability of the system.[19]
+
+That is, the company would maximize the sum of the expected future
+benefits stream, using as a discount factor the real interest rate, as
+the benefits are a monetary flow. As we assume the existence of perfect
+foresight and rational expectations, we can directly eliminate
+mathematical expectation, since this implies that we know the future
+value of the exogenous variables. Thus, taking into account the
+definition of profits, the problem to maximize can be written as:
+
+$\max{\sum_{t = 0}^{T}{\frac{1}{{(1 + R_{t})}^{t}}\left\lbrack Y_{t} - W_{t}L_{t} - I_{t} - C(I_{t},\ K_{t}) \right\rbrack}}$
+(7.21)
+
+subject to the above restrictions. By substituting the technological
+constraint in the objective function we obtain the following auxiliary
+function of Lagrange:
+
+$V = \sum_{t = 0}^{T}{\frac{1}{\left( 1 + R_{t} \right)^{t}}\left\lbrack F\left( K_{t},L_{t} \right) - W_{t}L_{t} - I_{t} - C\left( I_{t},\ K_{t} \right) \right\rbrack} - \lambda_{t}(K_{t + 1} - I_{t} - (1 - \delta)K_{t})$
+(7.22)
+
+The first-order conditions to the previous problem are the
+following:[20]
+
+$\frac{\partial V}{\partial K_{t + 1}} = \frac{1}{\left( 1 + R_{t + 1} \right)^{t + 1}}\left\lbrack F_{K}\left( K_{t + 1},\ L_{t + 1} \right) - C_{K}\left( I_{t + 1},K_{t + 1} \right) \right\rbrack + \lambda_{t + 1}(1 - \delta) - \lambda_{t} = 0$
+(7.23)
+
+$\frac{\partial V}{\partial I_{t}} = - \frac{1 + C_{I}(K_{t},I_{t})}{{(1 + R_{t})}^{t}} + \lambda_{t} = 0$
+(7.24)
+
+$\frac{\partial V}{\partial L_{t}} = \frac{F_{L}\left( K_{t},\ L_{t} \right) - W_{t}}{{(1 + R_{t})}^{t}} = 0$
+(7.25)
+
+$\frac{\partial V}{\partial\lambda_{t}} = - K_{t + 1} + I_{t} + (1 - \delta)K_{t} = 0$
+(7.26)
+
+From the first-order condition (7.24) we obtain the value of the
+Lagrange multiplier for the period t:
+
+$\lambda_{t} = \frac{1 + C_{I}(I_{t},K_{t})}{{(1 + R_{t})}^{t}}$ (7.27)
+
+and for the period t + 1:
+
+$\lambda_{t + 1} = \frac{1 + C_{I}(I_{t + 1},K_{t + 1})}{{(1 + R_{t + 1})}^{t + 1}}$
+(7.28)
+
+Given that the interest rate (the discount factor) is an exogenous
+variable, we assume that its value remains constant period to period,
+such that R_(t + 1) = R_(t). By substituting in the first-order
+condition (7.23), the Lagrange multiplier for period t and t + 1, it
+turns out that:
+
+F_(K)(K_(t + 1), L_(t + 1)) − C_(K)(I_(t + 1), K_(t + 1)) = (1 + R_(t))[1 + C_(I)(I_(t + 1), K_(t + 1)]
+
+−[1 + C_(I)(I_(t + 1)K_(t + 1)](1 − δ) (7.29)
+
+an expression that equals the value of the marginal product of capital
+with the cost of using it, and that reflects the investment decision of
+the company.
+
+Finally, directly from the first-order condition (7.25) we obtain the
+condition that equals the marginal productivity of labor with the
+salary:
+
+F_(L)(K_(t), L_(t)) = W_(t) (7.30)
+
+7.2.5. The marginal q
+
+Next, we define Tobin’s Q ratio. This ratio would be calculated as the
+market value of the company with respect to the replacement cost of
+installed capital. In our case, we define this ratio in marginal terms,
+denoted as q.[21] That is, the q ratio would be the variation in the
+market value of the firms with respect to the variation in the
+replacement cost of capital, that is, the cost of investing an
+additional unit. Under certain assumptions, the q ratio is equal to the
+average of the Q ratio. The q ratio is defined as:
+
+$q_{t} = \lambda_{t}{(1 + R_{t})}^{t}\$ (7.31)
+
+Therefore, we define the shadow price of capital as:
+
+$\lambda_{t} = \frac{q_{t}}{{(1 + R_{t})}^{t}}$ (7.32)
+
+By using the definition of the Lagrange parameter obtained above, it
+turns out that,
+
+q_(t) = 1 + C_(I)(I_(t), K_(t)) (7.33)
+
+By substituting this expression in the equilibrium condition for the
+stock of capital (7.29) we obtain:
+
+F_(K)(K_(t + 1,)L_(t + 1)) − C_(K)(I_(t + 1), K_(t + 1)) = (1 + R_(t))q_(t) − q_(t + 1)(1 − δ)
+(7.34)
+
+From the previous expression, we obtain the following equation that
+indicates the dynamics of the marginal q:
+
+$q_{t + 1} = \frac{\left( 1 + R_{t} \right)q_{t} - F_{K}\left( K_{t + 1},L_{t + 1} \right) + C_{K}(I_{t + 1},K_{t + 1})}{1 - \delta}$
+(7.35)
+
+The previous expression tells us that now the marginal productivity of
+capital is equal to an expression in which appears the cost of capital
+use but also the function of net investment of adjustment costs. Thus,
+if there were no adjustment costs then C_(K)(I_(t + 1), K_(t + 1)) = 0,
+so the equilibrium condition would be:
+
+$q_{t + 1} = \frac{\left( 1 + R_{t} \right)q_{t} - F_{K}\left( K_{t + 1},L_{t + 1} \right)}{1 - \delta}$
+(7.36)
+
+With adjustment costs, the cost of capital use is higher depending on
+how the adjustment costs are based on the capital stock. The greater the
+C_(K)(I_(t), K_(t)), the greater the marginal productivity of capital
+has to be, that is, the smaller the capital stock. This means that
+although the stock of capital of a firm in a period is less than
+optimal, the firm does not make an investment in that period to fully
+cover the difference, since the adjustment cost can be very important,
+carrying out its investments gradually over time.
+
+Therefore, Tobin’s Q model can be summarized in a system of two dynamic
+equations, one for the stock of capital and another for the q ratio,
+given by:
+
+q_(t) = 1 + C_(I)(I_(t), K_(t)) (7.37)
+
+(1 − δ)q_(t + 1) + F_(K)(K_(t + 1), L_(t + 1)) = (1 + R_(t))q_(t) + C_(K)(I_(t + 1), K_(t + 1))
+(7.38)
+
+plus the static condition that determines the level of employment. If we
+assume that employment remains fixed, we can solve Tobin’s Q model in
+terms of the capital stock and the q ratio. The stock of capital is a
+state variable, which is predetermined by the decisions made in the
+previous period, while the q ratio is a full flexible forward-looking
+variable, which is subject to changes in expectations, and which adjusts
+instantaneously to disturbances.
+
+7.3. Functional forms and calibration of the model
+
+To solve the previous model numerically, we need to define specific
+functional forms, both for the technology and for the adjustment costs.
+First, let's normalize the employment level to 1 (L_(t) = 1). In this
+way, the production function would be given by:
+
+Y_(t) = F(K_(t)) = K_(t)^(α) (7.39)
+
+where the level of employment we assume is fixed and where 0 < α < 1.
+This is because the decision regarding labor supply are taken by the
+households and not by the firm. Hence, we consider a technological
+function as a function of the stock of capital and where α is the
+elasticity of the level of output with respect to the physical capital
+stock.
+
+Next, we have to specify a functional form for the adjustment costs. In
+practice, adjustment costs can have a wide variety of functional forms.
+One of the most commonly used functional forms for adjustment costs, and
+which is also what we are going to adopt here, is the following:
+
+$C\left( I_{t},K_{t} \right) = \frac{\phi}{2}\left( \frac{I_{t} - \delta K_{t}}{K_{t}} \right)^{2}K_{t}$
+(7.40)
+
+representing a function of quadratic adjustment costs that depends both
+on the investment and the stock of capital, and where ϕ > 0 is a
+parameter that would indicate how sensitive the investment is with
+respect to the value of the q ratio. In this specific case we would
+have:
+
+$C_{I}\left( I_{t},K_{t} \right) = \phi\left( \frac{I_{t} - \delta K_{t}}{K_{t}} \right)$
+(7.41)
+
+$C_{K}\left( I_{t},K_{t} \right) = \frac{\phi}{2}\left( \frac{I_{t} - \delta K_{t}}{K_{t}} \right)^{2} - \phi\left( \frac{I_{t} - \delta K_{t}}{K_{t}} \right)\frac{I_{t}}{K_{t}}$
+(7.42)
+
+In the analysis to be done next, we use the adjustment cost function
+given by (7.40). By using this functional form and its derivatives with
+respect to investment and capital stock, as well as the production
+function defined above, and by introducing them into the model equations
+(7.37 and 7.38), it results that:
+
+$q_{t} = 1 + \phi\left( \frac{I_{t} - \delta K_{t}}{K_{t}} \right)$
+(7.43)
+
+$(1 - \delta)q_{t + 1} = \left( 1 + R_{t} \right)q_{t} - \alpha K_{t + 1}^{\alpha - 1} + \frac{\phi}{2}\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)^{2}\phi\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)\frac{I_{t + 1}}{K_{t} + 1\ \ \ }$
+(7.44)
+
+From these expressions, we will obtain the two difference equations that
+determine this model. From the equation of capital accumulation, it
+turns out that:
+
+I_(t) − δK_(t) = K_(t + 1) − K_(t) (7.45)
+
+By defining ΔK_(t) = K_(t + 1) − K_(t), and substituting in the
+expression (7.43), we obtain directly the capital accumulation equation:
+
+$q_{t} - 1 = \phi\frac{\mathrm{\Delta}K_{t}}{K_{t}}$ (7.46)
+
+and by solving for the capital stock change, it results that:
+
+$\mathrm{\Delta}K_{t} = (q_{t} - 1)\frac{K_{t}}{\phi}$ (7.47)
+
+On the other hand, by operating on the expression (7.44) and defining
+Δq_(t) = q_(t + 1) − q_(t), we obtain that:
+
+$q_{t + 1} = \frac{\left( 1 + R_{t} \right)}{(1 - \delta)}q_{t} - \frac{\alpha}{(1 - \delta)}K_{t + 1}^{\alpha - 1} + \frac{\phi}{2(1 - \delta)}\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)^{2} - \frac{\phi}{(1 - \delta)}\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)\frac{I_{t + 1}}{K_{t + 1}}$
+(7.48)
+
+By adding and subtracting in the left part of this expression:
+
+$q_{t + 1} - q_{t} + q_{t} = \frac{\left( 1 + R_{t} \right)}{(1 - \delta)}q_{t} - \frac{\alpha}{(1 - \delta)}K_{t + 1}^{\alpha - 1} + \frac{\phi}{2(1 - \delta)}\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)^{2}$
+
+$- \frac{\phi}{(1 - \delta)}\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)\frac{I_{t + 1}}{K_{t + 1}}$
+(7.49)
+
+and by rearranging the terms, it results that:
+
+$\mathrm{\Delta}q_{t} = \frac{\left( R_{t} + \delta \right)q_{t} - \alpha K_{t + 1}^{\alpha - 1} + \frac{\phi}{2}\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)^{2} - \phi\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)\frac{I_{t + 1}}{K_{t + 1}}}{(1 - \delta)}$
+(7.50)
+
+Given these functional forms for the production function and for the
+adjustment cost function, the calibration of the parameters of the model
+are the following: α, which is the technological parameter that
+determines the elasticity of the production level with respect to the
+stock of capital is assumed to be 0.35. The physical depreciation rate
+of capital is assumed to be 6 percent per year (δ = 0.06). The
+adjustment cost parameter is assumed takes a value of 10, (ϕ = 10).
+Finally, the model has a variable that we have assumed to be exogenous,
+the real interest rate. Let's assume that R_(t) = 0.04, that is 4% per
+year.
+
+Table 7.1: Calibration of the parameters
+
+  ----------- ----------------------------------- -------
+  Symbol      Definition                          Value
+
+  α           Production-capital elasticity       0.35
+
+  δ           Depreciation rate                   0.06
+
+  ϕ           Parameter adjustment costs          10.0
+  ----------- ----------------------------------- -------
+
+7.3.1. Steady state
+
+Next, we will proceed to calculate the steady state. To simplify the
+notation, we are going to eliminate the time subscript of the
+steady-state variables. However, we must bear in mind that the steady
+state can be altered from one period to another, depending on the
+disturbances suffered by the system. The dynamic equation for the
+capital stock (the investment rule), in steady state, would be given by:
+
+$\mathrm{\Delta}K_{t} = \left( \overline{q} - 1 \right)\frac{\overline{K}}{\phi} = 0$
+(7.51)
+
+Since in the steady state the previous equation must be equal to zero,
+this supposes that the value of the q ratio in steady state has to be
+equal to the unit:
+
+$\overline{q} = 1$ (7.52)
+
+In fact, in a steady state it turns out that C_(I)(•) = 0, because it
+turns out that $\overline{q} = 1$. On the other hand, the dynamic
+equation for the q, in steady state would be given by:
+
+$\mathrm{\Delta}q_{t} = \frac{\left( R_{t} + \delta \right)\overline{q} - \alpha{\overline{K}}^{\alpha - 1}}{(1 - \delta)}$=0
+(7.53)
+
+since in steady state ${\overline{I}}_{t} = \delta{\overline{K}}_{t}$.
+Therefore, for the previous expression to be zero, the denominator must
+be null, so we would have to:
+
+$\alpha{\overline{K}}^{\alpha - 1} = R_{t} + \delta$ (7.54)
+
+resulting that the stock of capital in steady state would be given by:
+
+$\overline{K} = \left( \frac{R_{t} + \delta}{\alpha} \right)^{\frac{1}{\alpha - 1}}$
+(7.55)
+
+By substituting the calibrated values for the parameters and for the
+exogenous variable, we would have that the value of capital stock in
+steady state is:
+
+${\overline{K}}_{t} = \left( \frac{0.04 + 0.06}{0.35} \right)^{\frac{1}{0.65}} = 6.87$
+
+7.4. Linearization of Tobin’s Q model
+
+Tobin’s Q model, even in its simplest version as described here,
+presents an added difficulty with respect to the non-micro-based models
+studied previously, due to the fact that the resulting dynamic equations
+are non-linear. The presence of non-linear dynamic equations is common
+in micro-based macroeconomic models, which is an additional difficulty
+for their numerical resolution. This difficulty stems from the fact that
+the type of solution we are going to find for these models is of the
+saddle-point type, so we need to calculate the stable path and the
+change that must occur in the variable that "jumps" up to said stable
+path for the system to converge to its steady state. As it happened in
+the Dornbusch model of overshooting of the exchange rate, if we have a
+saddle point it is necessary to have the value of the eigenvalues of the
+system to calculate the impact effect of a disturbance on the variable
+that depends on the expectations and adjusts instantaneously. That is,
+we have to calculate the stable saddle path, which is easier if we are
+working with a dynamic system composed of linear equations.
+
+The fact that the equations are non-linear, makes it difficult to
+calculate the eigenvalues of the system, without which it is not
+possible to calculate the stable path to determine the dynamics of the
+different variables. The simplest way to proceed, and that is the
+strategy we use here, is to obtain a linear approximation to the
+original non-linear equations of the model, which facilitates the
+calculation of the eigenvalues by applying the same procedure that we
+used previously. This is precisely the standard method that is carried
+out in macroeconomic analysis: to solve a linear approximation to the
+original non-linear system. Thus, once we have obtained the dynamic
+equations of a certain non-linear macroeconomic model, we proceed to
+linearize it around its steady state, in order to analyze the dynamics
+of the variables. This assumes that we define the variables as
+deviations from the steady state. Obviously, this procedure is only
+valid if the economy is always very close to the steady state (the error
+that is made in the linear approximation would be small), which would be
+guaranteed if the disturbances suffered by an economy are not of a high
+amount.
+
+In this section, we redefine the model in linear terms. From the problem
+solved previously, we obtain the following two difference equations:
+
+$\mathrm{\Delta}K_{t} = (q_{t} - 1)\frac{K_{t}}{\phi}$ (7.56)
+
+$\Delta q_{t} = \frac{\left( R_{t} + \delta \right)q_{t} - \alpha K_{t + 1}^{\alpha - 1} + \frac{\phi}{2}\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)^{2} - \phi\left( \frac{I_{t + 1} - \delta K_{t + 1}}{K_{t + 1}} \right)\frac{I_{t + 1}}{K_{t + 1}}}{(1 - \delta)}$
+(7.57)
+
+where we have defined Δq_(t) = q_(t + 1) − q_(t), and where
+ΔK_(t) = K_(t + 1) − K_(t),. The problem that we encounter is that both
+equations are non-linear, so we cannot write the problem in matrix
+notation and study the characteristics of the coefficient matrix
+associated with the endogenous variables directly. To apply the
+procedure described in prevous chapters, we must first transform these
+equations to be linear (a linear approximation to them).
+
+To obtain the log-linearization of our system of equations, we will
+express the variables of the model as the log-linear deviation with
+respect to its steady-state values. The log-linear deviation of a
+variable, x_(t), with respect to its steady-state value,
+${\overline{x}}_{t}$, we will define as x̂_(t), where
+${\widehat{x}}_{t} = \ln x_{t} - \ln{\overline{x}}_{t}$. To construct
+the equations in log-linear form, we will follow three basic rules, as
+indicated in Uhlig (1999).[22] These basic rules are the following:
+
+1.  Each one of the variables can be defined as:
+
+  $x_{t} \approx {\overline{x}}_{t}\exp\left( {\widehat{x}}_{t} \right) \approx {\overline{x}}_{t}\left( 1 + {\widehat{x}}_{t} \right)$
+  (7.58)
+
+2.  When two variables are multiplying, then:
+
+  $x_{t}z_{t} \approx {\overline{x}}_{t}(1 + {\widehat{x}}_{t}){\overline{z}}_{t}(1 + {\widehat{z}}_{t}) \approx {\overline{x}}_{t}{\overline{z}}_{t}(1 + {\widehat{x}}_{t} + {\widehat{z}}_{t})$
+  (7.59)
+
+  that is, we assume that the product of two deviations with respect to
+  its steady states, x̂_(t)ẑ_(t), is a very small number and
+  approximately equal to zero.
+
+3.  The third rule refers to the powers, such that:
+
+  $x_{t}^{a} \approx {\overline{x}}_{t}^{a}\left( 1 + {\widehat{x}}_{t} \right)^{a} \approx {\overline{x}}_{t}^{a}(1 + a{\widehat{x}}_{t})$
+  (7.60)
+
+Log-linearization of the dynamic equation for the capital stock
+
+First, we proceed to log-linearize the first dynamic equation,
+corresponding to the variations in the stock of capital. Let’s write the
+starting equation again:
+
+$K_{t + 1} - K_{t} = (q_{t} - 1)\frac{K_{t}}{\phi}$ (7.61)
+
+or equivalently:
+
+$K_{t + 1} - K_{t} = q_{t}\frac{K_{t}}{\phi} - \frac{K_{t}}{\phi}$
+(7.62)
+
+By applying the log-linearization rule (rules 1 and 2) we obtain:
+
+${\overline{K}}_{t + 1}\left( 1 + {\widehat{k}}_{t + 1} \right) - {\overline{K}}_{t}\left( 1 + {\widehat{k}}_{t} \right) = \frac{1}{\phi}{\overline{q}}_{t}{\overline{K}}_{t}\left( 1 + {\widehat{q}}_{t} + {\widehat{k}}_{t} \right) - \frac{1}{\phi}{\overline{K}}_{t}(1 + {\widehat{k}}_{t})$
+(7.63)
+
+or equivalently, by eliminating the time subscripts for the steady-state
+variables (given that
+(${\overline{K}}_{t + 1} = {\overline{K}}_{t} = \overline{K}$),
+
+$\overline{K} + \overline{K}{\widehat{k}}_{t + 1} - \overline{K} - \overline{K}{\widehat{k}}_{t} = \frac{1}{\phi}\overline{q}\overline{K} + \frac{1}{\phi}\overline{q}\overline{K}{\widehat{q}}_{t} + \frac{1}{\phi}\overline{q}\overline{K}{\widehat{k}}_{t} - \frac{1}{\phi}\overline{K} - \frac{1}{\phi}\overline{K}{\widehat{k}}_{t}$
+(7.64)
+
+and by simplifying and given that ${\overline{q}}_{t} = 1$, it turns out
+that:
+
+${\widehat{k}}_{t + 1} - {\widehat{k}}_{t} = \frac{1}{\phi} + \frac{1}{\phi}{\widehat{q}}_{t} + \frac{1}{\phi}{\widehat{k}}_{t} - \frac{1}{\phi} - \frac{1}{\phi}{\widehat{k}}_{t}$
+(7.65)
+
+or equivalently:
+
+${\widehat{k}}_{t + 1} - {\widehat{k}}_{t} = \frac{1}{\phi}{\widehat{q}}_{t}$
+(7.66)
+
+so, we finally get the following linear approximation to the variations
+in the stock of capital (in terms of its deviations from its steady
+state):
+
+$\Delta{\widehat{k}}_{t} = \frac{1}{\phi}{\widehat{q}}_{t}$ (7.67)
+
+This equation indicates that a positive deviation of the ratio from its
+steady-state value implies an increase in the deviation of the stock of
+capital with respect to its steady state.
+
+Log-linearization of the dynamic equation for the ratio q
+
+Next, we proceed to apply the same procedure to the second dynamic
+equation of the model. We can write this dynamic equation as:
+
+$(1 - \delta)q_{t + 1} = \left( 1 + R_{t} \right)q_{t} - \alpha K_{t + 1}^{\alpha - 1} + \frac{\phi}{2}\left( \frac{I_{t + 1}}{K_{t + 1}} - \delta \right)^{2} - \phi\left( \frac{I_{t + 1}}{K_{t + 1}} - \delta \right)\frac{I_{t + 1}}{K_{t + 1}}$
+
+  (7.68)
+
+In steady state, that expression would be:
+
+$(1 - \delta)\overline{q} = \left( 1 + \overline{R} \right) - \alpha{\overline{K}}_{t}^{\alpha - 1}$
+(7.69)
+
+since in steady state ${\overline{I}}_{t} = \delta{\overline{K}}_{t}$.
+On the other hand, from the expression (7.43) we obtain that the
+investment ratio with respect to the stock of capital is given by:
+
+$\frac{I_{t}}{K_{t}} = \frac{1}{\phi}\left( q_{t} - 1 \right) + \delta$
+(7.70)
+
+By substituting this expression in the dynamic equation (7.68), it
+results:
+
+$$(1 - \delta)q_{t + 1} = \left( 1 + R_{t} \right)q_{t} - \alpha K_{t + 1}^{\alpha - 1} - \frac{1}{2\phi}\left( {\frac{1}{\phi}(q}_{t + 1} - 1) \right)^{2}$$
+
+  $- \phi\left( \frac{1}{\phi}\left( q_{t + 1} - 1 \right) \right)\left( \frac{1}{\phi}\left( q_{t + 1} - 1 \right) + \delta \right)$
+  (7.71)
+
+By operating and simplifying, we come to:
+
+$(1 - \delta)q_{t + 1} = \left( 1 + R_{t} \right)q_{t} - \alpha K_{t + 1}^{\alpha - 1} - \frac{1}{2\phi}\left( q_{t + 1} - 1 \right)^{2} - \delta\left( q_{t + 1} - 1 \right)$
+(7.72)
+
+By applying the log-linearization rules to the previous expression, it
+results that:
+
+$(1 - \delta)\overline{q}\left( 1 + {\widehat{q}}_{t + 1} \right) = (1 + R)\overline{q}\left( 1 + {\widehat{q}}_{t} \right) - \alpha{\overline{K}}^{\alpha - 1}\left( 1 + (\alpha - 1){\widehat{k}}_{t + 1} \right) - \frac{1}{2\phi}{\overline{q}}^{2}\left( 1 + 2{\widehat{q}}_{t + 1} \right) - \frac{1}{2\phi} + \frac{1}{\phi}\overline{q}\left( 1 + {\widehat{q}}_{t + 1} \right) - \delta\overline{q}\left( 1 + {\widehat{q}}_{t + 1} \right) + \delta$
+(7.73)
+
+Since the steady-state value of the q ratio is equal to 1,
+($\overline{q} = 1$), we can write:
+
+$$(1 - \delta)\left( 1 + {\widehat{q}}_{t + 1} \right) = (1 + R)\left( 1 + {\widehat{q}}_{t} \right) - \alpha{\overline{K}}^{\alpha - 1}\left( 1 + (\alpha - 1){\widehat{k}}_{t + 1} \right)\ $$
+
+$- \frac{1}{2\phi}\left( 1 + 2{\widehat{q}}_{t + 1} \right) - \frac{1}{2\phi} + \frac{1}{\phi}\left( 1 + {\widehat{q}}_{t + 1} \right) - \delta\left( 1 + {\widehat{q}}_{t + 1} \right) + \delta$
+(7.74)
+
+and by operating:
+
+1 + q̂_(t + 1) − δ − δq̂_(t + 1) = (1 + q̂_(t) + R_(t) + q̂_(t)R_(t))
+$- \alpha{\overline{K}}^{\alpha - 1}(1 + (\alpha - 1){\widehat{k}}_{t + 1}) - \delta{\widehat{q}}_{t + 1}$
+(7.75)
+
+or equivalently,
+
+$(1 - \delta) + {\widehat{q}}_{t + 1} = \left( 1 + R_{t} \right) + \left( 1 + R_{t} \right){\widehat{q}}_{t} - \alpha{\overline{K}}^{\alpha - 1} - \alpha{\overline{K}}^{\alpha - 1}(\alpha - 1){\widehat{k}}_{t + 1}$
+(7.76)
+
+By using the expression of steady state (7.69) and canceling terms, we
+arrive at:
+
+${\widehat{q}}_{t + 1} = \left( 1 + R_{t} \right){\widehat{q}}_{t} - \alpha{\overline{K}}^{\alpha - 1}(\alpha - 1){\widehat{k}}_{t + 1}$
+(7.77)
+
+and by using the definition of the stock of capital in steady state and
+readjusting terms, we have:
+
+q̂_(t + 1) = (1 + R_(t))q̂_(t) − (α − 1)(R_(t) + δ)k̂_(t + 1) (7.78)
+
+On the other hand, from the expression (7.66), we obtain that:
+
+${\widehat{k}}_{t + 1} = {\widehat{k}}_{t} + \frac{1}{\phi}{\widehat{q}}_{t}$
+(7.79)
+
+and by replacing in the previous expression results that:
+
+${\widehat{q}}_{t + 1} = \left( 1 + R_{t} \right){\widehat{q}}_{t} - (\alpha - 1)\left( R_{t} + \delta \right)\left( {\widehat{k}}_{t} + \frac{1}{\phi}{\widehat{q}}_{t} \right)$
+(7.80)
+
+Since we are interested in obtaining expression in terms of the
+variations in q̂_(t), that we define as Δq̂_(t) = q̂_(t + 1) − q̂_(t), by
+operating, we would obtain:
+
+$\Delta{\widehat{q}}_{t} = \frac{R_{t}\phi - (\alpha - 1)\left( R_{t} + \delta \right)}{\phi}{\widehat{q}}_{t} - (\alpha - 1)(R_{t} + \delta){\widehat{k}}_{t}$
+(7.81)
+
+finally obtaining the following log-linear approximation to the dynamic
+equation for the q ratio as a function of the deviations of the two
+variables with respect to their steady-state value. This expression
+indicates that the changes in the q ratio depend positively on their
+deviations with respect to their steady state and positively on the
+deviations of the stock of capital with respect to their value of steady
+state (given the assumption that α < 1). Thus, if the value of the debt
+is very high, its effect is that said ratio continues to increase. On
+the other hand, if the deviation of the stock of capital with respect to
+its steady state is positive, indicating that the stock of capital is
+higher than its steady-state value, then the effect on the ratio is also
+positive.
+
+Therefore, in matrix notation, the model of Tobin’s $Q\$(log-)linearized
+in terms of deviations from the steady state can be defined through the
+following dynamic system:
+
+$\begin{bmatrix}
+\Delta{\widehat{q}}_{t} \\
+\Delta{\widehat{k}}_{t}
+\end{bmatrix} = \underset{A}{\overset{\begin{bmatrix}
+\frac{R_{t}\phi - (\alpha - 1)\left( R_{t} + \delta \right)}{\phi} & - (\alpha - 1)(R_{t} + \delta) \\
+\frac{1}{\phi} & 0
+\end{bmatrix}}{︸}}\begin{bmatrix}
+{\widehat{q}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix}$ (7.82)
+
+where A is the matrix of coefficients associated with the deviations of
+each variable with respect to its steady-state value.[23] Using the
+calibrated values for the parameters and the exogenous variables, the
+system would be:
+
+$$\begin{bmatrix}
+\Delta{\widehat{q}}_{t} \\
+\Delta{\widehat{k}}_{t}
+\end{bmatrix} = \begin{bmatrix}
+\frac{0.4 + 0.65x0.1}{10} & 0.65x0.1 \\
+0.1 & 0
+\end{bmatrix}\begin{bmatrix}
+{\widehat{q}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix}$$
+
+7.4.1. System stability
+
+Once the model is linearized, we can then calculate the roots
+(eigenvalues) associated with the coefficient matrix to study the
+stability conditions of the dynamic system. For this, we calculate:
+
+$Det\begin{bmatrix}
+\frac{R_{t}\phi - (\alpha - 1)\left( R_{t} + \delta \right)}{\phi} - \lambda & - (\alpha - 1)(R_{t} + \delta) \\
+\frac{1}{\phi} & 0 - \lambda
+\end{bmatrix} = 0$ (7.83)
+
+The corresponding second-degree equation would be:
+
+$\lambda^{2} - \frac{R_{t}\phi - (\alpha - 1)\left( R_{t} + \delta \right)}{\phi}\lambda + \frac{(\alpha - 1)(R_{t} + \delta)}{\phi}$
+(7.84)
+
+Therefore, by solving the previous equation, the two roots would be
+given by:
+
+${\lambda_{1}}_{,}\lambda_{2} = \frac{\frac{R_{t}\phi - (\alpha - 1)(R_{t} + \delta)}{\phi} \pm \sqrt{\left( \frac{R_{t}\phi - (\alpha - 1)(R_{t} + \delta)}{\phi} \right)^{2} - 4\frac{(\alpha - 1)(R_{t} + \delta)}{\phi}}}{2}$
+(7.85)
+
+As we can see, both roots are going to be real, given that α < 1, and
+therefore, the sign inside the square root is positive. Only complex
+roots could be given when the returns to capital were increasing
+(α > 1), although we do not consider plausible this possibility at the
+aggregate level. On the other hand, when solving the square root, we
+observe that one root is positive while the other is going to be
+negative. In effect, if we substitute the values of the parameters and
+the exogenous variable, it results that:
+
+$\lambda_{1} = \frac{0.0465 - \sqrt{{0.0465}^{2} - 4x0.0065}}{2} = - 0.0607\ \ \$
+
+$\lambda_{2} = \frac{0.0465 + \sqrt{{0.0465}^{2} - 4x0.0065}}{2} = 0.1072$
+
+being the modules of the eigenvalues plus the unit, 0.94 and 1.11,
+respectively, so the solution will be a saddle point, and therefore,
+both convergent and divergent trajectories exist with respect to the
+steady state.
+
+7.4.2. Stable saddle path
+
+Once we have calculated the eigenvalues, considering λ₁ as the
+eigenvalue such that it fulfills the condition |λ₁ + 1| < 1, we obtain
+the existence of a saddle point. In this case, there is a unique
+trajectory that leads directly to the steady state, which we call the
+stable saddle path. In mathematical terms, this stable saddle path can
+be defined as:
+
+$\begin{bmatrix}
+\Delta{\widehat{q}}_{t} \\
+\Delta{\widehat{k}}_{t}
+\end{bmatrix} = \lambda_{1}\begin{bmatrix}
+{\widehat{q}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix}$ (7.86)
+
+The adjustment procedure to a disturbance is similar to the one studied
+in the Dornbusch model (Chapter 3). When a disturbance occurs, the
+economy follows the stable saddle path from the next period in which the
+disturbance occurs until it reaches the steady state. In fact, this is
+going to be the fundamental characteristic of the micro-based
+macroeconomic models of dynamic general equilibrium, as we will see
+later. The only piece of information that we lack is how the economy
+adjusts instantaneously, when a disturbance occurs, from the initial
+steady state to the stable saddle path. That is, what is the "jump" that
+must be produced in q in order to reach the new stable saddle path from
+which the economy adjusts to its new steady state.
+
+7.4.3. Instant readjustment of the ratio q
+
+As we have seen in Chapter 3, in which the numerical resolution of the
+overshooting model of the exchange rate was studied, Tobin’s Q model
+also presents a saddle-point solution. This means that we need to
+determine the amount of the instantaneous readjustment of the q ratio
+before a certain disturbance, which will move the economy from the
+initial steady state to the stable saddle path calculated previously.
+The reduced form of the Tobin’s Q model contains two endogenous
+variables, the stock of capital and the q ratio. While the capital stock
+is a rigid variable due to its characteristics (changing the stock of
+capital is a process that takes time; time-to-built), the q ratio is a
+totally flexible (jump) variable, determined by the market value of the
+firm, which is also highly conditioned by expectations about future
+profits.
+
+The procedure to calculate the readjustment in expectations is similar
+to the one done previously. For this, we start with the equation that
+describes the dynamic behavior of the q ratio with respect to its steady
+state:
+
+$\Delta{\widehat{q}}_{t} = \frac{R_{t}\phi - (\alpha - 1)(R_{t} + \delta)}{\phi}{\widehat{q}}_{t} - (\alpha - 1)\left( R_{t} + \delta \right){\widehat{k}}_{t}$
+(7.87)
+
+Equivalently, we can define the following stable trajectory:
+
+Δq̂_(t) = λ₁q̂_(t) (7.88)
+
+Matching both expressions at the time the disturbance occurs (t = 1)
+results in:
+
+$\frac{R_{t}\phi - (\alpha - 1)(R_{t} + \delta)}{\phi}{\widehat{q}}_{1} - (\alpha - 1)\left( R_{t} + \delta \right){\widehat{k}}_{1} = \lambda_{1}{\widehat{q}}_{1}$
+(7.89)
+
+and by solving for the deviations of the q ratio from its steady-state
+value, it results:
+
+${\widehat{q}}_{1} = \frac{(\alpha - 1)(R_{t} + \delta)}{\frac{R_{t}\phi - (\alpha - 1)(R_{t} + \delta)}{\phi} - \lambda_{1}}{\widehat{k}}_{1}$
+(7.90)

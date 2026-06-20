@@ -1,0 +1,279 @@
+Appendix N: Solution of the Dynamic Stochastic General Equilibrium (DSGE) model
+
+In this appendix, we solve a stochastic version of the Real Business
+Cycle-Dynamic General Equilibrium model studied in Chapter 8. In
+practice, there is a wide variety of methods to solve this type of
+dynamic models with rational expectations, both in the case where the
+system to be solved is linear (a linear approximation) and non-linear.
+The idea of these methods is to obtain the so-called transition
+functions and policy functions, which consist of a recursive system in
+which all the variables of the model depend on the state variables. The
+state variables are predetermined variables, that is, their value has
+already been determined through economic agents’ decisions in the
+previous period. For example, the capital stock is a state variable,
+since the capital stock today was decided through investment in the
+previous period. Therefore, at each period, we know the value of the
+state variable for that period. The solution to the model would be given
+by a recursive system for the state variables (called transition
+functions), and by a system in which the rest of the control variables
+depend on the value of the state variables (the policy functions). Tis
+appendix presents one of these methods for solving systems of linear
+equations with rational expectations. This means that we have to proceed
+previously to linearize the dynamic general equilibrium model whose
+equations are non-linear. In particular, we present the method of
+Blanchard and Khan.[33]
+
+The solution to these types of models involves obtaining a recursive
+system in terms of the state variables. In general terms, this solution
+can be represented as
+
+s_(t) = Vs_(t − 1) + Wε_(t) (N.1)
+
+v_(t) = Zs_(t) (N.2)
+
+where s_(t) is the vector of the state variables (in our case the
+capital stock and total factor productivity), v_(t) is the vector of the
+rest of the endogenous variables of the model, including the "jump"
+variable that is a forward-looking variable (in our case consumption),
+on which rational expectations apply, ε_(t) is a vector of exogenous
+variables that in this case we associate with the random component, and
+where V, W and Z are matrices that are composed of the model parameters.
+The first system would define the transition functions and the second
+the policy functions.
+
+Next, we apply the method of Blanchard and Khan step by step. We start
+from the equations that define the stochastic version of the model in
+Chapter 8, which are the following:
+
+$E_{t}C_{t + 1} = \beta\left\lbrack \alpha\frac{E_{t}Y_{t + 1}}{K_{t + 1}} + 1 - \delta \right\rbrack C_{t}$
+(N.3)
+
+Y_(t) = A_(t)K_(t)^(α) (N.4)
+
+K_(t + 1) = (1 − δ)K_(t) + I_(t) (N.5)
+
+Y_(t) = C_(t) + I_(t) (N.6)
+
+ln A_(t) = ρlnA_(t − 1) + ε_(t) (N.7)
+
+where we assume ε_(t) is a random disturbance.
+
+Next, we get a linear approximation to it. The log-linearized model in
+terms of its deviations from the steady state would be the following:
+
+E_(t)ĉ_(t + 1) = (1 − β + βδ)(E_(t)ŷ_(t + 1) − k̂_(t + 1)) + ĉ_(t) (N.8)
+
+ŷ_(t) = â_(t) + αk̂_(t) (N.9)
+
+k̂_(t + 1) = (1 − δ)k̂_(t) + î_(t) (N.10)
+
+(1 − β + βδ)ŷ_(t) = (1 − β + (1 − α)βδ)ĉ_(t) + αβδî_(t) (N.11)
+
+â_(t) = ρâ_(t − 1) + ε_(t) (N.12)
+
+We divide the variables into two groups. The first group would be
+composed of the advanced variable (consumption) and the state variable
+(capital stock). The second group would be composed of the rest of the
+variables (the level of production and investment).
+
+$x_{t} = \begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix},\ \ z_{t} = \begin{bmatrix}
+{\widehat{y}}_{t} \\
+{\widehat{i}}_{t}
+\end{bmatrix}$ (N.13)
+
+The model can be written in terms of the following systems of equations:
+
+Az_(t) = Bx_(t) + Câ_(t) (N.14)
+
+Dx_(t + 1) + Fz_(t + 1) = Gx_(t) + Hz_(t) (N.15)
+
+The system of log-linearized equations is therefore divided into two
+groups: those equations that are static and are defined at the same
+moment of time and those equations that contain future variables. The
+first system of equations would therefore be composed of:
+
+ŷ_(t) = â_(t) + αk̂_(t) (N.16)
+
+(1 − β + βδ)ŷ_(t) − αβδî_(t) = (1 − β + (1 − α)βδ)ĉ_(t) (N.17)
+
+while the second system of equations would be composed of:
+
+E_(t)ĉ_(t + 1) − (1 − β + βδ)(ŷ_(t + 1) − k̂_(t + 1)) = ĉ_(t) (N.18)
+
+k̂_(t + 1) = (1 − δ)k̂_(t) + δî_(t) (N.19)
+
+To simplify, we will define the following two parameters:
+
+  
+  Ω = 1 − β + βδ
+
+  Φ = 1 − β + (1 − α)βδ
+
+Therefore, the systems (N.14) and (N.15), using each set of equations,
+can be written as:
+
+$\underset{A}{\overset{\begin{bmatrix}
+1 & 0 \\
+\Omega & - \alpha\beta\delta
+\end{bmatrix}}{︸}}\begin{bmatrix}
+{\widehat{y}}_{t} \\
+{\widehat{i}}_{t}
+\end{bmatrix} = \underset{B}{\overset{\begin{bmatrix}
+0 & \alpha \\
+\Phi & 0
+\end{bmatrix}}{︸}}\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + \begin{bmatrix}
+1 \\
+0
+\end{bmatrix}{\widehat{a}}_{t}$ (N.20)
+
+And
+
+$\underset{D}{\overset{\begin{bmatrix}
+1 & \Omega \\
+0 & 1
+\end{bmatrix}}{︸}}\begin{bmatrix}
+{E_{t}\widehat{c}}_{t + 1} \\
+{\widehat{k}}_{t + 1}
+\end{bmatrix} + \underset{F}{\overset{\begin{bmatrix}
+ - \Omega & 0 \\
+0 & 0
+\end{bmatrix}}{︸}}\begin{bmatrix}
+{\widehat{y}}_{t + 1} \\
+{\widehat{i}}_{t + 1}
+\end{bmatrix} = \underset{G}{\overset{\begin{bmatrix}
+1 & 0 \\
+0 & 1 - \delta
+\end{bmatrix}}{︸}}\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + \underset{H}{\overset{\begin{bmatrix}
+0 & 0 \\
+0 & \delta
+\end{bmatrix}}{︸}}\begin{bmatrix}
+{\widehat{y}}_{t} \\
+{\widehat{i}}_{t}
+\end{bmatrix}$ (N.21)
+
+Clearing from the first system results in:[34]
+
+$\begin{bmatrix}
+{\widehat{y}}_{t} \\
+{\widehat{i}}_{t}
+\end{bmatrix} = A^{- 1}B\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + A^{- 1}C{\widehat{a}}_{t}$ (N.22)
+
+By writing this system in t + 1, we would obtain:
+
+$\begin{bmatrix}
+{\widehat{y}}_{t + 1} \\
+{\widehat{i}}_{t + 1}
+\end{bmatrix} = A^{- 1}B\begin{bmatrix}
+E_{t}{\widehat{c}}_{t + 1} \\
+{\widehat{k}}_{t + 1}
+\end{bmatrix} + A^{- 1}C{\widehat{a}}_{t + 1}$ (N.23)
+
+Replacing these two systems in the system (N.21), results in:
+
+  
+  $$D\begin{bmatrix}
+  E_{t}{\widehat{c}}_{t + 1} \\
+  {\widehat{k}}_{t + 1}
+  \end{bmatrix} + FA^{- 1}B\begin{bmatrix}
+  E_{t}{\widehat{c}}_{t + 1} \\
+  {\widehat{k}}_{t + 1}
+  \end{bmatrix} + FA^{- 1}C{\widehat{a}}_{t + 1} =$$
+
+$G\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + HA^{- 1}B\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + HA^{- 1}C{\widehat{a}}_{t}$ (N.24)
+
+and grouping terms results:
+
+$\left( D + FA^{- 1}B \right)\begin{bmatrix}
+E_{t}{\widehat{c}}_{t + 1} \\
+{\widehat{k}}_{t + 1}
+\end{bmatrix} + FA^{- 1}C{\widehat{a}}_{t + 1} = (G + HA^{- 1}B)\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + HA^{- 1}C{\widehat{a}}_{t}$
+
+  (N.25)
+
+Given that
+
+â_(t) = ρâ_(t − 1) + ε̂_(t) (N.26)
+
+The expected value in t + 1 results in:
+
+E_(t)â_(t + 1) = ρâ_(t) (N.27)
+
+By substituting results that:
+
+$(D + FA^{- 1}B)\begin{bmatrix}
+E_{t}{\widehat{c}}_{t + 1} \\
+{\widehat{k}}_{t + 1}
+\end{bmatrix} + FA^{- 1}C\rho{\widehat{a}}_{t} = (G + HA^{- 1}B)\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + HA^{- 1}C{\widehat{a}}_{t}$
+
+  (N.28)
+
+and by regrouping, we get:
+
+$$\left( D + FA^{- 1}B \right)\begin{bmatrix}
+E_{t}{\widehat{c}}_{t + 1} \\
+{\widehat{k}}_{t + 1}
+\end{bmatrix} = \left( G + HA^{- 1}B \right)\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + (HA^{- 1}C - {FA^{- 1}C\rho)\widehat{a}}_{t}$$
+
+  (N.29)
+
+Defining the matrices
+
+J = (D + FA⁻¹B)⁻¹(G + HA⁻¹B)
+
+  
+  M = (D + FA⁻¹B)⁻¹(HA⁻¹C − FA⁻¹Cρ)
+
+we finally arrive at the following system:
+
+$\begin{bmatrix}
+E_{t}{\widehat{c}}_{t + 1} \\
+{\widehat{k}}_{t + 1}
+\end{bmatrix} = J\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix} + M{\widehat{a}}_{t}$ (N.30)
+
+Where
+
+$J = \begin{bmatrix}
+1 - \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta} & (\alpha - 1)\Omega(1 - \delta + \frac{\Omega}{\beta}) \\
+ - \frac{\Phi}{\alpha\beta} & 1 - \delta + \frac{\Omega}{\beta}
+\end{bmatrix}$
+
+and operating results in:
+
+$J = \begin{bmatrix}
+1 - \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta} & \frac{(\alpha - 1)\Omega}{\beta} \\
+ - \frac{\Phi}{\alpha\beta} & \frac{1}{\beta}
+\end{bmatrix}$
+
+matrix that is exactly the same as the matrix given by the expression
+(Table 8.1), if we write that system in a normal way, that is, if we add
+the unit to the elements of the main diagonal. For its part, the M

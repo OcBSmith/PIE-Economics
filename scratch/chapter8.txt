@@ -1,0 +1,1527 @@
+
+  Solve Tobin’s Q model with this adjustment-cost function and build the
+  corresponding spreadsheet. Analyze the sensitivity of the model to
+  changes in the value of the parameter ϕ.
+
+4.  Analyze how the steady state of the economy changes with a decrease
+    in the parameter α.
+
+8. The basic dynamic general equilibrium model
+
+8.1. Introduction
+
+Current macroeconomic analysis is carried out mainly through the
+construction, calibration, estimation and simulation of dynamic general
+equilibrium models, both stochastic and deterministic. These models
+represent an unified theoretical framework that can be used for the
+study of the economy both in the short term (business cycles) and in the
+long term (economic growth).[24] The key characteristic of this typology
+of models is that they are micro-founded. That is, the behavioral
+equations that make up these models are derived from the microeconomic
+analysis of the behavior of the different economic agents interacting in
+the economy, as opposed to dynamic macroeconomic models with rational
+expectations, non-micro-based, in which the equations that represent the
+economy are defined directly in aggregate form.[25] This typology of
+micro-based models constitutes the core of macroeconomic analysis at
+present, being the basic tool for the realization of simulations of
+economic policy and for determining the dynamic effects of different
+disturbances on the economy. For the construction of this micro-based
+macroeconomic model, we set up a macroeconomic environment where both
+households and firms takes economic decisions. This basic framework can
+be extended by considering other economic agents, such as the
+government, the central bank, the financial sector, etc.
+
+In this chapter, we will describe the main characteristics of the basic
+dynamic general equilibrium model. The model can be defined as a system
+of equations that represent decisions of the different agents
+(first-order conditions of a maximization problem), budgetary and
+technological restrictions, as well as national accounting identities.
+The basic theoretical structure of this type of models is relatively
+simple although it gives rise to a highly complex dynamic derived from
+general equilibrium effects and the existence of forward-looking
+variables, which makes the resolution of these models somewhat
+difficult. In fact, this typology of models does not have a closed-form
+solution, including the simplified version presented here, but it is
+only possible to solve it through graphic representations making use of
+phase diagrams, or through numerical methods. The latter is precisely
+the approach we are using in this book. The simple model that we are
+going to solve is reduced to a system of two difference equations, which
+determine the temporal dynamics of consumption and the capital stock.
+
+The model to be solved here starts from the consideration of the
+behavior of the two main types of agents that exist in an economy:
+Households or consumers on the one hand, and firms on the other. In
+reality, an economy is populated by a very large number of consumers or
+families (millions of agents) that we are going to assume are identical
+in preferences. This will allow us to solve the model based on the
+decisions taken by a representative consumer. On the other hand, there
+is a large number of firms (millions of agents) that we will also assume
+are identical in technology in a perfect competition environment. This
+will allow us to solve the model based on the decisions taken by a
+representative firm. These agents will make decisions on a set of
+macroeconomic variables through the maximization of a certain objective
+function. We consider the model in its deterministic version, in a
+context of perfect foresight, although it can be extended to a
+stochastic environment in a simple way.
+
+The result we obtain from the interaction of the different agents is
+called Dynamic General Equilibrium, given that all the variables are
+determined endogenously, simultaneously and in a dynamic context, or
+Competitive Equilibrium if we assume the existence of a market economy
+where the agents are free to take economic decisions in a
+perfect-competition environment. In this context, the functioning of the
+economy is as follows: consumers make decisions about how much they will
+consume (how much they will save and invest) and what their labor supply
+(working time) will be, taking as given the prices of the capital
+productive factor and the price of labor (wage per unit of time). On the
+other hand, firms decide how many productive factors they will hire,
+given their prices. These quantities will determine the production of
+the economy, given a technological constraint. The equilibrium of the
+model is given by a situation in which the decisions of the consumers in
+terms of the maximization of their utility function are compatible with
+the decisions of the firms in terms of profits maximization, fulfilling
+the feasibility restriction of the economy. Alternatively, we can
+suppose the existence of a central planner economy where there is an
+agent, the central planner, who decides the optimal quantities of each
+variable that maximizes social welfare, without the need for pricing of
+the productive factors.
+
+In this chapter, we will study how to numerically compute the basic
+model of dynamic general equilibrium. For this, we are going to use two
+different solution strategies, which we have already used in the
+previous chapters. In the first place, we are going to solve the dynamic
+model of general equilibrium using the "Solver" tool of the Excel
+spreadsheet, which allows us to solve optimization problems like the one
+assumed by this type of models. Secondly, we proceed to linearize the
+equations of this model (which are non-linear), through a
+log-linearization process, in order to obtain a system of linear
+difference equations, an approximation of the original, that can be
+simulated numerically in the spreadsheet. The dynamics of the variables
+of this model will be conditioned to the existence of a saddle point, so
+we need to calculate the eigenvalues ​​associated with a linear
+approximation to the original equations of the model to determine the
+stable saddle path and the jump that the forward-looking variable (the
+level of consumption) has to experience to reach the stable saddle path
+to the steady state when a shock hits the economy. Both procedures lead
+to similar results, but while in the first procedure we use an algorithm
+that is already programmed in Excel, and therefore is a black box method
+from which we obtain the result to our problem, in the second procedure,
+we simulate a system of dynamic equations numerically to obtain same
+results in a direct way.
+
+The structure of the rest of the chapter is as follows. In Section 2, we
+analytically solve the basic model of dynamic general equilibrium
+without working decisions, so that the utility function of consumers
+will only depend on consumption. Section 3 presents the calibration of
+the model. Section 4 presents the numerical resolution of the model
+through the Solver tool. Finally, Section 5 presents the numerical
+resolution of the log-linearized model. In both cases, we will analyze
+the effects of a technological disturbance that implies an increase in
+the aggregate productivity of the economy.
+
+8.2. The canonical dynamic general equilibrium model
+
+In this section, we will analytically solve the basic model of dynamic
+general equilibrium with an exogenous labor supply decision. This is a
+deterministic version of the RBC (Real Business Cycle) model that has
+been extensively used in macroeconomic analysis. The model represents an
+economy composed of two types of economic agents: households and firms.
+The objective of households is the maximization of their intertemporal
+utility, which depends only on their level of consumption. From the
+maximization of this objective function, we obtain the behavior of the
+representative household, in terms of the consumption-savings decision,
+as well as the determination of the stock of capital of the economy,
+since we assume that the saving is equal to the investment. These
+decisions are taken given the relative price of capital. We assume that
+the firms operate in a competitive environment with the same technology,
+and therefore, they are identical. Thus, we analyze the behavior of a
+representative firm. The objective of this representative firm is to
+maximize profits. For this purpose, it will decide to rent a certain
+amount of the productive factor to the representative consumer, who is
+the owner of the capital stock.
+
+The model includes as an additional variable the Total Factor
+Productivity (TFP), which represents aggregate productivity of the
+economy or neutral technological progress in the sense of Hicks. When
+specifying the model, TFP can be considered as an exogenous variable,
+and therefore, it would be a constant in the resolution of the model, or
+we can consider it as an endogenous variable, with the assumption that
+this variable follows a certain stochastic process. In the first case,
+we would have a deterministic model, while in the second case, the model
+would be stochastic. In both cases, a variation in TFP represents a
+technological disturbance that affects the aggregate productivity of the
+economy.
+
+8.2.1. Households
+
+The first economic agent populating the economic is the household. To
+analyze the behavior of the different economic agents, we will use the
+concept of representative agent. That is, let's assume that all agents
+are identical in preferences and technologies. This means that we can
+analyze the behavior of one of them and then add to obtain the aggregate
+variables. In addition, we have to make a series of assumptions about
+how those preferences are. The next assumption we make is that the
+representative agent is an optimizer, that is, it maximizes a certain
+objective function. In the case of households, the objective function is
+the utility or instantaneous happiness function. To analyze the behavior
+of households, we introduce another series of assumptions, which we have
+already seen in the chapters dedicated to the consumer-savings decision.
+First, let's consider that the capital markets are perfect. This means
+that individuals can move money from the future to the present at a cost
+given by the interest rate, and that there is no liquidity restriction
+to this movement. This assumption is fundamental for the individual to
+separate their consumption decisions from their income period by period.
+On the other hand, we also assume that the utility function is
+additively separable over time. This means that the utility of a period
+is only affected by the consumption of that period, but does not depend
+on the consumption of previous periods (no consumption habits).
+
+The dynamic general equilibrium model that we solve here assumes that
+the utility function only depends on consumption. In this way, we
+eliminate the decision regarding the number of hours that individuals
+will spend working. This implies that the allocation of hours dedicated
+to work is a constant, such that L_(t) = 1. The consumer problem in this
+setup is slightly different from those discussed in previous Chapters,
+in the sense that now the budget constraint include income from physical
+capital. Thus, we assume that savings are equivalent to investment,
+which is transformed directly into physical capital at no cost through
+their accumulation over time, taking into account the physical
+depreciation suffered by the capital.
+
+The household’s maximization problem is given by:
+
+$\max_{\left\{ C_{t} \right\}_{t = 0}^{T}}{E_{t}\sum_{t = 0}^{T}{\beta^{t}U(C_{t})}}$
+(8.1)
+
+where β < 1 is the intertemporal discount factor, and E_(t)(•) is the
+mathematical expectation on future variables. Since we consider a
+context without uncertainty, that is, with perfect foresight, we can
+eliminate the expectation operator from the maximization problem, given
+that the value of all the variables in the future is known at the
+present time.
+
+Households maximize the weighted sum of their profits subject to the
+budget constraint. The budget constraint will indicate both the uses and
+the available resources. The household’s resources come from the rent of
+their endowments of productive factors to the firms. This means that we
+assume that consumers are the owners of the productive factors of the
+economy. These productive factors are on the one hand the time, from
+which the amount of work will be determined. The second productive
+factor is capital, which is generated through the savings process, that
+is, the part of production that is not consumed. Given the price of
+productive factors, consumers will decide how much productive factors
+(how much capital and how much work) they will rent to companies.
+
+The fact that consumers are the owners of the productive factor implies
+that they are also the owners of the firms. Since we assume the
+existence of a competitive environment with a technology that presents
+constant returns to scale, the benefits of the representative firm are
+zero. In a non-competitive environment, if the representative firm
+obtains positive profits, they should be included in the household’s
+budget constraint.
+
+Let's assume that the utility function of the individual has the
+following form:
+
+U(C_(t)) = ln (C_(t)) (8.2)
+
+where C_(t) is the consumption. The restriction facing the economy is
+given by:
+
+C_(t) + I_(t) = Y_(t) (8.3)
+
+where I_(t) is investment and Y_(t) is final output.[26] The investment
+is accumulated in the form of physical capital, K_(t), from the
+following process:
+
+K_(t + 1) = (1 − δ)K_(t) + I_(t) (8.4)
+
+where δ > 0 is the rate of physical depreciation of capital, that is,
+part of the gross investment made in a period has the objective of
+replacing the capital that depreciates in that period and the rest (net
+investment) is transformed into new capital in the following period. In
+reality, the capital is composed of a great variety of asset types that
+have different characteristics and that, therefore, present different
+depreciation rates. Thus, we find capital assets that present very low
+depreciation rates, such as non-residential buildings (structures).
+However, there are other types of capital assets (equipment) with very
+high depreciation rates, such as computer programs or computers. Another
+additional assumption we are making is that we can convert the produced
+and not consumed units into investment in the economy and, therefore, in
+physical capital. This means that all the variables of the model are
+defined in terms of consumption units.
+
+The budget constraint is given by:
+
+C_(t) + I_(t) = W_(t)L_(t) + R_(t)K_(t) (8.5)
+
+where W_(t) is the salary per unit of time and R_(t) is the return on
+capital. The expression (8.4) implies that the investment can be defined
+as:
+
+I_(t) = K_(t + 1) − (1 − δ)K_(t) (8.6)
+
+so, in this case, the budget constraint of the individual would be:
+
+C_(t) + K_(t + 1) − (1 − δ)K_(t) = W_(t)L_(t) + R_(t)K_(t) (8.7)
+
+or equivalently:
+
+C_(t) + K_(t + 1) = W_(t)L_(t) + (R_(t) + 1 − δ)K_(t) (8.8)
+
+Finally, we need to determine the stock of initial capital, K₀, as well
+as the stock of final capital, K_(T + 1), in the case in which the life
+cycle of the agents is finite. In the context in which we are going to
+numerically solve this model, we can consider either a finite life cycle
+(for the case in which we use the Solver tool in Excel), or an infinite
+life cycle, for the case in which we compute numerically a linear
+approximation to the model.
+
+The consumer problem, in this case, would be defined as:
+
+$\max_{\left\{ C_{t} \right\}_{t = 0}^{T}}{\sum_{t = 0}^{T}\beta^{t}\ln C_{t}}$
+(8.9)
+
+s.t:
+
+C_(t) + K_(t + 1) = W_(t)L_(t) + (R_(t) + 1 − δ)K_(t) (8.10)
+
+K₀ > 0 (8.11)
+
+$K_{T + 1} = \overline{K}$ (8.12)
+
+The consumer problem can be solved, for example, through the following
+auxiliary function of Lagrange:
+
+$\mathcal{L =}\sum_{t = 0}^{T}\left\lbrack \beta^{t}\ln{C_{t} - \lambda_{t}(C_{t} + K_{t + 1} - W_{t}L_{t} - \left( R_{t} + 1 - \delta \right)K_{t})} \right\rbrack$
+(8.13)
+
+where the agents take as given the relative prices of the productive
+factors, that is, the salary and the real interest rate.
+
+First-order conditions, for t = 0, 1, 2, …., T, are given by:
+
+$\frac{\partial\mathcal{L}}{\partial C_{t}} = \beta^{t}\frac{1}{C_{t}} - \lambda_{t} = 0$
+(8.14)
+
+$\frac{\partial\mathcal{L}}{\partial K_{t + 1}} = \lambda_{t + 1}\left\lbrack R_{t + 1} + 1 - \delta \right\rbrack - \lambda_{t} = 0$
+(8.15)
+
+$\frac{\partial\mathcal{L}}{\partial\lambda_{t}} = C_{t} + K_{t + 1} - \left( R_{t} + 1 - \delta \right)K_{t} - W_{t}L_{t} = 0$
+(8.16)
+
+To obtain the optimal household decision, we have to calculate the value
+of the Lagrange parameter, which represents the shadow price of
+consumption, that is, how much the individual values the last unit
+consumed in each period. To do this, we operate in the first first-order
+condition (8.14) and replace it in the second first-order condition
+(8.15).
+
+On the other hand, in the second first-order condition (8.15) both the
+Lagrange parameter appears in the period t, as in the period t + 1. As
+of the first condition of first order we have obtained that
+λ_(t) = β^(t)/C_(t), this supposes that λ_(t + 1) = β^(t + 1)/C_(t + 1).
+By substituting, we obtain the condition that equals the marginal ratio
+of the consumption with that of the investment:
+
+C_(t + 1) = β[R_(t + 1) + 1 − δ]C_(t) (8.17)
+
+This equation is known as the Keynes-Ramsey rule that indicates the
+optimal consumption path of the individual, also known as the Lucas
+equation, which indicates what the decision of investment and
+accumulation of capital in the economy is. As we can see, this dynamic
+equation for consumption is exactly the same as the one obtained
+previously, when it was assumed that the utility function of the
+consumer was also logarithmic.
+
+8.2.2. The firms
+
+The other economic agent that we consider are firms, which represents
+the productive sector of the economy. The firms constitute the economic
+agent that is dedicated to the production the goods and services that
+households will wither consume or save and transform into physical
+capital. For this, they rent the productive factors (labor and capital)
+to the households, who are the owners of them. The price of these
+productive factors is determined by the technology.
+
+We assume that firms maximize profits, subject to the technological
+restriction. As we are in a competitive environment, this means that the
+profits of the firms will be zero. Therefore, the factors will be
+remunerated based on their contribution to the production process. This
+means that all the income derived from the use of productive factors are
+equal to their retribution. The other assumptions we make in the case of
+this agent are in relation to the form of the production function. We
+assume that there are constant returns to scale, so if the number of
+factors increases by a certain amount, production increases in that
+proportion. This means that there are decreasing returns with respect to
+the capital productive factor and with respect to the productive factor
+of labor. All these assumptions make the role of companies in these
+types of models relatively limited, at least in their basic versions.
+Thus, the firms only decide the amount of productive factors that they
+rent, taking as given the prices, and given the existing technology,
+they obtain a certain level of production.
+
+We assume that the function of aggregate production (technology) has the
+following form:
+
+Y_(t) = A_(t)F(K_(t), L_(t)) (8.18)
+
+where Y_(t) is the level of aggregate production of the economy and
+A_(t) is the total factor productivity (TFP). This production function
+has to fulfill the same properties: strictly increasing, strictly
+concave with respect to each factor and twice differentiable. A_(t) is a
+variable that represents the state of technology, TFP. TFP is in
+principle a non-observable variable, but it can be calculated as a
+residual from the production function.[27] The TFP can be interpreted as
+the level of general knowledge about the productive arts available to an
+economy, that is, it would be reflecting a very broad concept of
+technology. In economic terms, it would be reflecting the aggregate
+productivity of the economy in the use of all its productive factors.
+
+We assume the TFP is determined exogenously from the following process:
+
+A_(t) = A_(t − 1)^(ρ) + ε_(t) (8.19)
+
+where ρ < 1 is an autoregressive parameter that measures the persistence
+of shocks that affect the TFP, and ε_(t) is a disturbance term, which we
+can consider either stochastic and deterministic. In our case, we will
+consider it as an exogenous deterministic variable, whose value is zero,
+except at the moment in which a technological shock occurs, taking a
+value different from zero (positive for a shock that increases aggregate
+productivity and negative for a shock decreasing aggregate
+productivity).
+
+The problem solved by the firm consists in maximizing profits, such
+that:
+
+max Π_(t) = P_(t)Y_(t) − W_(t)L_(t) − R_(t)K_(t) (8.20)
+
+subject to the technological restriction given by (8.18). If we assume a
+competitive environment then it turns out that the optimal benefits are
+zero, Π_(t) = 0. As we can see, the problem for maximizing profits is
+static, although firms takes their decisions in a dynamic context. In
+fact, if we solve the problem of profit maximization in a dynamic
+context, the result we obtain is exactly the same, given the assumptions
+we are making about the ownership of capital stock.
+
+The first-order conditions of the previous problem are:
+
+$\frac{\partial\Pi_{t}}{\partial K_{t}}:P_{t}A_{t}F_{K}\left( K_{t},L_{t} \right) - R_{t} = 0$
+(8.21)
+
+$\frac{\partial\Pi_{t}}{\partial L_{t}}:P_{t}A_{t}F_{L}\left( K_{t},L_{t} \right) - W_{t} = 0$
+(8.22)
+
+that indicate that the value of the marginal productivity of each
+productive factor must be equal to its cost. As we can see, the relative
+price of the factors is equal to their marginal productivity, such that
+we obtain:
+
+$A_{t}F_{K}\left( K_{t},L_{t} \right) = \frac{R_{t}}{P_{t}}$ (8.23)
+
+$A_{t}F_{KL}\left( K_{t},L_{t} \right) = \frac{W_{t}}{P_{t}}$ (8.24)
+
+The price of the final good is normalized to 1 (P_(t) = 1), such that
+all the variables are measured in terms of consumption units. Thus, the
+only prices that appear in the model are those corresponding to the
+productive factors, with all the variables defined in real terms. In
+this way, the price of labor would be a real wage and the price of
+physical capital would be a real interest rate.
+
+Just as we have parameterized the utility function of consumers, we
+parameterize the technology function. In particular, we assume that the
+production function is of the Cobb-Douglas type:
+
+A_(t)F_(K)(K_(t), L_(t)) = A_(t)K_(t)^(α)L_(t)^(1 − α) (8.25)
+
+where α is the elasticity of the level of production with respect to
+capital. This production function is the most used in practice, and
+implies an that the elasticity of substitution between labor and capital
+is the unit, and representing an intermediate situation between a
+Leontief technology, in which it is not possible to substitute one
+productive factor for another, and a technology with perfect
+substitutability of the productive factors. In this case, the profits
+maximization would be given by:
+
+max Π_(t) = A_(t)K_(t)^(α)L_(t)^(1 − α) − W_(t)L_(t) − R_(t)K_(t) (8.26)
+
+By calculating the first-order conditions with respect to capital and
+labor, we would obtain:
+
+$\frac{\partial\Pi_{t}}{\partial K_{t}}:\alpha A_{t}K_{t}^{\alpha - 1}L_{t}^{1 - \alpha} - R_{t} = 0$
+(8.27)
+
+$\ \frac{\partial\Pi_{t}}{\partial L_{t}}:(1 - \alpha)A_{t}K_{t}^{\alpha}L_{t}^{- \alpha} - W_{t} = 0$
+(8.28)
+
+or written otherwise:
+
+$R_{t} = \frac{\alpha A_{t}K_{t}^{\alpha - 1}L_{t}^{1 - \alpha}}{K_{t}} = \alpha\frac{Y_{t}}{K_{t}}$
+(8.29)
+
+$W_{t} = \frac{(1 - \alpha)A_{t}K_{t}^{\alpha}L_{t}^{- \alpha}}{L_{t}} = (1 - \alpha)\frac{Y_{t}}{L_{t}}$
+(8.30)
+
+so that the income from labor (the labor share) would be a 1 − α
+proportion of the total income and the income from the capital would be
+a α proportion of the total income.
+
+8.2.3. Equilibrium of the model
+
+Once the behavior of households and firms have been described, next we
+study the interaction between the two economic agents to determine the
+macroeconomic equilibrium. Consumers decide how much they will consume,
+C_(t) ,and how much they will invest, I_(t), in order to maximize their
+level of happiness, taking as given the prices of productive factors. On
+the other hand, firms will produce a certain amount of goods, Y_(t),
+which is given based on their decision on how much capital, K_(t) , they
+will hire given the prices of productive factors.
+
+Therefore, the competitive equilibrium of the economy is composed of the
+following three blocks of information:
+
+i.  A price system for W and R.
+
+ii. A value assignment for Y, C, L and K.
+
+iii. A feasibility restriction, Y_(t) = C_(t) + I_(t) , which indicates
+     the possible assignments.
+
+As we can see, the definition of equilibrium we are using implies that
+all markets in the economy are in equilibrium. Thus, both the labor
+market and the capital market, as well as the goods market, are in
+equilibrium. This situation is what we call general equilibrium.
+
++:------------------------------------:+:---------------------------------------:+
+| Structure of the basic dynamic general equilibrium model                       |
++--------------------------------------+-----------------------------------------+
+| Household utility function           | U = U(C_(t))                            |
++--------------------------------------+-----------------------------------------+
+| Budget constraint                    | C_(t) + I_(t) = W_(t)L_(t) + R_(t)K_(t) |
++--------------------------------------+-----------------------------------------+
+| Initial capital stock                | K₀ > 0                                  |
++--------------------------------------+-----------------------------------------+
+| Final capital stock                  | $K_{T} = \overline{K}$                  |
++--------------------------------------+-----------------------------------------+
+| Equation of capital accumulation     | K_(t + 1) = (1 − δ)K_(t) + I_(t)        |
++--------------------------------------+-----------------------------------------+
+| Production function                  | Y_(t) = A_(t)F(K_(t), L_(t))            |
++--------------------------------------+-----------------------------------------+
+| Total Factor Productivity            | A_(t) = A_(t − 1)^(ρ) + ε_(t)           |
++--------------------------------------+-----------------------------------------+
+
+Definition of competitive equilibrium: A competitive equilibrium for our
+economy is a sequence of consumption, and investment by consumers,
+{C_(t), I_(t)}_(t = 0)^(T), a sequence of capital and working hours used
+by firms {K_(t), L_(t)}_(t = 0)^(T), and a sequence of prices
+{W_(t), R_(t)}_(t = 0)^(T):
+
+i.  The problem of optimizing consumers is satisfied.
+
+ii. First-order conditions for companies are met.
+
+iii. The economy's feasibility constraint is met.
+
+In the model that we are solving, the utility function of consumers only
+depends on the level of consumption. This means that we have not
+considered leisure as an argument of the utility function and,
+therefore, we cannot determine the labor supply (it is given,
+L_(t) = 1). Competitive equilibrium consists of finding sequences of the
+{C_(t), I_(t), K_(t ), R_(t), W_(t), Y_(t), A_(t)}_(t = 0)^(T) variables
+such that the conditions that define equilibrium are satisfied. In
+summary, the model of our economy would be composed of the following
+seven equations:
+
+C_(t + 1) = β[R_(t + 1) + 1 − δ]C_(t) (8.31)
+
+$R_{t} = \alpha\frac{Y_{t}}{K_{t}} = \frac{\alpha A_{t}K_{t}^{\alpha}}{K_{t}} = \alpha A_{t}K_{t}^{\alpha - 1}$
+(8.32)
+
+W_(t) = (1 − α)Y_(t) = (1 − α)A_(t)K_(t)^(α) (8.33)
+
+Y_(t) = A_(t)K_(t)^(α) (8.34)
+
+K_(t + 1) = (1 − δ)K_(t) + I_(t) (8.35)
+
+C_(t) + I_(t) = Y_(t) (8.36)
+
+A_(t) = A_(t − 1)^(ρ) + ε_(t) (8.37)
+
+8.2.4. The dynamic system
+
+Next, we will reduce the previous system to a system of two dynamic
+equations, one for consumption and another for the stock of capital,
+plus the equation that determines the behavior of the TFP. By
+substituting the expression for the interest rate (8.32) in the dynamic
+equation of consumption (8.31) we obtain:
+
+$\frac{C_{t + 1}}{C_{t}} = \beta\left\lbrack \alpha A_{t + 1}K_{t + 1}^{\alpha - 1} + 1 - \delta \right\rbrack$
+(8.38)
+
+On the other hand, by substituting the relative price of the productive
+factors in the budget restriction of the individual, we obtain:
+
+ C_(t) + K_(t + 1) − (αA_(t)K_(t)^(α − 1) + 1 − δ)K_(t) − (1 − α)A_(t)K_(t)^(α) = 0
+(8.39)
+
+or equivalently:
+
+ C_(t) + K_(t + 1) − K_(t) − αA_(t)K_(t)^(α − 1) + δK_(t) − A_(t)K_(t)^(α) + αA_(t)K_(t)^(α) = 0
+(8.40)
+
+and by operating we finally arrive at:
+
+C_(t) + K_(t + 1) − (1 − δ)K_(t) − A_(t)K_(t)^(α) = 0 (8.41)
+
+an expression that indicates the process of capital accumulation over
+time, in which the capital in the next period is equal to what is
+produced today, minus what is consumed, plus today's capital minus its
+depreciation.
+
+Therefore, the competitive solution is determined by two difference
+equations:
+
+C_(t + 1) = β[αA_(t + 1)K_(t + 1)^(α − 1) + 1 − δ]C_(t) (8.42)
+
+K_(t + 1) = (1 − δ)K_(t) + A_(t)K_(t)^(α) − C_(t) (8.43)
+
+plus the equation that determines the behavior of the TFP.
+
++:------------------------------:+:-------------------------------------------------------:+
+| Solution of the basic dynamic general equilibrium model                                  |
+|                                                                                          |
+| Logarithmic utility and Cobb-Douglas technology                                          |
++--------------------------------+---------------------------------------------------------+
+| Optimal consumption parth      | C_(t + 1) = β[αA_(t + 1)K_(t + 1)^(α − 1) + 1 − δ]C_(t) |
++--------------------------------+---------------------------------------------------------+
+| Capital accumulation           | K_(t + 1) = (1 − δ)K_(t) + A_(t)K_(t)^(α) − C_(t)       |
++--------------------------------+---------------------------------------------------------+
+| TFP                            | A_(t) = A_(t − 1)^(ρ) + ε_(t)                           |
++--------------------------------+---------------------------------------------------------+
+
+8.2.5. Steady state
+
+Next, we calculate the steady state of the economy. For this, we start
+from the equation that determines the optimal path of consumption, which
+is given by:
+
+C_(t + 1) = β[R_(t + 1) + 1 − δ]C_(t) (8.44)
+
+By eliminating the time subscripts for the variables in the optimal
+consumption path, we obtain that:
+
+$1 = \beta(\overline{R} + 1 - \delta)$ (8.45)
+
+from which we obtain the steady-state value for the interest rate, such
+that:
+
+$\overline{R} = \frac{1 - \beta + \beta\delta}{\beta}$ (8.46)
+
+On the other hand, the real interest rate is equal to the marginal
+productivity of capital, so the equation of the optimal steady-state
+consumption path can also be defined as:
+
+$\overline{C} = \beta(\alpha\overline{A}{\overline{K}}^{\alpha - 1} + 1 - \delta)\overline{C}$
+(8.47)
+
+By operating, it results that:
+
+$\beta\left( \alpha\frac{\overline{Y}}{\overline{K}} + 1 - \delta \right) = 1$
+(8.48)
+
+Solving for the steady state of the stock of capital as a function of
+the level of steady-state production results in:
+
+$\overline{K} = \frac{\alpha\beta}{1 - \beta + \beta\delta}\overline{Y}$
+(8.49)
+
+From the equation of capital accumulation in steady state we obtain:
+
+$\overline{K} = (1 - \delta)\overline{K} + \overline{I}$ (8.50)
+
+so that by operating it results:
+
+$\overline{I} = \delta\overline{K}$ (8.51)
+
+and using the expression (8.49) so that we can write:
+
+$\overline{I} = \frac{\alpha\beta\delta}{1 - \beta + \beta\delta}\overline{Y}$
+(8.52)
+
+In turn, from the economy's feasibility constraint, we obtain that in
+steady state:
+
+$\overline{C} = \overline{Y} - \overline{I} = \frac{1 - \beta + \beta\delta - \alpha\beta\delta}{1 - \beta + \beta\delta}$
+(8.53)
+
+Finally, the level of steady-state production is given by:
+
+$\overline{Y} = \overline{A}{\overline{K}}^{\alpha}$ (8.54)
+
+so, by using the expression (8.49) we obtain:
+
+$\overline{Y} = \overline{A}{\overline{K}}^{\alpha} = {\overline{A}}^{\frac{1}{1 - \alpha}}\left\lbrack \frac{\alpha\beta}{(1 - \beta + \beta\delta)} \right\rbrack^{\frac{\alpha}{1 - \alpha}}$
+(8.55)
+
+Once obtained the value of the steady-state production, we can now
+substitute in the previous expressions and obtain the steady-state
+values for the remaining variables. Thus, if we substitute the
+expression (8.53) in (8.47), it follows that the value of the stock of
+capital in steady state is given by:
+
+$\overline{K} = \frac{\alpha\beta}{1 - \beta + \beta\delta}{\overline{A}}^{\frac{1}{1 - \alpha}}\left\lbrack \frac{\alpha\beta}{(1 - \beta + \beta\delta)} \right\rbrack^{\frac{\alpha}{1 - \alpha}} = \left( \frac{(1 - \beta + \beta\delta)}{\alpha\overline{A}\beta} \right)^{\frac{1}{\alpha - 1}}$
+(8.56)
+
+Alternatively, the steady-state capital stock can be calculated as:
+
+$\overline{R} = \frac{1}{\beta} - 1 + \delta = \frac{1 - \beta + \beta\delta}{\beta}$
+(8.57)
+
+On the other hand, from the first-order condition of the company
+regarding the stock of capital we have to:
+
+$\alpha\overline{A}{\overline{K}}^{\alpha - 1} = \overline{R} = \frac{1 - \beta + \beta\delta}{\beta}$
+(8.58)
+
+Solving for the steady-state capital stock results in:
+
+$\overline{K} = \left( \frac{1 - \beta + \beta\delta}{\alpha\overline{A}\beta} \right)^{\frac{1}{\alpha - 1}}$
+(8.59)
+
+Finally, the steady-state value of the TFP is equal to 1
+($\overline{A} = 1$), since in the steady state we assume that ε_(t) = 0
+and therefore:
+
+$\overline{A} = {\overline{A}}^{\rho} = 1$ (8.60)
+
+8.3. Calibration of the model
+
+Next, we proceed to calibrate the value of the parameters and the value
+of the exogenous variables of the model. The value of these parameters
+can be estimated or obtained through a calibration process using the
+information available about them. In this simple model, we only have
+four parameters: The technological parameter of the production function,
+α, the discount factor of future utility, β, the rate of depreciation of
+capital, δ, and the parameter that determines the persistence of
+aggregate productivity, ρ. In addition, the model includes a variable of
+exogenous disturbance, which can be considered as stochastic or
+deterministic, and which affects the total productivity of the factors,
+representing a technological shock, ε_(t). In our case, we will consider
+as deterministic this exogenous variable, taking a value of zero, except
+at the moment in which the disturbance occurs, which will take a
+positive or negative value, representing a technological change that
+increases or decreases the aggregate productivity. This implies we would
+be considering that TFP, A_(t), as an endogenous variable.
+
+The parameter value α can be calibrated directly from national
+accounting. Given the production function that we are using
+(Cobb-Douglas), this parameter reflects the proportion of capital income
+over total income, while (1 − α) reflects wage income over total income.
+Considering the information offered by national accounting,
+approximately 65% ​​of the total income corresponds to salary income,
+while the remaining 35% corresponds to capital income. Therefore, we set
+a value of α = 0.35. The discount factor takes a value less than one,
+depending on the degree of patience of the agent with respect to the
+future, and its value corresponds to a certain interest rate in steady
+state. The value that we are going to use for this discount factor is
+0.96, taking as reference an annual period. The physical depreciation
+rate of the capital we are going to assume is 6% per year. The parameter
+of persistence of the technological shocks we assume is equal to 0.80.
+Finally, let's suppose that the variable that represents the
+technological disturbance, ε_(t), takes the value zero, except at the
+moment in which this disturbance occurs, which we assume takes a value
+of 0.01.
+
+Table 8.1: Calibration of the parameters
+
+  ----------- ------------------------------------ ---------
+  Symbol      Definition                           Value
+
+  α           Production-capital elasticity        0.35
+
+  β           Discount factor                      0.96
+
+  δ           Capital depreciation rate            0.06
+
+  ρ           Persistence parameter of TFP         0.80
+  ----------- ------------------------------------ ---------
+
+Table 8.2 shows the steady-state values for the model variables, using
+the expressions calculated above and the values calibrated for the
+parameters. In effect, if we calculate the steady-state value for the
+capital stock, it results:
+
+$\overline{K} = \left( \frac{1 - \beta + \beta\delta}{\alpha\overline{A}\beta} \right)^{\frac{1}{\alpha - 1}} = \left( \frac{1 - 0.96 + 0.96 \times 0.96}{0.35 \times 1 \times 0.96} \right)^{\frac{1}{0.65}} = 6.70$
+
+From this value, we can calculate the production level in steady state
+as:
+
+$\overline{Y} = \overline{A}{\overline{K}}^{\alpha} = 1 \times {6.70}^{0.35} = 1.95$
+
+The steady-state consumption can be calculated using the expression:
+
+  
+  $$\overline{C} = \frac{1 - \beta + \beta\delta - \alpha\beta\delta}{1 - \beta + \beta\delta}\overline{Y} =$$
+
+  $$\frac{1 - 0.96 + 0.96 \times 0.06 - 035 \times 0.96 \times 0.06}{1 - 0.96 + 0.96 \times 0.06} \times 1.95 = 1.544$$
+
+Alternatively, we can first calculate the investment as:
+
+$\overline{I} = \delta\overline{K} = 0.06 \times 6.70 = 0.402$
+
+and the consumption would be:
+
+  
+  $$\overline{C} = \overline{Y} - \overline{I} = 1.95 - 0.402 = 1.544$$
+
+Finally, the interest rate (equivalent to the marginal productivity of
+capital) in steady state would be:
+
+$$\overline{R} = \alpha\overline{A}{\overline{K}}^{\alpha - 1} = \frac{1 - \beta + \beta\delta}{\beta} = \frac{1 - 0.96 + 0.96 \times 0.06}{0.96} = 0.102$$
+
+Table 8.2: Value of steady-state variables
+
+  ---------------- ---------------------------- ---------
+  Variable         Definition                   Value
+
+  $\overline{Y}$   Production                   1.946
+
+  $\overline{C}$   Consumption                  1.544
+
+  $\overline{I}$   Investment                   0.402
+
+  $\overline{K}$   Physical capital stock       6.699
+
+  $\overline{R}$   Interest rate                0.102
+  ---------------- ---------------------------- ---------
+
+8.4. Numerical solution with Solver
+
+Once the model has been solved analytically and the corresponding
+dynamic system has been obtained, then we will solve it computationally
+in Excel using the "Solver" tool. In Appendix M, we present the code to
+solve this model in MATLAB. Figure 8.1 shows the structure of the Excel
+sheet where we have solved this problem, called "ICM-8-1.xls". As we can
+see, we need to define first the value of the parameters of the model,
+which appear in cells "B4" to "B7". From these parameters and the
+steady-state expressions calculated above, we can obtain the
+steady-state values for the model variables, which appear in cells "B10"
+to "B15". If we place the cursor in cell "B10", the expression that
+appears is:
+
+=PTF*((1-Beta+Delta*Beta)/(Alpha*PTF*Beta))^(Alpha/(Alpha-1))
+
+which is the one corresponding to the value of the steady-state
+production. Similarly, in cell "B12" we have introduced the expression
+corresponding to the steady-state value of the stock of capital, so the
+expression that appears in said cell is:
+
+=((1-Beta+Delta*Beta)/(Alpha*PTF*Beta))^(1/(Alpha-1))
+
+[]
+
+Figure 8.1. Structure of the spreadsheet "ICM-8.1.xls". Solving the
+Dynamic General Equilibrium model with Solver.
+
+Similarly, in cell "B13" we calculate the steady-state value of the
+consumption, in cell "B14" the steady-state value of the investment and
+in cell "B15" the steady-state value of the interest rate. Finally, in
+cell "B18", we assign the value of the technological change that we
+assume occurs in period 1, taking a zero value initially.
+
+The variables of the model are defined in the columns "D-K", where the
+values corresponding to the initial steady state appear in the period 0.
+The column "D" is the time index, the column "E" is the TFP, while the
+column "F" gives us the optimal path of consumption, which is the
+variable that we have to calculate. Column "G" is the investment, which
+is simply the difference between what is produced and what is consumed,
+column "H" is production, column "I" is the stock of capital, column "J"
+is the return on capital and finally the "K" column is the discounted
+utility. In cell "E4", the expression
+
+=E3^Rho+Epsilon
+
+appears with the objective of simulating a productivity shock in
+period 1. In cell "E5" the introduced expression is "=E4^Rho", since we
+assume that the shock takes a positive or negative value at time 1 and
+zero in the following periods. This expression is copied to the
+following cells in the column.
+
+In cell "I3", the initial capital stock appears. For its part, in cell
+"I4" appears the expression:
+
+=(1-Delta)*I3+G3
+
+where the stock of capital in each period of time is the stock of
+capital of the previous period, discounting the depreciation, plus the
+new capital that is incorporated, which is determined by savings.
+Finally, column "K" presents the value of the utility in discounted
+terms.
+
+The sum of the discounted utilities is calculated in cell "K34", which
+will be the target cell to be maximized in the "Solver" tool. The
+solution to the problem is obtained by executing the "Solver", once we
+have defined the target cell to be maximized (the "K34"), the final
+condition ("$I$34=K0"), and the cells to change with the solution
+("$F$4:$F$33"), similar to how it has been carried out in the previous
+chapters.
+
+As we can now see, the optimal path of consumption that we obtain is
+completely horizontal, indicating that the consumption is the same
+period to period. This is because we are calculating its steady-state
+value, and in steady state the variables are constant period to period.
+In the previous exercises in which the optimal consumption path was
+calculated, the slope of the same depended on the relationship between
+the discount factor and the interest rate, which was assumed exogenous.
+However, in this general equilibrium model, the interest rate is an
+endogenous variable, and its equilibrium value is such that, given a
+discount factor, it makes the rest of the variables constant, so the
+optimal path of the resulting consumption is horizontal. In fact, we can
+verify that in a steady state, given a value of β = 0.96, corresponding
+to an intertemporal subjective rate of θ = 0.042, the steady-state value
+of the interest rate is 10.2% per period. Discounting the physical
+depreciation rate of capital, which is 6% per period, it turns out that
+the net return of capital is 0.102 − 0.06 = 0.042, which is exactly
+equal to the value of the subjective rate of intertemporal preference.
+
+8.4.1. Shock analysis: Neutral technological shock
+
+Once the model is solved, we will now study the impact of a disturbance
+consisting of a temporary positive technological shock that increases
+the total productivity of the factors. This is a typical exercise that
+is carried out within the framework of the analysis of real cycles (Real
+Business Cycles) and which consists in studying how the economy reacts
+to a technological shock that increases the Total Factor Productivity in
+a transitory way. To do this, we will assume that in period 1, the
+exogenous variable ε_(t) takes a value of 0.01 (ε₁ = 0.01). Therefore,
+we would include this new value in cell "B18" and execute the "Solver"
+to obtain the new solution of the model. Figure 8.2 shows the results
+obtained in terms of the dynamics (impulse-response functions) that the
+different variables will follow until reaching the steady state, which
+is the same as we had initially, given the assumption that the effects
+of this technological shock are transient. In these figures, we have
+represented the variation of each variable with respect to its
+steady-state value. As we can see, the increase in the total
+productivity of the factors causes an instantaneous increase in the
+level of production, consumption and investment. Given the initial
+endowment of productive factors, production is now higher. When
+obtaining a higher level of production, the consumer allocates these
+greater resources both to increase their level of consumption and their
+level of investment, since the increase in TFP entails an increase in
+the price of productive factors (in this case, an increase in the
+profitability of capital). This higher level of investment, in turn,
+leads to an increase in the stock of capital, which also positively
+contributes to increasing the level of production.
+
+The persistence in the response of production comes both from the
+persistence of the shock itself, and from the increase in the stock of
+capital. In Figure 8.2, we have represented the dynamics of the TFP,
+which shows some persistence, depending on the value of the parameter ρ.
+This persistence of the shock is transferred to a persistent response of
+the rest of the macroeconomic variables. The response of consumption
+show a hump-shaped response, increasing progressively during the first
+periods, given that fewer resources are allocated to investment.
+However, after a certain period, the return of production to its
+steady-state value also causes consumption to decrease once capital is
+no longer accumulated. Therefore, we observe two sources of increase in
+production. The first as a result of the higher level of aggregate
+productivity and the second as a consequence of the increase in the
+stock of capital.
+
+[]
+
+Figure 8.2. Impulse-response function to a transitory Total Factor
+Productivity shock.
+
+8.5. Numerical solution of the log-linear model
+
+In this section, we will repeat the analysis, but using the alternative
+approach that we have previously used to solve Tobin’s Q model. To do
+this, we will obtain a dynamic system with two equations in linear
+differences, an approximation of the original non-linear equations of
+the model, and we will simply simulate them numerically in the
+spreadsheet. The solution of this dynamic linear system is a
+saddle-point, so it is necessary to calculate the position of the stable
+saddle path corresponding to the steady state. To do this, we need to
+previously calculate the value of the eigenvalues, a procedure that is
+simple when the dynamic system is linear. The only drawback associated
+with this method is that we have to use certain algebraic operations
+that can be very tedious to obtain the linear approximation of the
+model. To obtain the log-linearization of our system of equations, we
+will express the variables of the model as the logarithmic deviation
+with respect to its steady-state values. We will define the deviation in
+logarithmic terms of a variable, x_(t), with respect to its value of
+steady state, ${\overline{x}}_{t}$, as x̂_(t), where
+${\widehat{x}}_{t} = \ln x_{t} - \ln{\overline{x}}_{t}$. To construct
+the equations in log-linear form, we are going to follow the three basic
+rules, which we have indicated in the previous chapter.
+
+8.5.1. Log-linearization of the model
+
+In this section, we will log-linearize the basic model of dynamic
+general equilibrium, to be able to solve it directly in a spreadsheet
+without using the "Solver" tool. The idea is to obtain a system of
+equations in linear differences, one for consumption and another for the
+stock of capital, in terms of its deviations from the steady state. The
+stock of capital is a state variable, whose value today was already
+determined in the previous period (that is why it is also called the
+default variable), while consumption is a variable of advanced control
+on which we must apply expectations, and which will change
+instantaneously in the face of a disturbance such that it reaches the
+stable path. For this, we apply the same procedure that we used in the
+previous chapter when log-linearizing Tobin’s Q model.
+
+Log-linearization of the production function
+
+We will start by obtaining a linear approximation to the production
+function since we will need it later. The production function that we
+are using, given that we have normalized to 1 the level of employment,
+is:
+
+Y_(t) = A_(t)K_(t)^(α) (8.61)
+
+For the analysis to be as simple as possible, we assume that the Total
+Factor Productivity is an exogenous variable (and therefore, we assume
+that it is a constant). Therefore, next we will assume that the value of
+the TFP is a constant that we define by $\overline{A}$. By applying the
+first of the rules described above to the left side of the production
+function, it turns out that:
+
+$Y_{t} \approx \overline{Y}(1 + {\widehat{y}}_{t})$ (8.62)
+
+On the other hand, by applying the third rule to the right side of the
+production function, it turns out that:
+
+$A_{t}K_{t}^{\alpha} \approx \overline{A}{\overline{K}}^{\alpha}\left( 1 + {\widehat{k}}_{t} \right)^{\alpha} \approx \overline{A}{\overline{K}}^{\alpha}(1 + \alpha{\widehat{k}}_{t})$
+(8.63)
+
+Therefore, the log-linearized equation for the production level is:
+
+$\overline{Y}\left( 1 + {\widehat{y}}_{t} \right) = \overline{A}{\overline{K}}^{\alpha}(1 + \alpha{\widehat{k}}_{t})$
+(8.64)
+
+and operating:
+
+$\overline{Y} + \overline{Y}{\widehat{y}}_{t} = \overline{A}{\overline{K}}^{\alpha} + \overline{A}{\overline{K}}^{\alpha}\alpha{\widehat{k}}_{t}$
+(8.65)
+
+By using the production function in steady state and canceling terms, it
+results:
+
+$\overline{Y}{\widehat{y}}_{t} = \overline{A}{\overline{K}}^{\alpha}\alpha{\widehat{k}}_{t}$
+(8.66)
+
+Thus, it follows that the linear approximation to the non-linear
+production function (in terms of deviations from the steady state) is
+given by:
+
+ŷ_(t) = αk̂_(t) (8.67)
+
+Log-linearization of the dynamic equation for the capital stock
+
+Next, we proceed to log-linearize the dynamic equation for the capital
+stock, which is given by:
+
+C_(t) + K_(t + 1) − (1 − δ)K_(t) = Y_(t) (8.68)
+
+By applying the rules described above, we obtain:
+
+$\overline{C}\left( 1 + {\widehat{c}}_{t} \right) + \overline{K}\left( 1 + {\widehat{k}}_{t + 1} \right) - (1 - \delta)\overline{K}(1 + {\widehat{k}}_{t}) = \overline{Y}(1 + {\widehat{y}}_{t})$
+(8.69)
+
+For its part, this equation in steady state is given by:
+
+$\overline{C} + \overline{K} - (1 - \delta)\overline{K} = \overline{Y}$
+(8.70)
+
+By operating, it turns out that,
+
+$\overline{C}{\widehat{c}}_{t} + \overline{K}{\widehat{k}}_{t + 1} - (1 - \delta)\overline{K}{\widehat{k}}_{t} = \overline{Y}{\widehat{y}}_{t}$
+(8.71)
+
+resulting in:
+
+$\frac{\overline{C}}{\overline{K}}{\widehat{c}}_{t} + {\widehat{k}}_{t + 1} - (1 - \delta){\widehat{k}}_{t} = \frac{\overline{Y}}{\overline{K}}{\widehat{y}}_{t}$
+(8.72)
+
+To continue with the linearization, we need to obtain the value of the
+steady-state ratios that appear in the previous expression. These
+steady-state ratios are:
+
+$\frac{\overline{C}}{\overline{K}} = \frac{\frac{1 - \beta + \beta\delta - \alpha\beta\delta}{(1 - \beta + \beta\delta)}\overline{Y}}{\frac{\alpha\beta}{(1 - \beta + \beta\delta)}\overline{Y}} = \frac{1 - \beta + \beta\delta - \alpha\beta\delta}{\alpha\beta}$
+
+$\frac{\overline{Y}}{\overline{K}} = \frac{\overline{Y}}{\frac{\alpha\beta}{(1 - \beta + \beta\delta)}\overline{Y}} = \frac{(1 - \beta + \beta\delta)}{\alpha\beta}$
+
+Substituting the steady-state ratios results in:
+
+$\frac{1 - \beta + \beta\delta - \alpha\beta\delta}{\alpha\beta}{\widehat{c}}_{t} + {\widehat{k}}_{t + 1} - (1 - \delta){\widehat{k}}_{t} = \frac{(1 - \beta + \beta\delta)}{\alpha\beta}{\widehat{y}}_{t}$
+(8.73)
+
+Substituting the deviation of the production level from its steady-state
+value obtained previously (ŷ_(t) = αk̂_(t)) results in:
+
+$\frac{1 - \beta + \beta\delta - \alpha\beta\delta}{\alpha\beta}{\widehat{c}}_{t} + {\widehat{k}}_{t + 1} = (1 - \delta){\widehat{k}}_{t} + \frac{(1 - \beta + \beta\delta)}{\alpha\beta}{\widehat{k}}_{t}$
+(8.74)
+
+Finally, by defining Δk̂_(t) = k̂_(t + 1) − k̂_(t), we arrive at the
+following difference equation for the stock of capital:
+
+$\Delta{\widehat{k}}_{t} = - \left\lbrack \frac{1 - \beta + \beta\delta - \alpha\beta\delta}{\alpha\beta} \right\rbrack{\widehat{c}}_{t} + \left\lbrack \frac{1 - \beta}{\beta} \right\rbrack{\widehat{k}}_{t}$
+(8.75)
+
+Log-linearization of the dynamic equation of consumption
+
+Next, we will proceed to log-linearize the dynamic equation of
+consumption. The starting equation is:
+
+$\frac{C_{t + 1}}{C_{t}} = \beta\left( \alpha\frac{Y_{t + 1}}{K_{t + 1}} + 1 - \delta \right)$
+(8.76)
+
+By applying the rules described above, we obtain:
+
+$\frac{\overline{C}}{\overline{C}}\left( 1 + {\widehat{c}}_{t + 1} - {\widehat{c}}_{t} \right) = \alpha\beta\frac{\overline{Y}}{\overline{K}}\left( 1 + {\widehat{y}}_{t + 1} - {\widehat{k}}_{t + 1} \right) + \beta(1 - \delta)$
+(8.77)
+
+By operating results that,
+
+$1 + {\widehat{c}}_{t + 1} - {\widehat{c}}_{t} = \alpha\beta\frac{\overline{Y}}{\overline{K}}\left( {\widehat{y}}_{t + 1} - {\widehat{k}}_{t + 1} \right) + \alpha\beta\frac{\overline{Y}}{\overline{K}} + \beta(1 - \delta)$
+(8.78)
+
+From the definition of steady state, we obtain that:
+
+$\frac{\overline{Y}}{\overline{K}} = \frac{1 - \beta + \beta\delta}{\alpha\beta}$
+(8.79)
+
+By substituting the previous expression, it turns out that:
+
+1 + ĉ_(t + 1) − ĉ_(t) = (1 − β + βδ)(ŷ_(t + 1) − k̂_(t + 1)) + (1 − β + βδ) + β(1 − δ)
+(8.80)
+
+and operating results in:
+
+ĉ_(t + 1) − ĉ_(t) = (1 − β + βδ)(ŷ_(t + 1) − k̂_(t + 1)) (8.81)
+
+By using the linear approximation for the production level obtained
+previously (ŷ_(t + 1) = αk̂_(t + 1)) and substituting, we obtain:
+
+ĉ_(t + 1) − ĉ_(t) = (1 − β + βδ)(α − 1)k̂_(t + 1) (8.82)
+
+On the other hand, from the expression (8.74) obtained previously it,
+results that:
+
+${\widehat{k}}_{t + 1} = \frac{1}{\beta}{\widehat{k}}_{t} - \frac{1 - \beta + \beta\delta - \alpha\beta\delta}{\alpha\beta}{\widehat{c}}_{t}$
+(8.83)
+
+By substituting in the previous expression, we obtain that:
+
+${\widehat{c}}_{t + 1} - {\widehat{c}}_{t} = (1 - \beta + \beta\delta)(\alpha - 1)\left( \frac{1}{\beta}{\widehat{k}}_{t} - \frac{1 - \beta + \beta\delta - \alpha\beta\delta}{\alpha\beta}{\widehat{c}}_{t}\  \right)$
+(8.84)
+
+Defining Δĉ_(t) = ĉ_(t + 1) − ĉ_(t), we can write it as:
+
+$\Delta{\widehat{c}}_{t} = \frac{(1 - \beta + \beta\delta)(\alpha - 1)}{\beta}{\widehat{k}}_{t} - \frac{(1 - \beta + \beta\delta)(\alpha - 1)(1 - \beta + \beta\delta)}{\alpha\beta}{\widehat{c}}_{t}$
+(8.85)
+
+where the variations in consumption depend negatively on the deviations
+of the stock of capital with respect to its steady state (the
+coefficient that multiplies the deviations of the stock of capital is
+negative) and positively of the deviations of consumption with respect
+to the steady state (given that the associated coefficient is positive).
+
+Log-linearization of the investment equation
+
+Finally, the log-linear equation for the investment (although this
+equation does not need it) is given by:
+
+I_(t) = Y_(t) − C_(t) (8.86)
+
+so, applying the rules of log-linearization results in:
+
+$\overline{I}\left( 1 + {\widehat{i}}_{t} \right) = \overline{Y}\left( 1 + {\widehat{y}}_{t} \right) - \overline{C}(1 + {\widehat{c}}_{t})$
+(8.87)
+
+or equivalently,
+
+$\overline{I} + \overline{I}{\widehat{i}}_{t} = \overline{Y} + \overline{Y}{\widehat{y}}_{t} - \overline{C} - \overline{C}{\widehat{c}}_{t}$
+(8.88)
+
+In steady state, it turns out that:
+
+$\overline{I} = \overline{Y} - \overline{C}$ (8.89)
+
+so, the above expression can be simplified to:
+
+$\overline{I}{\widehat{i}}_{t} = \overline{Y}{\widehat{y}}_{t} - \overline{C}{\widehat{c}}_{t}$
+(8.90)
+
+and clearing the deviations of the investment with respect to its value
+of steady state results in:
+
+${\widehat{i}}_{t} = \frac{\overline{Y}}{\overline{I}}{\widehat{y}}_{t} - \frac{\overline{C}}{\overline{I}}{\widehat{c}}_{t}$
+(8.91)
+
+By using the steady-state definitions, it turns out that:
+
+$\frac{\overline{Y}}{\overline{I}} = \frac{1 - \beta + \beta\delta}{\alpha\beta\delta}$
+(8.92)
+
+and:
+
+$\frac{\overline{C}}{\overline{I}} = \frac{1 - \beta + \beta\delta - \alpha\beta\delta}{\alpha\beta\delta}$
+(8.93)
+
+By substituting, we arrive at that:
+
+${\widehat{i}}_{t} = \frac{1 - \beta + \beta\delta}{\alpha\beta\delta}{\widehat{y}}_{t} - \frac{1 - \beta + \beta\delta - \alpha\beta\delta}{\alpha\beta\delta}{\widehat{c}}_{t}$
+(8.94)
+
+Discrete log-linearized system
+
+Therefore, the dynamic general equilibrium model can be defined as a
+linear dynamic system in terms of the deviations of consumption and the
+stock of capital from its steady state. To simplify our analysis, we
+group parameters such that:
+
+Ω = 1 − β + βδ (8.95)
+
+Φ = 1 − β + (1 − α)βδ (8.96)
+
+Therefore, the log-linearized system in terms of deviations from the
+steady state remains, in matrix notation, as:
+
+$\begin{bmatrix}
+\Delta{\widehat{c}}_{t} \\
+\Delta{\widehat{k}}_{t}
+\end{bmatrix} = \begin{bmatrix}
+ - \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta} & \frac{(\alpha - 1)\Omega}{\beta} \\
+ - \frac{\Phi}{\alpha\beta} & \frac{(1 - \beta)}{\beta}
+\end{bmatrix}\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix}$ (8.97)
+
+In Appendix N, we present the equivalent system (in normal form)
+corresponding to the stochastic version of the model. Substituting the
+calibrated values results in:
+
+Ω = 1 − 0.96 + 0.96 × 0.06 = 0.0976
+
+Φ = 1 − 0.96 + 0.65 × 0.96 × 0.06 = 0.07744
+
+By substituting the calibrated values of the parameters, the dynamic
+system results in:
+
+$$\begin{bmatrix}
+\Delta{\widehat{c}}_{t} \\
+\Delta{\widehat{k}}_{t}
+\end{bmatrix} = \begin{bmatrix}
+0.0146 & - 0.066 \\
+ - 0.2305 & 0.0417
+\end{bmatrix}\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix}$$
+
+8.5.2. Stability analysis
+
+Once we have the model in log-linear terms, we can proceed to analyze
+its stability and obtain the eigenvalues associated with it. As we can
+see, we have transformed a system of non-linear dynamic equations into a
+linear dynamic system, in terms of the deviations (in logarithmic terms,
+that is, in percentage) of each variable with respect to the steady
+state. For this, we calculate:
+
+$Det\begin{bmatrix}
+ - \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta} - \lambda & \frac{(\alpha - 1)\Omega}{\beta} \\
+ - \frac{\Phi}{\alpha\beta} & \frac{(1 - \beta)}{\beta} - \lambda
+\end{bmatrix} = 0$ (8.98)
+
+From the previous system, we obtain the following equation of the second
+degree:
+
+$\lambda^{2} + \left( \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta} - \frac{(1 - \beta)}{\beta} \right)\lambda - \left( \frac{(1 - \beta)}{\beta} \right)\left( \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta} \right) + \left( \frac{(\alpha - 1)\Omega}{\beta} \right)\left( \frac{\Phi}{\alpha\beta} \right) = 0$
+(8.99)
+
+or equivalently:
+
+$\lambda^{2} + \left( \frac{(\alpha - 1)\Omega\Phi - \alpha(1 - \beta)}{\alpha\beta} \right)\lambda + \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta} = 0$
+(8.100)
+
+By resolving, we obtain the following roots:
+
+$\lambda_{1},\lambda_{2} = \frac{- \frac{(\alpha - 1)\Omega\Phi - \alpha(1 - \beta)}{\alpha\beta} \pm \sqrt{\left( \frac{(\alpha - 1)\Omega\Phi - \alpha(1 - \beta)}{\alpha\beta} \right)^{2} - 4\frac{(\alpha - 1)\Omega\Phi}{\alpha\beta}}}{2}$
+(8.101)
+
+being a positive root and the other negative. In effect, by substituting
+the values of the parameters, we obtain that:
+
+$$\lambda_{1} = \frac{0.0.56 - \sqrt{{0.056}^{2} + 0.0585}}{2} = - 0.096$$
+
+$$\lambda_{2} = \frac{0.0.56 + \sqrt{{0.056}^{2} + 0.0585}}{2} = 0.1523$$
+
+If we calculate the root module plus the unit, we obtain 0.91 for the
+first and 1.16 for the second, so the solution is a saddle point.
+
+8.5.3. Stable saddle path
+
+The existence of a saddle point causes the existence of a single stable
+path that determines the dynamics of adjustment of the economy to the
+steady state. As we have seen previously, in this case, there is a jump
+in the forward-looking variable (consumption) in the face of a
+disturbance, which directly leads the economy to this stable saddle
+path, determining the adjustment in the short term. From that initial
+adjustment, the economy moves along this stable saddle path, in a
+process of gradual adjustment (depending on the speed of adjustment of
+the rest of the variables), until reaching the steady state.
+
+Once we have calculated the eigenvalues, defining λ₁ as the own value
+that fulfills that |λ₁ + 1| < 1, the system can be written as:
+
+$\begin{bmatrix}
+\Delta{\widehat{c}}_{t} \\
+\Delta{\widehat{k}}_{t}
+\end{bmatrix} = \lambda_{1}\begin{bmatrix}
+{\widehat{c}}_{t} \\
+{\widehat{k}}_{t}
+\end{bmatrix}$ (8.102)
+
+from which we obtain the mathematical trajectories for both variables
+that lead us to the steady state.
+
+8.5.4. Instant readjustment in the level of consumption
+
+To compute the model, we need to calculate the short-term effect, that
+is, the variation in consumption (which is the "jumping" variable) just
+at the moment when a disturbance occurs. As we have seen in theoretical
+terms, when a disturbance occurs, the consumption is adjusted
+immediately until reaching the stable saddle path.
+
+The dynamic equation obtained previously for consumption is:
+
+$\Delta{\widehat{c}}_{t} = - \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta}{\widehat{c}}_{t} + \frac{(\alpha - 1)\Omega}{\beta}{\widehat{k}}_{t}$
+(8.103)
+
+On the other hand, the stable path is defined by the trajectory:
+
+Δĉ_(t) = λ₁ĉ_(t) (8.104)
+
+Matching both expressions results in:
+
+$- \frac{(\alpha - 1)\Omega\Phi}{\alpha\beta}{\widehat{c}}_{t} + \frac{(\alpha - 1)\Omega}{\beta}{\widehat{k}}_{t} = \lambda_{1}{\widehat{c}}_{t}$
+(8.105)
+
+By operating, we obtain the value that consumption has to take (in terms
+of deviations from the steady state) so that it is located in the stable
+saddle path and is given by:
+
+${\widehat{c}}_{t} = \frac{\alpha(\alpha - 1)\Omega}{(\alpha - 1)\Omega\Phi + \alpha\beta\lambda_{1}}{\widehat{k}}_{t}$
+(8.106)
+
+an expression that is equivalent to the variation that has to be
+experienced at the time of the disturbance, since the initial deviation
+is zero (steady state).
+
+8.5.5. Numerical solution of the linear approximation
+
+The numerical resolution of the log-linearized model corresponds to the
+spreadsheet "ICM-8-2.xls". In Appendix M, we show the code to solve this
+same exercise using DYNARE. The structure of the spreadsheet is shown in
+Figure 8.3. First, we define the parameters of the model. In this
+exercise, we will use the same parameters as in the previous exercise -
+the intertemporal discount factor, the elasticity of production with
+respect to the stock of capital and the rate of depreciation of capital.
+We also calculate two parameters that are a combination of the previous
+ones to simplify the used expressions. The corresponding values appear
+in cells "B14" to "B18". In column "C", these values are reproduced, in
+order to perform a sensitivity analysis and study the implications of
+changes in the values of these parameters. Below, we present the
+steady-state values, rows 21 to 25, which are the same as those obtained
+in the previous exercise. In column "B", the steady-state values are
+presented with the initial values, while in column "C", these values are
+presented with the final values. Given that in this exercise we have
+considered TFP as an exogenous variable, we have introduced its initial
+value in cell "B25". If we want to introduce a new value to simulate a
+permanent technological disturbance, we would do so by changing the
+corresponding value in cell "C25".
+
+Rows 28 and 29 calculate the eigenvalues associated with the dynamic
+system, in column "B" for the initial steady state and in column "C" for
+the final steady state. Given the restrictions on the parameters, the
+roots are going to be real, so the calculation of the imaginary part is
+not necessary. If we place the cursor in cell "B28", the expression that
+appears is:
+
+=((-((Alpha_0-1)*OMEGA_0*PHI_0-Alpha_0*(1-Beta_0)))/(Alpha_0*Beta_0)
+
+-ROOT((((Alpha_0-1)*OMEGA_0*PHI_0-Alpha_0*(1-Beta_0))/(Alpha_0*Beta_0))^2
+
+-4*((Alpha_0-1)*OMEGA_0*PHI_0)/(Alpha_0*Beta_0)))/2
+
+which corresponds to the equation (8.101), for the first root, while in
+cell "B29", the equivalent expression for the other root appears. In
+rows 32 and 33, the module of each root plus the unit is calculated.
+
+[]
+
+Figure 8.3. Structure of the spreadsheet "ICM-8-2.xls". Log-linear
+version of the Dynamic General Equilibrium model.
+
+The information that results from numerically simulating this model
+appears in the "G-U" columns. Column "G" is the time index. The
+variables of the model are defined in the columns "H", the consumption,
+"I" corresponds to the investment, "J" the level of production, "K" the
+stock of capital, while the columns "L", "M", "N", and "O", present the
+previous variables in the same order, but in logarithms. Next, the
+column "P" corresponds to the logarithmic deviation of the consumption
+with respect to its steady-state value, the "Q" is the logarithmic
+deviation of the investment with respect to its steady-state value,
+which is simply the difference between what is produced and what is
+consumed, in terms of deviations. Column "R" is the logarithmic
+deviation of production, which depends on the deviation of the stock of
+capital from its steady-state value, and column "S" is the logarithmic
+deviation of the capital stock with respect to its steady-state value.
+
+To determine the initial consumption, C₀ column "H", we will start from
+its steady-state value. To determine the consumption in period 1 (cell
+"H4"), we use the following expression:
+
+=EXP(P4+LN(Css_1))
+
+This same expression appears in the following cells. A similar
+expression appears in the "K" column to calculate the stock of capital
+from its logarithmic deviation. To determine the values corresponding to
+column "J", we use the expression, "=PTF_0*K_0^Alpha_0", corresponding
+to the initial period, while the initial expression entered in the
+column "I" is "=K_0*Delta_0". For the following periods, it is
+determined using the following expression, "=Alpha1*Q4". The only value
+that would change is "Q" that corresponds to the logarithmic variations
+of the stock of capital in each period of time with respect to the
+steady state.
+
+Columns "P" to "S" show the deviations of each variable with respect to
+its steady state, where the key cells are "P4" and "S4". The "P" column
+corresponds to the logarithmic variation in consumption with respect to
+its steady-state value. For the initial period (zero), cell "P3", is the
+difference between the logarithm of the steady-state consumption and the
+logarithm of the same, whose result is zero. Cell "P4" contains the new
+value of the deviation of the consumption before a disturbance that
+places said variable in the new stable path. Thus, ĉ₁ is determined with
+the following expression:
+
+=Alpha_1*(Alpha_1-1)*OMEGA_1/((Alpha_1-1)*OMEGA_1*PHI_1
+
++Alpha_1*Beta_1*Lambda1_1)*S4
+
+which corresponds to the expression (8.106). For the successive periods,
+the consumption deviation is determined using the expression, "=N4+R4",
+that is, the consumption in the previous period plus the variation in
+consumption, which is the value corresponding to cell "R4". This
+expression is copied into the remaining rows of that column.
+
+Column "S" contains the differences of the logarithm of the stock of
+capital with respect to the steady state. For the period zero it would
+be determined using the following expression, "=LN(K3)-LN($K$3)", it is
+the difference between the logarithm of the stock of capital in steady
+state and the same, therefore it is zero. On the other hand, to
+calculate this deviation in period 1, corresponding to cell "S4", it
+would correspond to the difference between the logarithm of the stock of
+capital in the steady state and the logarithm of the stock of capital in
+the final steady state, the expression that we use is:
+
+=LN(K_0)-LN(Kss_1)
+
+which corresponds to the expression (8.93). On the other hand, the
+column "R" calculates the deviations of the production level, using the
+expression "=Alpha_0*S3", which corresponds to the expression (8.68). In
+the following periods and until the end of the column, the expression
+used is, "=Alpha_1*S4".
+
+Finally, columns "T" and "U" show the variations in the deviations of
+consumption and capital stock, respectively. Column "T" contains the
+variations of the logarithmic deviations of the consumption with respect
+to the steady state. If we place the courses in cell "T3", the
+expression that appears is:
+
+=-(Alpha_0-1)*OMEGA_0*PHI_0/(Alpha_0*Beta_0)*P3
+
++(Alpha_0-1)*OMEGA_0/Beta_0*S3
+
+which corresponds to the equation (8.86). This same expression appears
+in the following cells of this column but referred to the values of the
+final parameters. Finally, column "U" presents the value of the
+variations of the deviations of the stock of capital with respect to the
+initial steady state. In this case, the expression that appears in cell
+"U3" is
+
+=-PHI_0/(Alpha_0*Beta_0)*P3+(1-Beta_0)/Beta_0*S3
+
+which corresponds to the equation (8.76). This same expression appears
+in the following cells of the column but refers to the values of the
+parameters in the final steady state.
+
+8.5.6. Shock analysis: Technological shock
+
+Once the numerical solution of the model has been obtained, we carry out
+a disturbance analysis. In particular, we consider that there is a
+positive technological shock, represented by an increase in Total Factor
+Productivity, for example an increases of 5% in TFP, similar to the one
+made previously, but in this case, the technological shock is permanent.
+To do this, we will introduce a value of 1.05 in cell "C25". This is
+what is called a neutral technological shock since it increases the
+productivity of both the capital productive factor and the labor factor.
+That is, we assume that TFP increases permanently, which will lead to
+the existence of a new steady state.
+
+Figure 8.4 shows the transition dynamics of the model variables towards
+the new steady state. TFP is greater from moment 1, staying at that
+level in the following periods (permanent change). This causes
+production to increase instantaneously in the value of the increase in
+aggregate productivity, although the adjustment is not instantaneous to
+the new steady state due to the transition dynamics that the capital
+stock will show. Thus, by instantly increasing production, so do
+consumption and investment. The increase in investment is due to the
+higher return on capital. This increase in investment causes the
+accumulation of physical capital, which in turn, will cause increases in
+production in addition to that initially produced by higher aggregate
+productivity. As production increases, so does consumption. However,
+these increases in production are decreasing, due to the existence of
+diminishing returns with respect to capital. The final result is the
+generation of a process of economic growth until the economy reaches the
+new steady state.
+
+[]
+
+Figure 8.4. Transition dynamics to a permanent change in Total Factor
+Productivity.
+
+Exercises
+
+1.  Suppose that an earthquake decreases by 20% the capital stock of the
+    economy. Using the "ICM-8-1.xls" spreadsheet, study what the effects
+    of this shock. To perform this experiment, simply enter in the
+    spreadsheet that the initial value of the capital stock in cell "I4"
+    is 20% lower than the corresponding steady-state value.
+
+2.  Solve the dynamic general equilibrium model assuming that the
+    utility function of consumers is:
+
+U(C_(t), L_(t)) = γln C_(t) + (1 − γ)ln (1 − L_(t))
+
+  Where 0 < γ < 1. Build a spreadsheet similar to the "ICM-8-1.xls",
+  which calculates both the optimal path of consumption and the optimal
+  labor supply. What effects does a positive technological disruption
+  have on the labor supply?
+
+3.  Repeat exercise 1, but now using the spreadsheet "ICM-8-2.xls". In
+    this case, you have to enter a value of -0.2 in cell "S4". What
+    differences do you observe regarding exercise 1?
+
+4.  Analyze the effects of an increase in the discount factor using the
+    "ICM-8-2.xls" spreadsheet. What is the economic explanation of these
+    results?
+
+5.  Build a spreadsheet similar to "ICM-8-2.xls", but resolving the
+    model again under the assumption that the utility function is the
+    one that appears in exercise 2.
+
+Part III: Economic growth

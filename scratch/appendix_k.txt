@@ -1,0 +1,230 @@
+for t=2:T-1
+
+f(2*t-1) = (1+tauc)*C(t+1)-beta*(1+(1-taur)*R)*(1+tauc)*C(t);
+
+f(2*t) = (1-tauw)*W(t)*(1-L(t))-((1+tauc)*C(t))*(1-gamma)/gamma;
+
+end
+
+f(2*T-1) = (1+tauc)*C(T)-(1+(1-taur)*R)*B(T-1)-(1-tauw)*W(T)*L(T);
+
+f(2*T) = (1-tauw)*W(T)*(1-L(T))-((1+tauc)*C(T))*(1-gamma)/gamma;
+
+Appendix K: The Tobin Q model in DYNARE
+
+Tobin's Q model can be solved in a very simple way using DYNARE. As we
+have seen in previous appendices, DYNARE is very easy to use, with a
+very simple language, specially designed to solve dynamic general
+equilibrium models. Tobin's Q model appears as an integral part of the
+dynamic general equilibrium model.
+
+// ***********************************************
+
+// An Introduction to Computational Macroeconomics
+
+// A. Bongers, T. Gómez and J. L. Torres (2019)
+
+// The Tobin Q model in DYNARE
+
+// File: m7d.mod
+
+// ***********************************************
+
+// Endogenous variables
+
+var q k dq dk;
+
+// Exogenous variables
+
+varexo R, delta;
+
+// Parameters
+
+parameters alpha, phi;
+
+// Calibration
+
+alpha = 0.35;
+
+phi = 10;
+
+// Defining the capital stock as the predetermined variable
+
+predetermined_variables k;
+
+// Model equations
+
+model;
+
+(1-delta)*q(+1)=(1+R)*q-alpha*k(+1)^(alpha-1)
+
++phi/2*(((k(+2)-k(+1))/k(+1)))^2
+
+-phi*((k(+2)-k(+1))/k(+1))*(k(+2)-(1-delta)*k(+1))/k(+1);
+
+k(+1)-k=(q-1)*k/phi;
+
+dk=k(+1)-k;
+
+dq=q(+1)-q;
+
+end;
+
+// Initial values
+
+initval;
+
+q = 1;
+
+k = 10;
+
+dk = 0;
+
+dq = 0;
+
+R = 0.04;
+
+delta = 0.06;
+
+end;
+
+// Initial steady state
+
+steady;
+
+check;
+
+// End values
+
+// Disturbance: Disruption in the interest rate
+
+endval;
+
+q = 1;
+
+k = 10;
+
+dk = 0;
+
+dq = 0;
+
+R = 0.03;
+
+delta = 0.06;
+
+end;
+
+// Final steady state
+
+steady;
+
+check;
+
+// Deterministic simulation
+
+simul(periods=200);
+
+// Graphics
+
+T=50;
+
+j=1:T;
+
+subplot(1,2,1)
+
+plot(j,q(1:T),'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+title('Ratio q')
+
+xlabel('Periods')
+
+subplot(1,2,2)
+
+plot(j,k(1:T),'Color',[0.25 0.25 0.25],'linewidth',3.5)
+
+title('Capital stock')
+
+xlabel('Periods')
+
+Appendix L: The dynamic general equilibrium model in MATLAB
+
+This appendix presents the code to solve the dynamic general equilibrium
+model in MATLAB and simulate a temporary productivity disruption, which
+would be the equivalent to the exercise proposed in the spreadsheet
+"ICM-8-1-xls".
+
+%************************************************
+
+% An Introduction to Computational Macroeconomics
+
+% A. Bongers, T. Gómez and J. L. Torres (2019)
+
+% Basic general equilibrium model
+
+% Logarithmic utility function: U=ln(C)
+
+% File: m8.m. Associated function: m8foc.m
+
+%************************************************
+
+clear all
+
+% Periods
+
+T = 100;
+
+% Parameter calibration
+
+Ass = 1.00;
+
+Alpha = 0.35;
+
+Delta = 0.06;
+
+Rho = 1;
+
+Beta = 0.96;
+
+% Steady State
+
+Kss = ((1-Beta+Delta*Beta)/(Ass*Alpha*Beta))^(1/(Alpha-1));
+
+Yss = Ass*Kss^Alpha;
+
+Iss = Delta*Kss;
+
+Css = Yss-Iss;
+
+% Disturbance
+
+Epsilon=0.01;
+
+A(1)=Ass^Rho+Epsilon;
+
+for i=2:T;
+
+A(i)=A(i-1)^Rho;
+
+end
+
+par =[Ass Alpha Delta Rho Beta Kss T A];
+
+save par par;
+
+% Initial values
+
+x0 = [Kss*ones(size(1:T)) 0.20*Kss*ones(size(1:T))]';
+
+% Algorithm
+
+sol = fsolve('m8foc',x0);
+
+% Solution
+
+for t=1:T;
+
+C(t) = sol(t);
+
+K(t) = sol(t+T);
+
+end

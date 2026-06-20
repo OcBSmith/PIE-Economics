@@ -1,0 +1,1310 @@
+    following:
+
+$U\left( C_{t},L_{t} \right) = lnC_{t} - \gamma\frac{L_{t}^{1 + 1/\phi}}{1 + 1/\phi}$
+
+  Solve the problem of the consumer by building the spreadsheet
+  corresponding to this problem.
+
+5.  Suppose that there is a maximum limit to work for which the fraction
+    of work time cannot be greater than 50% of the available time. Use
+    the spreadsheet "ICM-5-2.xls" and evaluate what the effects of this
+    limit are (Hint: for this, you have to introduce an additional
+    restriction in the problem to be solved such that the column
+    corresponding to the employment cannot be higher than 0.5:
+    "$G$3:$G$33<=0.5").
+
+6. The government and the fiscal policy
+
+6.1. Introduction
+
+Apart from households and firms, decisions by other economic agents can
+also be incorporated into micro-based macroeconomic models. This is the
+case of the government. However, in the majority of models, the
+government decisions have no microeconomic foundation. Usually, the
+government enters in macroeconomic models exogenously, through the
+different variables representing fiscal policy instruments. In this
+framework, the government decides a certain level of public expenditure
+and its structure, which is financed through public revenues obtained
+through the setting of taxes. Both public spending and tax rates are
+exogenous variables, so the basic structure of the model is not altered,
+as no additional endogenous variables are considered. However, public
+spending and tax rates can be distortionary instruments, as these
+exogenous variables can alter the optimal decision of economic agents
+and the resulting macroeconomic equilibrium. This means that even when
+public expenditure equals fiscal revenues (that is, under the existence
+of a balanced public budget and, therefore, in a situation in which the
+government returns via transfers of public goods the same amount to the
+economic agents that it collects via taxes), the resulting macroeconomic
+equilibrium will be affected by both public spending and the taxes,
+since the decisions taken by the different economic agents are
+conditioned by these exogenous variables. The difference between public
+revenues and expenditures is financed through the issuance of debt,
+these being the elements, together with the interest rate of public
+debt, which define the government's budget constraint.
+
+In the majority of micro-founded macroeconomic models, the role of the
+government associated with the household’s maximization problem is
+usually introduced, not affecting in most cases the problem of
+maximizing profits of firms (given that it is usually assumed that there
+is perfect competition, so its benefits are zero), except in the case a
+social security system is considered. On the side of public revenues,
+different types of taxes are introduced, which can be both of a fixed
+amount (lump-sum taxes), taxes on the generation of income (direct
+taxes), and taxes on expenditure on final goods and services (indirect
+taxes). Lump-sum taxes have the characteristic that they are
+non-distortionary taxes, that is, they do not affect the optimal
+decision of economic agents. This is so because the burden of the tax
+cannot be altered in any way as the tax is fixed and independent of what
+decisions the different economic agents make. On the other hand, both
+direct and indirect taxes are distorting taxes, affecting the optimal
+decision of households. The distortion comes from the fact that the
+government introduces a tax rate on a certain tax base. This tax base
+can be altered by economic agents, through changes in their decisions
+that will determine the final amount to be paid for the tax. With regard
+to public spending, in most cases, it is assumed that they are
+represented by a lump-sum transfer to households and that, therefore,
+they have no effect on the decisions of the agent since it is a fixed
+amount. In this case, this lump-sum transfer would enter as an
+additional (fixed) income into the household’s budget constraint of the
+individual. However, there are some models that pay greater attention to
+the different types of public expenditure and different fiscal policies
+on the expenditure side, including the provision of goods produced by
+the public sector, public employment and public wages, the consumption
+of intermediate goods by the government, etc. In this case, public
+spending would have distorting effects on the decision of the other
+economic agents in the economy.
+
+In this chapter, we carry out different exercises regarding the
+household’s decisions but taking into account the taxation by the
+government. Taxes are considered exogenous variables since they
+constitute economic (fiscal) policy instruments, so the structure of the
+household’s maximization problem (in terms of the endogenous variables
+to be solved) is not altered. In this context, households take taxes as
+additional information for taking optimal decisions. First, we solve
+again the basic household maximization problem with a utility function
+depending on consumption but introducing a lump-sum tax. For instance,
+we can introduce a labor income tax on the wage income, which we
+consider exogenous. Since in this case the tax base is exogenous (it is
+given) as no labor decisions are taken into account, the tax rate is
+non-distorting (the amount to be paid is pre-fixed independently on the
+household’s decisions). Secondly, in Section 3, we will analyze the
+household maximization problem in terms of consumption-savings and
+consumption-leisure decisions, considering the existence of three tax
+rates: taxes on consumption, taxes on labor income and taxes on savings
+returns, which constitute the tax menu usually considered in micro-based
+macroeconomic models. In this context, the labor income tax is
+distortionary. Finally, in Section 4, we solve the household
+maximization problem but considering the existence of social security
+contributions. The objective of all these exercises is to study the
+effects caused by changes in fiscal policy via taxes on household'
+decisions. For the numerical solution of these exercises, we use the
+"Solver" tool of the Excel spreadsheet, as in the previous chapters.
+
+6.1. Non-distorsionary taxes
+
+First, the basic household’s maximization problem is considered but
+introducing a tax on the wage income, which is supposed to be exogenous.
+This means that this is a lump-sum tax and, therefore, does not have
+distorting effects on household’s optimal decisions. This is because the
+tax base on which the tax applies is given, so the individual cannot
+alter it to affect the amount of taxes to be paid to the government. In
+practice, there is a great variety of lump-sum taxes (this is the case
+of a poll tax or fees), but which quantitatively represent a relatively
+small fraction of total fiscal revenues. The key characteristic of
+lump-sum taxation is that it does not alter the optimal decision by
+economic agents and, therefore, changes in these taxes have no
+consequences on the economy, and simply imply a change in the
+government's fiscal revenues (a transfer from household to the
+government).
+
+Let’s assume that the household’s utility function is logarithmic and
+only depends on consumption. Therefore, the problem to be maximized is
+given by:
+
+$\max_{\left\{ C_{t} \right\}_{t = 0}^{T}}{\sum_{t = 0}^{T}{\beta^{t}\ln C_{t}}}$
+(6.1)
+
+where C_(t) is the consumption and β is the discount factor, subject to
+the budget constraint:
+
+C_(t) + B_(t) = (1 − τ_(t)^(w))W_(t) + (1 + R_(t − 1))B_(t − 1) + G_(t)
+(6.2)
+
+where B_(t) is the stock of financial assets, τ_(t)^(w) is the tax rate
+on the wage income, W_(t) is the wage income that we consider exogenous,
+and R_(t) is the interest rate of the assets, which we also assume is an
+exogenous variable. We assume that the government returns to the
+households all fiscal revenues via lump-sum transfers, where G_(t) are
+the transfers or public spending (balanced budget),
+G_(t) = τ_(t)^(w)W_(t). Alternatively, we can assume that the government
+does not return the fiscal revenues levied and simply destroys the
+fiscal revenues (G_(t) = 0) gets. In this case, the budget constraint
+would be simply:
+
+C_(t) + B_(t) = (1 − τ_(t)^(w))W_(t) + (1 + R_(t − 1))B_(t − 1) (6.3)
+
+where the results in this case would be equivalent in terms of the
+optimal consumption-saving decision of the agent (although the numerical
+values would be different in each case).
+
++:-----------------------------------:+:-----------------------------------------------------------------------:+
+| Structure of the model: Non-distortionary taxes                                                               |
++-------------------------------------+-------------------------------------------------------------------------+
+| Utility function                    | U = U(C_(t))                                                            |
++-------------------------------------+-------------------------------------------------------------------------+
+| Budget constraint                   | C_(t) + B_(t) = (1 − τ_(t)^(w))W_(t) + (1 + R_(t − 1))B_(t − 1) + G_(t) |
++-------------------------------------+-------------------------------------------------------------------------+
+| Initial stock of assets             | B_(t − 1 = 0)                                                           |
++-------------------------------------+-------------------------------------------------------------------------+
+| Final stock of assets               | B_(T) = 0                                                               |
++-------------------------------------+-------------------------------------------------------------------------+
+| Government budget constraint        | G_(t) = τ_(t)^(w)W_(t)                                                  |
++-------------------------------------+-------------------------------------------------------------------------+
+
+To solve the previous problem we have to impose an initial condition,
+which is given by B_(t − 1) = 0, and a final condition that is given by
+B_(T) = 0. The Lagrangian auxiliary function associated with this
+maximization problem is given by:
+
+$\mathcal{L =}\sum_{t = 0}^{T}\left\lbrack \beta^{t}\ln{C_{t} - \lambda_{t}(C_{t} + B_{t} - (1 - \tau_{t}^{w}})W_{t} - (1 + R_{t - 1})B_{t - 1}) - G_{t} \right\rbrack$
+(6.4)
+
+The first-order conditions, for t = 0, 1, 2, …, T, are the following:
+
+$\frac{\partial\mathcal{L}}{\partial C_{t}} = \frac{\beta^{t}}{C_{t}} - \lambda_{t} = 0$
+(6.5)
+
+$\frac{\partial\mathcal{L}}{\partial B_{t}} = - \lambda_{t} + \lambda_{t + 1}\left( 1 + R_{t} \right) = 0$
+(6.6)
+
+$\frac{\partial\mathcal{L}}{\partial\lambda_{t}} = C_{t} + B_{t} - \left( 1 - \tau_{t}^{w} \right)W_{t} - \left( 1 + R_{t - 1} \right)B_{t - 1} - G_{t} = 0$
+(6.7)
+
+By solving from the first first-order condition (6.5) and substituting
+it in the second first-order condition (6.6) we obtain:
+
+$\beta^{t}\frac{1}{C_{t}} = \beta^{t + 1}\frac{1}{C_{t + 1}}(1 + R_{t})$
+(6.8)
+
+and operating results:
+
+C_(t + 1) = β(1 + R_(t))C_(t) (6.9)
+
+resulting in an expression that determines the optimal consumption
+decision and in which there is no trace of the tax. Thus, we can observe
+that the optimal consumption path over time (the intertemporal
+consumption-saving decision) remains the same as we obtained without
+government, so the tax does not affect this optimal consumption tax.
+This is because the tax applied on an exogenous variable, and therefore,
+households do not have any chance of change the amount of payable taxes
+(the tax base cannot be altered), so this tax is equivalent to a
+lump-sum tax.
+
++:-----------------------------------:+:-----------------------------------------------------------------------:+
+| Solution to the problem of the consumer with taxes                                                            |
+|                                                                                                               |
+| Non-distorting taxes. Logarithmic utility function                                                            |
++-------------------------------------+-------------------------------------------------------------------------+
+| Optimal consumption path            |   C_(t + 1) = β(1 + R_(t))C_(t)                                         |
++-------------------------------------+-------------------------------------------------------------------------+
+| Financial assets                    | B_(t) = (1 + R_(t − 1))B_(t − 1) + (1 − τ_(t)^(w))W_(t) + G_(t) − C_(t) |
++-------------------------------------+-------------------------------------------------------------------------+
+
+6.2.1. Numerical solution
+
+Next, we proceed to numerically solve the previous maximization problem.
+For this, we will use the "Solver" tool of Excel, just as we have done
+in the previous chapters. In fact, the problem we are solving here is
+identical to that solved in Chapter 4. The only difference is the
+introduction of an additional exogenous variable; the tax rate. We
+assume that the government does not return to households what is
+collected through taxes, that is, G_(t) = 0.
+
+[]
+
+Figure 6.1. Structure of the spreadsheet "ICM-6-1.xls". Household
+maximization problem with no distortionary taxes.
+
+The spreadsheet in which we have solved this problem is "ICM-6-1.xls",
+whose structure is shown in Figure 6.1, being similar to those used in
+chapter 4. First, we define the parameters of the model. Since the
+utility function is logarithmic, only one parameter have to be
+calibrated: the intertemporal discount rate, β. The value assigned to
+this parameter is 0.97, and it is reflected in cell "B4". Additionally,
+the problem comprises three exogenous variables: the interest rate, the
+wage income and the tax rate. The value for the interest rate is 0.05
+that appears in cell "B7", while we have assumed a tax rate of 40%
+(τ_(t)^(w) = 0.4), introduced in cell "B8". Regarding the wage income,
+we have assumed that it takes a value of 10 in each period. Instead of
+introducing it as a single value for all periods, we have introduced it
+as a column with the same value for all periods to facilitate
+simulations with different structures for wage income.
+
+Columns "D" through "I" show the rest of the information we need to
+solve this problem. Column "D" is the time index. In column "E", the
+solution to the problem appears in terms of the optimal level of
+consumption period to period. As we have seen before, in order to obtain
+this solution, first of all, we have to introduce some values (guess
+solution) as "seed" of the algorithm, values that is advisable not to be
+very different from the final planned solution. Column "F" shows the
+wage income, which we consider as given, while column "G" shows the
+taxes that the individual has to pay, which is obtained by multiplying
+the income by the tax rate. Then, column "H" calculates the stock of
+savings (accumulated financial assets plus their profitability). For the
+first period, savings is the difference between disposable income (total
+income minus taxes) and consumption. If we place the cursor in cell
+"H3", the expression that appears is:
+
+=F3-E3-G3
+
+If we place the cursor in cell "H4", the expression that appears is:
+
+=(1+R_0)*H3+F4-E4-G4
+
+This same expression appears in the following cells in this same column.
+Finally, in column "I", we present the values of the discounted utility.
+Thus, in cell "I3", we can observe the expression:
+
+=Beta^D3*LN(E3)
+
+The sum of the discounted utilities is calculated in cell "I34", which
+will be the target cell to be maximized in the "Solver" tool. The
+solution to the problem is obtained by executing the "Solver", once we
+have defined the target cell to be maximized (the "I34"), the final
+condition ("$H$33=0"), and the cells to change with the solution
+("$E$3:$E$33"), similar to how it has been carried out in the previous
+chapters.
+
+6.2.2. Change in the tax rate
+
+Next, we proceed to study a fiscal policy reform consisting in a change
+in the tax rate to observe to what extent the decision of
+consumption-optimal savings of the individual is altered by a change in
+fiscal policy. Figure 6.2 shows the consumption-savings decision before
+(dashed line) and after the variation in the tax (solid line). To do
+this, we only have to change the value of cell "B8". Suppose, for
+example, that there is an increase in the tax rate on exogenous income
+and it becomes 45%. If we change the value of this cell to 0.45 and
+execute the "Solver" again, we will observe that the optimal path of
+consumption (and the one corresponding to saving) remains the same. The
+result with the new tax is reflected by the solid line in Figure 6.2.
+Thus, changes in this tax rate have no consequence on the optimal
+decisions of the consumer, so it does not generate distortions. The
+optimal path of consumption and savings are shown in Figure 6.2.
+
+[]
+
+Figure 6.2. Optimal consumption-saving decision with a lump-sum tax.
+Dash line: Initial solution. Solid line: Solution after increasing the
+tax rate to 0.45.
+
+In the numerical solution of this exercise, we have assumed that the
+government does not return the collected amount to the consumer. This
+means that as the tax rate increases, the disposable income is reduced,
+so that the consumption and savings levels are lower, the higher the
+tax. If the government returns the proceeds, as we have stated
+analytically, then the levels of consumption and savings would be the
+same for any tax rate, given that the disposable income would always be
+equal to the total income, regardless of the level of the tax.3
+
+This exercise shows that fiscal policy is ineffective if it does not
+have distorting effects on the decisions of the rest of the agents that
+intervene in the economy. This is what is known as the Principle of
+Ricardian Equivalence (David Ricardo, 1772-1823) or the irrelevance
+theorem in the way in which an increase is financed (via taxes or via
+public debt) in public spending. The Principle of Ricardian Equivalence
+is only fulfilled under the assumptions we are using in this basic
+consumer problem.
+
+6.3. Distortionary taxes
+
+Next, we consider the existence of distortionary taxes on the consumer
+problem. In micro-based macroeconomic models, the existence of two types
+of taxes is usually considered: taxes on expenditures and taxes on
+income. The tax on spending is an indirect tax, which is applied on
+consumption. This tax assumes that the agents pay an overprice for each
+consumed unit. The most important tax within the indirect taxes is the
+Value-Added Tax (VAT). In general, we will denoted this tax plus other
+taxes that also apply to the final price of goods and services as excise
+taxes, as the consumption tax. The second type of tax is a direct rate
+on the income. Given that households have two sources to generate
+income, labor and capital, we will distinguish between a tax applied to
+labor income and another tax rate applied to capital income, or to the
+returns of financial assets, such as the case of the basic household
+problem that we are solving.
+
+As we can see, these taxes are going to alter the budget constraint of
+the individual. Indirect taxes are applied on the part of the expense,
+while direct taxes are applied on the part of the income. In this case,
+the household’s budget constraint can be written as:
+
+(1 + τ_(t)^(c))C_(t) + B_(t) = (1 − τ_(t)^(w))W_(t)L_(t) + [(1 − τ_(t)^(r) )R_(t − 1)]B_(t − 1) + G_(t)
+(6.10)
+
+where B_(t) is the stock of financial assets, τ_(t)^(c) is the tax rate
+on consumption, τ_(t)^(w) is the tax rate on labor income and τ_(t)^(r)
+is the tax rate on capital income (financial assets returns). The budget
+constraint indicates that the spending on consumption, including the
+overprice introduced by the consumption tax, together with net
+investment, cannot exceed the sum of net labor income plus and net
+capital income. These taxes are distorting, since they will affect the
+economic decisions of households. This is because the tax base of each
+tax can be altered by the agent, thus changing the total amount of taxes
+to be paid to the government. That is, the government is the one that
+determines the tax rate, but before this exogenous variable, consumers
+can alter their decisions, thereby changing the tax base, either by
+altering their labor supply or altering the amount of savings, and
+affecting the amount to pay to the government. This means that changes
+in the government's tax policy will lead to changes in
+consumption-saving decisions and in the quantity of productive factors,
+capital and labor, so in this case, fiscal policy would be effective,
+affecting macroeconomic equilibrium, thus, not fulfilling the Ricardian
+Equivalence Principle.
+
+On the other hand, the government makes an expenditure, G_(t) ,which is
+carried out in the form of lump-sum transfers received by the individual
+and is also assumed to be an exogenous variable. Note that the transfers
+enter as a constant (a certain amount of money) in the budget constraint
+of the government, so it will not have any influence on the decisions of
+it. If public spending is carried out in the form of public goods or
+salaries for public employees, then, in this case, public spending would
+also be distortionary. Therefore, we see that the introduction of the
+government changes the budget constraint of the individual, so four new
+variables appear, but they are assumed exogenous, so that the structure
+of the household maximization problem is not affected, but in which the
+optimal decision that maximizes the utility will be affected by the
+decisions that the government makes regarding these variables.
+
+Finally, we assume that period by period, the budget constraint of the
+government is met. Therefore, the transfers that consumers receive are:
+
+G_(t) = τ_(t)^(c)C_(t) + τ_(t)^(l)W_(t)L_(t) + τ_(t)^(γ)R_(t − 1)B_(t − 1)
+(6.11)
+
+Then, we will proceed to solve the problem of the consumer, assuming
+that the utility depends on consumption and leisure. The problem to be
+maximized by the individual would be:
+
+$\max_{\left\{ C_{t}L_{t} \right\}_{t = 0}^{T}}{\sum_{t = 0}^{T}\beta^{t}\left( \gamma\ln C_{t} \right) + (1 - \gamma)\ln{(1 - L_{t})}}$
+(6.12)
+
+Subject to the budget constraint defined above:
+
+(1 + τ_(t)^(c))C_(t) + B_(t) = (1 − τ_(t)^(w))W_(t)L_(t) + (1 − τ_(t)^(r))R_(t − 1)B_(t − 1) + G_(t)
+(6.13)
+
+and the initial and final conditions for the stock of financial assets.
+
++:-----------------------------------:+:----------------------------------------------------------------------------------------------------:+
+| Structure of the model: distortionary taxes                                                                                                |
++-------------------------------------+------------------------------------------------------------------------------------------------------+
+| Utility function                    | U = U(C_(t), O_(t))                                                                                  |
++-------------------------------------+------------------------------------------------------------------------------------------------------+
+| Household budget constraint         | (1 + τ_(t)^(c))C_(t) + B_(t) = (1 − τ_(t)^(w))W_(t)L_(t) + (1 − τ_(t)^(r))R_(t − 1)B_(t − 1) + G_(t) |
++-------------------------------------+------------------------------------------------------------------------------------------------------+
+| Initial stock of assets             | B_(t − 1) = 0                                                                                        |
++-------------------------------------+------------------------------------------------------------------------------------------------------+
+| Final stock of assets               | B_(T) = 0                                                                                            |
++-------------------------------------+------------------------------------------------------------------------------------------------------+
+| Government budget constraint        | G_(t) = τ_(t)^(c)C_(t) + τ_(t)^(w)W_(t)L_(t) + τ_(t)^(r)R_(t − 1)B_(t − 1)                           |
++-------------------------------------+------------------------------------------------------------------------------------------------------+
+
+The corresponding Lagrange auxiliary function would be:
+
+  $\mathcal{L =}\sum_{t = 0}^{T}\beta^{t}\left\lbrack \gamma\ln{C_{t} + (1 - \gamma)\ln\left( 1 - L_{t} \right)} \right\rbrack$
+
+−λ_(t)[(1 + τ_(t)^(c))C_(t) + B_(t) − (1 − τ_(t)^(w))W_(t)L_(t) − (1 − τ_(t)^(r))B_(t − 1)R_(t − 1) − G_(t)]
+(6.14)
+
+By solving the previous maximization problem, we find that first-order
+conditions, for t = 0, 1, 2, …, T, are the following:
+
+$\frac{\partial\mathcal{L}}{\partial C_{t}} = \frac{\gamma B^{t}}{C_{t}} - \lambda_{t}\left( 1 + \tau_{t}^{c} \right) = 0$
+(6.15)
+
+$\frac{\partial\mathcal{L}}{\partial B_{t}} = - \lambda_{t} + \lambda_{t + 1}\left( 1 - \tau_{t}^{r} \right)R_{t} = 0$
+(6.16)
+
+$\frac{\partial\mathcal{L}}{\partial L_{t}} = - \frac{\beta^{t}(1 - \gamma)}{1 - L_{t}} + \lambda_{t}\left( 1 - \tau_{t}^{r} \right)W_{t} = 0$
+(6.17)
+
+$\frac{\partial\mathcal{L}}{\partial\lambda_{t}} = \left( 1 + \tau_{t}^{c} \right)C_{t} + B_{t} - \left( 1 - \tau_{t}^{w} \right)W_{t}L_{t} - (1 - \tau_{t}^{r})R_{t - 1}B_{t - 1} = 0$
+(6.18)
+
+By solving the first first-order condition (6.15) and substituting it in
+the second first-order condition (6.16) we obtain:
+
+$\beta^{t}\frac{1}{(1 + \tau_{t}^{c})C_{t}} = \beta^{t + 1}\frac{(1 - \tau_{t}^{r})R_{t}}{\left( 1 + \tau_{t + 1}^{c} \right)C_{t + 1}}$
+(6.19)
+
+and by operating results that:
+
+(1 + τ_(t + 1)^(c))C_(t + 1) = β[(1 − τ_(t)^(r))R_(t)(1 + τ_(t)^(c))C_(t)]
+(6.20)
+
+As we can see, the optimal consumption path depends both on the tax on
+the income generated by the financial assets and on the variations in
+the consumption tax. Thus, if the tax on consumption remains constant
+period to period (that is τ_(t + 1)^(c) = τ_(t)^(c)), then the optimal
+consumption path would be:
+
+C_(t + 1) = β[(1 − τ_(t)^(r))R_(t)C_(t)] (6.21)
+
+so, in this case, it would only be influenced by the income tax on
+financial assets. This means that once the government sets a certain tax
+rate on consumption, if it does not change over time, it does not
+influence the optimal consumption decision. On the other hand, if the
+consumption tax is altered at any moment of time, there will be a
+readjustment in the optimal path of consumption. Thus, if the government
+increases the tax on labor income in the period t + 1 with respect to
+the existing in t, this will mean a lower marginal utility of
+consumption tomorrow compared to today, so the individual will readjust
+their level of consumption, increasing their consumption today and
+decreasing their consumption tomorrow. Note that a change in τ_(t)^(r)
+is equivalent to a variation in the return on financial assets (a change
+in the interest rate).
+
+On the other hand, labor supply is obtained by substituting the
+first-order condition (6.15) in (6.17), obtaining:
+
+$\frac{1 - \gamma}{\gamma}\left( 1 + \tau_{t}^{c} \right)C_{t} = (1 - \tau_{t}^{w})W_{t}(1 - L_{t})$
+(6.22)
+
+As we can see, the labor supply is negatively affected by both the
+consumption tax and the tax rate on the income generated by this factor.
+Thus, the higher the tax rate on labor income, the lower the net wage
+income received by the household and, therefore, the lower the labor
+supply. This result is consequence of the fact that the tax reduces the
+net salary, which in turn implies a lower utility in terms of
+consumption for each unit of time dedicated to working activities. The
+tax on wages (an increase in it) causes that the disutility of the last
+unit of time that we dedicate to work is less than the utility that we
+would obtain if this unit of time is dedicated to leisure, so that the
+individual reduces his labor supply. On the other hand, the labor supply
+also depends on the consumption tax. Consuming is now more expensive
+because you have to pay an overprice, which reduces the profitability of
+working (in terms of utility) with respect to the profitability of
+leisure, thus decreasing labor supply.
+
++:--------------------------------:+:--------------------------------------------------------------------------:+
+| Solution to the problem of the consumer with taxes                                                            |
+|                                                                                                               |
+| Logarithmic utility function                                                                                  |
++----------------------------------+----------------------------------------------------------------------------+
+| Optimal consumption path         | (1 + τ_(t + 1)^(c))C_(t + 1) = β[(1 − τ_(t)^(r))R_(t)](1 + τ_(t)^(c))C_(t) |
++----------------------------------+----------------------------------------------------------------------------+
+| Financial assets                 | B_(t) = (1 − τ_(t)^(r))R_(t − 1)B_(t − 1) + (1 − τ_(t)^(w))W_(t)           |
+|                                  |                                                                            |
+|                                  | +G_(t) − (1 + τ_(t)^(c))C_(t)                                              |
++----------------------------------+----------------------------------------------------------------------------+
+| Optimal labor supply             | (1 − γ)(1 + τ_(t)^(c))C_(t) = γ(1 − τ_(t)^(w))W_(t)(1 − L_(t))             |
++----------------------------------+----------------------------------------------------------------------------+
+
+Although these three tax types are distorting, in the exercise that we
+are solving, both the salary per unit of time and the interest rate are
+exogenous variables and, therefore, are not affected by the decisions of
+the individuals. In a dynamic general equilibrium macroeconomic model,
+these variables (the price of productive factors) are determined
+endogenously, so they are also altered by the decisions of economic
+agents in response to the taxes. On the contrary, in the model that we
+are solving, both the salary and the interest rate are exogenous
+variables and, therefore, constant to changes in taxes.
+
+6.3.1. Numerical solution
+
+Next, we proceed to the numerical solution of this problem. Figure 6.3
+shows the structure of the spreadsheet "ICM-6-2.xls", similar to the
+previous one, but extended to consider the labor supply decisions and
+the three distortionary tax rates. For the resolution of this household
+maximization problem, we use again the tool "Solver" of Excel. The
+parameters that we need to define are the discount rate and the weight
+of consumption in the utility function. We assume that the discount rate
+is 0.97, and that the weight of consumption is 0.4. On the other hand,
+we have to define the exogenous variables that correspond to the price
+of the productive factors, the salary and the interest rate, and the
+three tax rates. Interest rate is fixed to 5% and the wage per unit of
+time to 100. For the tax rates, we assume that the consumption tax is
+15%, the tax on labor income is of 35% and the capital income tax of
+25%. Appendix J shows the corresponding problem solved in MATLAB, using
+the "fsolve" function.
+
+[]
+
+Figure 6.3. Structure of the spreadsheet "ICM-6-2.xls". Household
+maximization problem with distortionary taxes.
+
+In column "E" we calculate the level of consumption period by period,
+while in column "F" we calculate the level of employment, which are the
+variables for which we are solving the problem. Initially, we would
+introduce in these two columns tentative values of the final solution,
+to start the execution of "Solver". Column "G" shows the gross labor
+income simply obtained by multiplying the salary per unit of time that
+is exogenous by the time spent working. In this particular example, we
+have assumed that the salary per unit of time is 100 and that it remains
+constant for all periods of the individual's life cycle. Column "H"
+shows the total tax collection from the three considered taxes, being
+the sum of the columns "I", "J" and "K". The "L" column shows savings
+(the stock of financial assets). This level of savings is calculated as
+follows. In the first period (period 0), it is simply the difference
+between the net income from taxes and the consumption that the
+individual makes. In the second and subsequent periods, it would be the
+difference between the net income of taxes and consumption in the period
+plus the savings of the previous period plus the profitability
+associated with said savings. The expression that appears in cell "L3"
+is:
+
+=(1-Tauw)*G3-(1+Tauc)*E3
+
+this is the net labor income of the period minus consumption, taxes
+included. On the other hand, the expression that appears in cell "L4"
+is:
+
+=(1+Rbar*(1-Tauk))*L3+(1-Tauw)*G4-(1+Tauc)*E4
+
+expression that we copy in the following rows of this column. Finally,
+column "M" shows the level of the household discounted utility in each
+period of their life.
+
+The sum of the discounted utilities is calculated in cell "M34", which
+will be the target cell to be maximized in the "Solver" tool. The
+solution to the problem is obtained by executing the "Solver", once we
+have defined the target cell to be maximized (the "M34"), the final
+condition ("$L$33=0"), and the cells to change with the solution
+("$E$3:$F$33"), similar to how it has been carried out in the previous
+chapters.
+
+Figure 6.4 shows the time paths of the relevant variables. First, the
+consumption path is increasing, so the individual decides to increase
+consumption as time progresses. The slope of this consumption path
+depends on the discount rate and the real interest rate, together with
+the form of the agent's utility function, which in this case is
+logarithmic. The income is assumed to be exogenous, the individual
+having a level of income (before taxes) of 10 in period 0 and increasing
+that income by one unit until period 26, when the individual retires and
+their income goes to zero. The income tax has the same form since we
+have assumed that it is proportional to the income. Finally, the savings
+of the agent will have the standard form. In this case, the individual
+will save during the first periods of their life until the moment of
+retirement, after which the savings are negative, consuming the
+individual the financial assets that they have accumulated throughout
+their working life.
+
+6.3.2. Change in the tax rate saving returns
+
+Suppose now that the government increases the tax on capital income,
+from 25% to 30%. We assume that the government does not return fiscal
+revenues, so this tax increase implies a decrease in the disposable
+income of the individual. The result of maximizing household’s
+discounted utility before (dash line) and after the tax change (solid
+line) is shown in Figure 6.4. As we have indicated, this tax is
+equivalent to a variation in the returns of financial assets, which will
+alter the household consumption-savings decision. Thus, we can observe
+how the volume of savings decreases as a result of the increase in this
+tax, although it remains positive during the first part of the life
+cycle. This change in the path of savings is due to the fact that the
+optimal path of consumption is now more horizontal. Given the discount
+factor and the change in the net returns of savings, the agent prefers
+to smooth their consumption level to a greater extent throughout their
+life cycle. This means that the level of consumption in the first
+periods is higher than before the fiscal policy change, while the level
+of consumption is lower than in the last periods of the life cycle.
+
+[]
+
+Figure 6.4. Optimal consumption-saving and labor supply decisions with
+distortionary taxes. Effects of an increase in the capital income tax
+(solid line).
+
+Labor supply is also affected by the change in this tax. As we have
+derived analytically previously, labor supply is affected by both the
+tax rate on consumption and the tax rate on labor income. However, in
+the context of the theoretical model that we are analyzing, in a partial
+equilibrium setup, both the gross returns of saving and gross wages are
+exogenous variables, which are not altered by the decisions of the
+agent. This means that changes in these two tax rates only cause changes
+in the consumption-savings decision, without altering the labor supply.
+However, in this exercise, we observed that the job offer is indeed
+affected by the change in income tax on financial assets. Thus, the
+labor supply, which has a negative slope over time, becomes more
+horizontal as a result of the increase in the capital income tax. This
+means that the agent would work less time in the first periods of their
+life cycle, but more time in the final periods, in order to make their
+salary income profile more stable over time.
+
+6.4. Social security
+
+In this section, we solve again the household maximization problem, but
+considering the existence of a social security system, which assumes
+that the individual will receive a pension once he retires and stops
+working. Thus, we will assume that the individual only works during a
+fraction of their life cycle, with the last periods being in a
+retirement situation. As during this last part of their life cycle they
+do not obtain wage income, the income obtained will come from a social
+security system, which implies the existence of a compulsory payment
+during the employee's working life to a pension fund or directly to the
+government, from which will be generated rights on a future pension. For
+this, we consider the existence of a tax on the salary income in the
+form of social security contributions. This supposes the existence of a
+compulsory saving, which it is determined by the government.
+
+In practice, there are two different social security systems: the
+pay-as-you-go system and the capitalization system. In the pay-as-you-go
+social security system, there is an intergenerational income transfer,
+between the agents who are working and those who are retired at each
+moment of time. That is to say, at a given moment the workers are paying
+the pensions of those who are retired, with the promise that when they
+are retired their pension will be paid by the agents who will be working
+at that moment. This is the social security system that most countries
+have implemented. This means that the sustainability of the system
+depends on the population dynamics and the level of employment that
+exists in the future.
+
+On the contrary, the capitalization system assumes that it is the
+individual himself who pays his own pension when he is retired. In this
+case, the government imposes an obligation to deposit a certain amount
+in a pension fund in each period. This pension fund will generate a
+return. When the individual retires, he obtains as a pension the
+contributed amounts plus the returns on that compulsory saving. At first
+glance, it would be equivalent to a private pension fund, with the
+important difference that in the case of a private pension fund the
+contributions are voluntary, whereas in the social security system of
+capitalization the contributions are obligatory. In this exercise, we
+are going to assume that the social security regime is capitalization.
+This means that the amount collected through social security
+contributions goes to a pension fund, which generates a return given by
+the real interest rate.
+
+To study the implications of a social security system, it would be more
+appropriate to use a model of overlapping generations. In this type of
+models, it is assumed that agents live for two periods, in the first
+they are young and they work and in the second they are old and they are
+retired. In each moment of time, there are two generations: young and
+old, young people today being the old people of tomorrow. However, this
+analysis can also be done with the standard structure that we are using
+of an agent with a finite life cycle.
+
+Again, we are going to consider that the problem of the consumer is to
+maximize the following utility function (with no leisure):
+
+$\max_{\left\{ C_{t} \right\}_{t = 0}^{T}}{\sum_{t = 0}^{T}{\beta^{t}\ln C_{t}}}$
+(6.23)
+
+subject to the following budget constraint of the individual:
+
+ C_(t) + B_(t) = (1 − τ_(t)^(ss))W_(t) + (1 + R_(t − 1))B_(t − 1) + D_(t)
+(6.24)
+
+where τ_(t)^(ss) is the tax rate of social security contributions and
+where D_(t) is the retirement pension received by the individual. This
+pension would only be positive when the individual's salary was zero,
+that is, when the individual has left work and is retired. In practice,
+the agent would face two different budgetary restrictions throughout his
+life cycle, depending on whether he is working or retired. Thus, if we
+assume that the retirement time is t^(*), for t = 0 up to t^(*) − 1, the
+budget constraint would be:
+
+C_(t) + B_(t) = (1 − τ_(t)^(ss))W_(t) + (1 + R_(t − 1))B_(t − 1) + D_(t)
+(6.25)
+
+while for the period t = t^(*) up to T, the budget constraint would be:
+
+C_(t) + B_(t) = R_(t − 1)B_(t − 1) + D_(t) (6.26)
+
+given that L_(t) = 0 from t = t^(*).
+
++:---------------------------------:+:------------------------------------------------------------------------:+
+| Structure of the model: Social Security                                                                      |
++-----------------------------------+--------------------------------------------------------------------------+
+| Utility function                  | U = U(C_(t))                                                             |
++-----------------------------------+--------------------------------------------------------------------------+
+| Budget constraint                 | C_(t) + B_(t) = (1 − τ_(t)^(ss))W_(t) + [1 + R_(t − 1)]B_(t − 1) + D_(t) |
++-----------------------------------+--------------------------------------------------------------------------+
+| Initial stock of assets           | B_(t − 1) = 0                                                            |
++-----------------------------------+--------------------------------------------------------------------------+
+| Final stock of assets             | B_(T) = 0                                                                |
++-----------------------------------+--------------------------------------------------------------------------+
+| Initial pension fund              | D_(t − 1) = 0                                                            |
++-----------------------------------+--------------------------------------------------------------------------+
+| Social Security                   | D_(t) = [1 + R_(t − 1)]D_(t − 1) + τ_(t)^(ss)W_(t)                       |
++-----------------------------------+--------------------------------------------------------------------------+
+
+The problem to solve would be given by the following auxiliary function
+of Lagrange:
+
+$\mathcal{L =}\sum_{t = 0}^{T}\left\lbrack \beta^{t}\ln C_{t} - \lambda_{t}(C_{t} + B_{t} - \left( 1 - \tau_{t}^{ss} \right)W_{t} - \left( 1 + R_{t - 1} \right)B_{t - 1} - D_{t}) \right\rbrack$
+(6.27)
+
+taking into account the initial and final conditions. The retirement
+pension is an exogenous variable that is decided by the government.
+
+By solving the previous problem, we find that the conditions of first
+order, for t = 0, 1, 2, …, T, are the following:
+
+$\frac{\partial\mathcal{L}}{\partial C_{t}} = \frac{\beta^{t}}{C_{t}} - \lambda_{t} = 0$
+(6.28)
+
+$\frac{\partial\mathcal{L}}{\partial B_{t}} = - \lambda_{t} + \lambda_{t + 1}\left( 1 + R_{t + 1} \right) = 0$
+(6.29)
+
+$\frac{\partial\mathcal{L}}{\partial\lambda_{t}} = C_{t} + B_{t} - \left( 1 - \tau_{t}^{ss} \right)W_{t} - \left( 1 + R_{t - 1} \right)B_{t - 1} - D_{t} = 0$
+(6.30)
+
+By solving from the first-order condition (6.28) and substituting it in
+the second first-order condition (6.29) we obtain:
+
+$\beta^{t}\frac{1}{C_{t}} = \beta^{t + 1}\frac{1}{C_{t + 1}}(1 + R_{t + 1})$
+(6.31)
+
+and by operating it results that:
+
+C_(t + 1) = β(1 + R_(t + 1))C_(t) (6.32)
+
+As we can see, the optimal path of consumption of the individual is
+totally independent of both the social security contribution tax and the
+amount of the pension once he is retired. The explanation is simple. In
+a context of perfect foresight, where the agent knows all the future
+variables, the social security contributions are perfect substitutes for
+private savings. This means that if the government changes social
+security contributions, agents react by altering their private saving
+decision, in order to maintain their consumption at their optimum level.
+However, if leisure is considered in the utility function, changes in
+the social security contributions would be distortionary, as the social
+security tax will affect the optimal labor supply decision.
+
++:-----------------------------------:+:------------------------------------------------------------------------:+
+| Solution to the problem of the consumer with social security                                                   |
+|                                                                                                                |
+| Logarithmic utility function                                                                                   |
++-------------------------------------+--------------------------------------------------------------------------+
+| Optimal consumption path            | C_(t + 1) = β(1 + R_(t))C_(t)                                            |
++-------------------------------------+--------------------------------------------------------------------------+
+| Financial assets                    | B_(t) = (1 + R_(t − 1))B_(t − 1) + (1 − τ_(t)^(ss))W_(t) + D_(t) − C_(t) |
++-------------------------------------+--------------------------------------------------------------------------+
+
+6.4.1. Numerical solution
+
+Next, we proceed to the numerical resolution of the previous exercise.
+Figure 6.5 shows the spreadsheet "ICM-6-3.xls", in which we have solved
+the previous problem. For this, as previously, we have to give values to
+the parameters and exogenous variables of the model. The model has only
+one parameter: the discount rate. Additionally, the model has four
+exogenous variables: real interest rate, wage income, type of social
+security contributions and retirement pension.
+
+Let's assume that β = 0.97 appears in cell "B4". The interest rate is
+fixed to be 5% (R = 0.05) and the tax rate for social security is 36%
+(τ_(t)^(ss) = 0.36), which are in cells "B7" and "B8", respectively. On
+the other hand, we have to decide how the individual receives his
+pension. Once the individual retires, they have access to the pension
+fund. We can make two assumptions. That the individual charges in full
+the amount of the pension fund at the moment of retirement, or that the
+pension fund is distributed in some way throughout the remaining life of
+the individual. In our case, we are going to choose the first option.
+Thus, we observe that when the agent retires, with the used data, the
+pension fund has a total of 246.3 consumption units.
+
+[]
+
+Figure 6.5. Structure of the spreadsheet "ICM-6-3.xls". Social Security
+system.
+
+Figure 6.6 shows the time path of the relevant variables (dash line). In
+the first place, we observe that the consumption path continues to have
+a positive slope. This is so, because as we have seen previously, the
+optimal path of consumption of the individual is not affected either by
+social security contributions or by the way in which pensions are
+received. This means that a social security system of capitalization has
+no effect on the individual's decisions regarding consumption period by
+period. This is due to the fact that social security contributions imply
+the existence of forced saving, which is a perfect substitute for
+voluntary savings. Therefore, changes in the social security system only
+cause changes in the voluntary savings of the individual, without
+affecting their level of consumption. The optimal path of savings is now
+different as a result of the social security scheme. As we can see, the
+savings now are negative, and of a very high amount, during the working
+life of the agent. This is because the individual is replacing voluntary
+savings with the mandatory savings derived from social security
+contributions. Given the optimal path of consumption that the individual
+wants to follow, social security contributions represent a very large
+volume of savings, which will compensate through changes in voluntary
+savings. At the time of retirement, there is a balance in the stock of
+financial assets, because we are assuming that the individual receives
+all the pension once and only devotes a small fraction of it to
+consumption in that period. As of this moment, the stock of financial
+assets is decreasing (the agent is consuming the pension received, until
+in the final period, the stock of financial assets is zero.) The pension
+fund shows the contributions that the individual makes period by period
+during their working time, together with the profitability that is
+generated. This fund is increased until the moment in which the
+retirement takes place. From that moment, and given the assumption that
+we have made, the pension fund is null. In summary, in this social
+security system, we see that the compulsory savings of the system are a
+perfect substitute for the private savings, indicating that given a
+certain level of mandatory savings, the individual will adjust their
+private savings so that the path of consumption is the one that
+maximizes their welfare.
+
+6.4.2. Change in social security contributions
+
+Suppose now that the government increases the social security
+contributions. For example, let's assume that quotes increase up to 40%.
+What implications does this change have on the agent's decisions? The
+results are shown in Figure 6.6, by the continuous line. As we can see,
+the optimal path of consumption of the individual remains the same,
+since it is not affected by this tax in terms of social security
+contributions. However, now the level of savings (voluntary) is
+different, adjusting to the new level of mandatory savings. Thus, while
+the pension fund increases with respect to the previous situation,
+voluntary savings decrease, so that given the new disposable income, the
+social security contributions’ net, the level of consumption will be the
+same. What we are observing in this exercise is a perfect substitution
+between voluntary savings and forced savings derived from a social
+security system. Given the assumption that the return on both financial
+assets is the same, both types of savings are perfectly substitutes.
+
+Different would be the case of a pay-as-you-go social security system,
+where contributions to social security go directly to pay the pensions
+of those who are retired, and the future pension of an agent who is in
+his working life depends on the contributions to the system made by
+future workers. In this type of system, the future pension will depend
+on the population dynamics and the evolution of labor productivity, so
+that voluntary savings would not be a substitute for social security
+contributions.
+
+[]
+
+Figure 6.6. Optimal consumption-saving decision with social security
+system. Effects of an increase in social security contributions (solid
+line).
+
+Exercises
+
+1.  Using the "ICM-6-2.xls" spreadsheet, study the effects of an
+    increase in the consumption tax to 20%. How the optimal household
+    decisions are affected by this tax change?
+
+2.  Analyze the effects of a change in the parameter γ, using the
+    "ICM-6-2.xls" spreadsheet. How the different fiscal revenues change?
+    How is the sensitivity of the optimal decisions by the households to
+    the tax rates depending on the value of this parameter.
+
+3.  Suppose that the interest rate changes to a 3 percent, R = 0.03.
+    What consequences does it have on the distortionary effects of
+    taxation on the consumption-savings decision and the
+    consumption-leisure decision?
+
+4.  Using the "ICM-6-2.xls" spreadsheet, study the effects of a decline
+    in the labor income tax.
+
+5.  Using the "ICM-6-3.xls" spreadsheet, study how changes in the
+    discount factor affects the incidence of the social security system
+    on the household consumption-saving optimal decision.
+
+6.  Introduce the optimal labor supply decision into the household’s
+    utility function and study how are the distortionary effects on
+    labor supply by the social security system.
+
+7. The firm and the investment decision: The Tobin’s Q model
+
+7.1. Introduction
+
+Another fundamental economic agent that is included in dynamic general
+equilibrium models is the firm. Firms, together with households, make up
+the two main economic agents which determine the behavior of an economy
+through in micro-based macroeconomic models. The firms represent the
+productive sector of the economy, that is, they are the economic agents
+that produce the final goods that are consumed or invested, by taking
+decisions about the demand of productive factors. To produce the final
+good, firms use a certain number of productive factors, given a
+technology function, which allows their transformation into final
+production. We consider the existence of two types of productive
+factors: physical capital and labor. Physical capital arises as a
+consequence of consumers savings decisions. In its simplest and
+traditional version, this saving is supposed to be equal to investment,
+which is transformed directly into physical capital, and in general it
+is assumed that the owner of the capital stock is the household, who
+rent production factors to the firms. On the other hand, the labor
+factor is derived from the time endowment of households. Households have
+an initial discretionary time endowment that can be used either for
+leisure activities or for working activities. Labor is just the time
+that households rent to firms. In the standard framework, firms rent
+productive factors to the households, which we assume are the owners of
+them, receiving a return. This makes the decision problem of firms very
+simple, since it is the households who make the decisions of labor
+supply and investment. This is the treatment that is given to firms in
+the majority of micro-based dynamic macroeconomic models, in which the
+existence of perfect competition is assumed. If the existence of
+imperfect competition (monopolistic competition) is introduced, the
+problem of the companies is more complex since they have some market
+power to influence the price of the produced goods.
+
+In studying optimal decisions by the firms, we assume that their
+objective function is profits maximization, subject to the technological
+restriction that is defined by the production function. Thus, the
+behavior of firms will be represented by an optimization problem in
+which a vector of quantities (demand) of productive factors is
+determined, given their prices and, through the technological function,
+determines the level of production of the economy. The key variable we
+analyze in this chapter is the investment decision. Along with
+consumption, investment is the other fundamental variable of an economic
+system. As we have seen in the study of households decisions, they
+determine the level of optimal savings in each period, savings that we
+assume are transformed directly into investment and physical capital.
+Investment is important since it determines both the level of employment
+and the possibilities of growth of the economy. In the classical
+analysis, firms do not own the capital whose accumulation process is
+determined by savings, which is the instrument that consumers use to
+determine their optimal consumption path. In this sense, saving is
+simply production not consumed, so that investment decisions are derived
+directly from savings decisions. This is the assumption generally
+adopted by most micro-based models. However, this means that we cannot
+adequately define an investment function for physical capital, or define
+what are its determinants independently of the optimal saving decision
+in the form of financial assets.
+
+In this chapter, we analyze the investment from the point of view of the
+firms. Thus, we assume that firms own their physical capital and,
+therefore, are the ones that make investment decisions using consumer
+savings as a source of financing. In this case, we would distinguish
+between consumers, on the one hand, and entrepreneurs, on the other, the
+latter being the owners of the firms and, therefore, the owner of the
+physical capital, representing the economic agent that makes the
+investment decisions. By using this alternative specification, we can
+separate the saving decision from the investment decision and thus,
+obtain the investment demand in a dynamic environment, since the
+investment decision today, will affect the future flow of profits of the
+firms, in a way equivalent to how consumers determine their level of
+savings today and their future level of consumption.
+
+In the standard neoclassical model, the optimal capital stock is
+determined as a function of the relative prices of the productive
+factors. However, we expand this basic analysis considering the
+existence of adjustment costs associated with the investment process.
+Based on this analysis, we will develop the Tobin’s Q model, which will
+constitute the framework of reference that we will use to describe
+investment decisions in an economy. In Tobin’s Q model, the optimal
+investment rate depends on a ratio, called Q, defined as the ratio of
+the market value of the company to the replacement cost of installed
+capital. The resulting model will consist of a discrete-time system
+composed of two difference equations, which determine the behavior of
+that ratio and the stock of capital. However, these equations have a
+non-linear nature, so analyzing the behavior of the system directly is
+more complex because it cannot be written in matrix notation. In this
+case, we proceed in the first place to obtain a linear approximation to
+the non-linear equations of the same, rewriting the model in terms of
+the deviations of each variable with respect to its steady-state value,
+which will allow analyzing its behavior through the eigenvalues
+associated with the system and obtain the corresponding stable saddle
+path.
+
+The structure of the rest of the chapter is as follows. In Section 2, we
+solve analytically Tobin’s Q model, describing the intertemporal problem
+of profit maximization of the firms, the definition of the profit
+function to be used, as well as the description of the adjustment costs
+associated with the investment process. Section 3 performs the
+calibration of the model, as well as the calculation of its steady
+state. Section 4 carries out the log-linearization of the model, a
+necessary step to proceed with its numerical resolution. Section 5
+presents the numerical resolution of the model, as well as the
+calculation of the readjustment in the expectations on the ratio Q.
+Section 6 carries out a disturbance analysis, while in Section 7 a
+sensitivity analysis is carried out.
+
+7.2. Tobin’s Q model
+
+In this section, we will study the reference model that is used to
+analyze the determinants of investment. This is the so-called Tobin-Q
+model, developed by James Tobin (1918-2002) in the late 1960s[17], being
+a widely used model to analyze the behavior of firms in relation to
+investment and practical applications to fix the equilibrium value of
+the shares of a company, the value of a firm when it is acquired by
+another, or to fix the exchange rate of shares between companies in the
+case of a merger. This model is based on defining a ratio, which is
+called the Tobin’s Q, which is constructed as the market value of the
+company with respect to the replacement cost of installed capital. That
+is, compare what the firm is valued with respect to what it would cost
+to install again all the capital available to the firm, which is
+equivalent to comparing the profitability of an investment with the cost
+of it. In this context, the investment will be a function of the value
+of this ratio and, in this way, any factor that affects this ratio will
+also affect the investment decision.
+
+In the analysis that we will perform, we assume that firms’ objective
+function is profits maximization, subject to the technological
+restriction. Thus, we will represent the behavior of the companies
+through an optimization problem in which a vector of quantities of
+productive factors (demand for them) is determined, given their prices,
+and through the technological function, the determination of the level
+of production. In the neoclassical model, the optimal capital stock is
+determined based on the relative prices of the productive factors.
+However, we are going to expand this basic analysis considering the
+existence of adjustment costs associated with the investment process.
+Based on this analysis, we will develop the Tobin’s Q model, which will
+constitute the frame of reference that we will use to describe
+investment decisions in an economy, as a dynamic system with two
+equations: one that describes the dynamics of the ratio Q, and another
+that describes the dynamics of the capital stock. As we have done in the
+case of the consumer, we are going to assume that all the companies are
+identical (the technological restriction they face is the same, this
+presents constant returns to scale and we assume the existence of a
+competitive environment), so we can use the concept of representative
+firm.
+
+A differentiating element of the analysis that we are going to carry out
+with respect to those carried out previously regarding consumer
+decisions is that we now introduce the concept of physical capital
+(structures and equipment), K, in contrast to the financial capital
+generated by savings and given by the stock of financial assets, B.
+Although both variables, in equilibrium, would be equivalent in a model
+of a closed economy without government, the nature of both variables is
+very different, given that the stock of financial assets is a totally
+flexible variable, while the stock of physical capital is a very rigid
+variable (structures and equipment need time to be built).
+
+7.2.1. The technology function
+
+We begin with the definition of the technological restriction to which
+the process of profit maximization of the firm is subject. The aggregate
+production function is given by the expression:
+
+Y_(t) = F(K_(t), L_(t)) (7.1)
+
+where Y_(t) is output, K_(t) is the stock of physical capital, L_(t) is
+the level of employment and F(•) is a mathematical function that
+converts productive factors into production and that represents the
+technology that is applied in the productive process. This technological
+function fulfills the following properties:
+
+F_(K) > 0; F_(L) > 0
+
+F_(KK) < 0; F_(LL) < 0
+
+F_(KL) > 0
+
+that is, the function is increasing with respect to both productive
+factors. If we increase the amount of the productive factors, labor or
+physical capital, production increases. On the other hand, the second
+derivative with respect to each of the productive factors is negative,
+indicating that the production function is concave with respect to each
+productive factor, which implies that the marginal productivity is
+decreasing. As we increase the quantity of a productive factor,
+production increases but each time it does so in a smaller proportion.
+In addition, the production function has to be concave in K and L, so it
+has to be fulfilled that:
+
+F_(KK)F_(LL) − (F_(KL))² > 0
+
+On the other hand, the production function meets the Inada conditions:
+
+lim_(k → 0)F_(K) = ∞; lim_(K → ∞)F_(K) = 0
+
+lim_(L → 0)F_(L) = ∞; lim_(L → ∞)F_(L) = 0
+
+that imply that if the quantity of a productive factor tends to zero,
+its marginal productivity tends to infinity, whereas if the quantity of
+productive factors tends to infinity, its productivity tends to zero. We
+also assume that both productive factors are needed to produce, that is,
+F(0, L_(t))F(K_(t), 0) = 0.
+
+7.2.2. Firm’s profits
+
+The objective of the firm is to maximize profits for which the firm
+determines the demand for productive factors. Profits are defined as the
+difference between the total income and the total costs of the firm:
+
+Π_(t) = IT_(t) − CT_(t) (7.2)
+
+where Π_(t) are profits, IT are the total revenues and CT are the total
+costs. Total revenues are given by the produced quantity multiplied by
+the price:
+
+IT_(t) = P_(t)Y_(t) (7.3)
+
+On the other hand, the total costs are given by the costs of the
+productive factors labor and capital, calculated as the compensation to
+each unit of productive factor multiplied by the quantity of the factor:
+
+CT_(t) = W_(t)L_(t) + R_(t)K_(t) (7.4)
+
+here W_(t) is the salary per unit of work and R_(t) is the interest rate
+of the physical capital stock. By normalizing the price of the final
+good to 1 (P_(t) = 1), the profit function can be defined as:
+
+Π_(t) = Y_(t) − W_(t)L_(t) − R_(t)K_(t) (7.5)
+
+This standard definition of the firm’s profits is what we would use
+under the assumption that the owners of both productive factors are the
+consumers. This is always true in the case of labor. The labor factor is
+derived from the endowment of time, and therefore labor supply is a
+decision taken by households. On the contrary, the physical capital
+factor can be assumed to be determined by the household, or can be
+assumed to be owned by the firms (or by another economic agent that can
+be named as capitalist). In the case where the consumers are the owners
+of both productive factors, the problem of maximizing profits of the
+companies is very simple. In this context, companies rent both factors,
+period by period, so the problem of profit maximization can be solved in
+static terms (there is no intertemporal decision on the part of the
+firm). Thus, the problem of profit maximization would consist in
+maximizing (7.5) subject to technological restriction (7.1), a problem
+that we can specify as:
+
+max_(K_(t), L_(t))Π_(t) = F(K_(t), L_(t)) − W_(t)L_(t) − R_(t)K_(t)
+(7.6)
+
+being the first-order conditions:
+
+$\frac{\partial\Pi_{t}}{\partial K_{t}} = F_{K}\left( K_{t},L_{t} \right) - R_{t} = 0$
+(7.7)
+
+$\frac{\partial\Pi_{t}}{\partial L_{t}} = F_{L}\left( K_{t},L_{t} \right) - W_{t} = 0$
+(7.8)
+
+from which are obtained the standard conditions that the prices of the
+productive factors are equal to the (value) of their marginal
+productivity:
+
+R_(t) = F_(K)(K_(t), L_(t)) (7.9)
+
+W_(t) = F_(L)(K_(t), L_(t)) (7.10)
+
+However, in the context of Tobin's Q model, we are going to introduce a
+difference with respect to the previous analysis, since we will assume
+that the firms invest in physical capital instead of renting it period
+by period. This means that the physical capital is owned by the firm and
+hence is the firm the agent who decides how physical capital changes,
+that is, the investment decision. In this way, what the firm really
+decides is its gross investment volume period by period, which we define
+as:
+
+I_(t) = K_(t + 1) − (1 − δ)K_(t) (7.11)
+
+that is, gross investment, I_(t), is equal to the variation of the stock
+of capital plus what depreciates capital, where δ > 0 is the rate of
+physical depreciation of capital.
+
+In this case, we are introducing a distinction between consumers and
+entrepreneurs. Entrepreneurs are the owners of firms in the economy and,
+therefore, the owners of physical capital stock. In this way, the
+investment decision will be different from the saving decision. Given
+that the stock of physical capital is the result of investment
+decisions, the decision regarding this productive factor depends on the
+quantity of investment that entrepreneurs decide to make in each period.
+In this case, we obtain that the cost in each moment of time of the
+physical capital productive factor for the firm is the cost associated
+with the gross investment that is made. Under this assumption, firm’s
+profits can be defined as:
+
+Π_(t) = Y_(t) − W_(t)L_(t) − I_(t) (7.12)
+
+where now the production costs associated with capital are those that
+are derived from the investment made by the firm in each period, since
+the existing stock of physical capital at that time is already owned by
+the firm and does not have to be paid every period. Therefore, the
+assumption about who owns the capital gives rise to different
+definitions of the firm’s profits function, as well as resulting in a
+dynamic optimization problem, since investment decisions today affect
+the future profits stream.
+
+7.2.3. Investment adjustment costs
+
+One of the problems presented by the neoclassical model is that it is
+assumed that there is no restriction to the stock of physical capital to
+change instantaneously to a disturbance. In fact, the standard
+neoclassical model implies that any deviation of the physical capital
+stock from its optimal value gives rise to an equivalent investment
+flow, so that any deviation of the physical capital stock from its
+optimum value is covered instantaneously. However, the stock of physical
+capital of firms is a variable that presents a high rigidity in time (it
+takes a while to be built), which causes that its adjustment is not so
+fast and much less instantaneous. One way to introduce rigidities in the
+process of capital accumulation is to consider the existence of
+adjustment costs associated with the investment. In practice, firms face
+the existence of a series of adjustment costs when altering their
+physical capital stock. In this section, we will introduce the existence
+of adjustment costs in the investment process. These adjustment costs
+are higher, the faster the company intends to adjust its physical
+capital stock.
+
+The introduction of adjustment costs in the investment process has
+important consequences on the solution of the model, since it allows us
+to separate the optimality conditions for the stock of capital and for
+the investment. In a context without adjustment costs in the investment
+process, as in the neoclassical model, both conditions coincide, since
+the variation in the stock of capital is equivalent to the investment
+(net of depreciation). However, the adjustment costs introduce a
+distinction between the optimal condition of the capital stock and that
+corresponding to the investment. This differentiation will be
+fundamental when introducing the ratio defined by Tobin in the profit
+maximization problem of the firm.
+
+We can distinguish between two types of adjustment costs: internal and
+external. External adjustment costs arise when firms face a perfectly
+elastic supply of capital, which causes the price of capital to depend
+on the speed at which it is desired to dispose of it. The more quickly
+you want to have an additional unit of capital, the higher the price
+will be. On the other hand, internal adjustment costs are measured in
+terms of production or profit losses. When new capital is incorporated,
+it is necessary to allocate part of the productive resources of the firm
+(mainly labor) to its installation. In this way, these factors are not
+temporarily available to produce, so there is a decrease in the level of
+production, with the consequent loss of profits. In reality, these
+adjustment costs can be very high, especially in the case of large
+companies.
+
+We define the following adjustment cost function:
+
+C = C(I_(t), K_(t)) (7.13)
+
+where the adjustment costs depend on the volume of investment and the
+installed physical capital stock. This cost function fulfills a series
+of characteristics, such that:
+
+C(0, K_(t)) = 0, C(I_(t), 0) = 0
+
+C_(I)(I_(t), K_(t)) > 0, C_(K)(I_(t), K_(t)) > 0
+
+C_(II)(I_(t), K_(t)) > 0, C_(KK)(I_(t), K_(t)) > 0
+
+that is, adjustment costs depend positively on both the investment and
+the capital stock (its first derivative with respect to these variables
+is positive), being zero in the case where no investment occurs, or is
+reversed for the first time (stock of starting capital equal to zero).
+On the other hand, its second derivative with respect to each argument
+is also positive, indicating that they grow more than proportionally,
+that is, it is a growing and convex function.
+
+The existence of adjustment costs means a loss of capital or an
+additional cost to the price thereof, which occurs during the investment
+process. Thus, for every euro that is destined for investment, an amount
+less than a euro will be transformed into physical capital, due to the
+existence of these adjustment costs. That is, part of the resources
+destined for investment are lost in the process of transformation to
+physical capital. There are different ways to incorporate the existence
+of adjustment costs in the model. For instance, we can include these
+costs in the capital accumulation equation or as an additional cost in
+the profit function. Both forms give equivalent results. If we choose
+the first option, we must specify the amount of physical capital that
+obtain the firm per unit invested, which would also be a function of the
+arguments that define the function of adjustment costs, and would be
+given by:
+
+Ψ(I_(t), K_(t)) = I_(t) − C(I_(t), K_(t)) (7.14)
+
+where the net investment function of adjustment costs, Ψ(•), depends on
+both the volume of investment and the stock of physical capital. In this
+case, the dynamic equation of accumulation of capital stock can be
+defined as:
+
+K_(t + 1) = (1 − δ)K_(t) + I_(t) − C(I_(t, )K_(t)) = (1 − δ)K_(t) + Ψ(I_(t), K_(t))
+(7.15)
+
+Alternatively, we can assume that the adjustment costs are additional
+costs to the value of the investment and that they involve a cost in
+terms of production losses and, therefore, of benefits. In this case,
+the function of capital accumulation would be the standard, while the
+profit function of the firm would be:
+
+Π_(t) = Y_(t) − W_(t)L_(t) − I_(t) − C(I_(t), K_(t)) (7.16)
+
+In the analysis that we develop next, we will use this last
+specification, obtaining the same results as if we had opted for the
