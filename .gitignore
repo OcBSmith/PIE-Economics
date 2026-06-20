@@ -21,7 +21,7 @@ An_Introduction_to_Computational_Macroeconomics*.docx
 site/
 
 # Temp scratch files
-scratch/recovered/
+scratch/
 
 # Julia Manifest
 Manifest.toml
