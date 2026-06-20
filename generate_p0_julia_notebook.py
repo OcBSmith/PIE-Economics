@@ -8,7 +8,7 @@ nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P0: Introducción a los siste
 
 - **ID de práctica:** LAB-P0-v1.0-julia
 - **Capítulo del libro:** Cap. 1 — *An introduction to computational dynamic systems* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Antonio F. Romero Carrasco, Anelí Bongers
+- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
 - **Fecha:** 2026-06-19
 - **Versión:** 1.0
 - **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)

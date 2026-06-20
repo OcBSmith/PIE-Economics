@@ -1,6 +1,6 @@
 name = "MacroAIComp"
 uuid = "a1b2c3d4-e5f6-7890-1234-567890abcdef"
-authors = ["Dra. Anelí Bongers", "Dr. José L. Torres Chacón", "Dr. José M. Cabello González", "D. Antonio F. Romero Carrasco"]
+authors = ["Dra. Anelí Bongers", "Dr. José L. Torres Chacón", "Dr. José M. Cabello González", "Dr. Antonio F. Romero Carrasco"]
 version = "0.1.0"
 
 [deps]

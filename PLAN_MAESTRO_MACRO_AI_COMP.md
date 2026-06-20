@@ -3,7 +3,7 @@
 > **Convocatoria:** INNOVA26 (UMA / Banco Santander)
 > **Duración:** 24 meses (Noviembre 2026 – Noviembre 2028)
 > **IP / Coordinadora:** Dra. Anelí Bongers
-> **Responsable técnico (PTGAS):** D. Antonio Francisco Romero Carrasco
+> **Responsable técnico (PTGAS):** Dr. Antonio Francisco Romero Carrasco
 > **Versión del plan:** v1.0 — última actualización: 2026-06-17
 
 ---
@@ -899,7 +899,7 @@ Si vuelves a este documento y no sabes por dónde retomar, haz esta secuencia:
 | IP / Coordinadora | Dra. Anelí Bongers | _(rellenar)_ | Macroeconomía computacional, IA en docencia |
 | Modelización macro | Dr. José L. Torres Chacón | _(rellenar)_ | DGE, crecimiento, Julia avanzado |
 | Evaluación y matemáticas | Dr. José M. Cabello González (Che) | _(rellenar)_ | Evaluación competencial, SymPy, optimización, estadística |
-| Técnico / PTGAS | D. Antonio F. Romero Carrasco | _(rellenar)_ | Infraestructura, prompting, bitácoras, control de calidad IA |
+| Técnico / PTGAS | Dr. Antonio F. Romero Carrasco | _(rellenar)_ | Infraestructura, prompting, bitácoras, control de calidad IA |
 
 ---
 

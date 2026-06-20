@@ -21,7 +21,7 @@ para la propuesta oficial de la convocatoria.
 | IP / Coordinadora | Dra. Anelí Bongers |
 | Modelización macro | Dr. José L. Torres Chacón |
 | Evaluación y matemáticas | Dr. José M. Cabello González |
-| Técnico / PTGAS | D. Antonio F. Romero Carrasco |
+| Técnico / PTGAS | Dr. Antonio F. Romero Carrasco |
 
 ## Estructura del repositorio
 

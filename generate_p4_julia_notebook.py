@@ -7,7 +7,7 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P4: Decisión Óptima de Consumo-Ocio y Oferta de Trabajo (Julia)
 - **ID de práctica:** LAB-P4-v1.0-julia
 - **Capítulo del libro:** Cap. 5 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Antonio F. Romero Carrasco, Anelí Bongers
+- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
 - **Fecha:** 2026-06-20
 - **Versión:** 1.0
 - **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
