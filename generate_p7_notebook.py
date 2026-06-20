@@ -4,7 +4,9 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# Práctica P7: El Modelo de Equilibrio General Dinámico Básico (DGE)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# Práctica P7: El Modelo de Equilibrio General Dinámico Básico (DGE)
 **Proyecto MACRO-AI-COMP (Convocatoria INNOVA26, UMA / Banco Santander)**
 *   **Código de Práctica**: LAB-P7-v1.0
 *   **Capítulo de Referencia**: Capítulo 8, *An Introduction to Computational Macroeconomics* (Bongers, Gómez y Torres, Vernon Press, 2019)
@@ -20,7 +22,9 @@ Al finalizar esta práctica, serás capaz de:
 3.  **Analizar** el mecanismo de propagación intertemporal y la persistencia de shocks tecnológicos (TFP) sobre las variables macroeconómicas clave (Producción, Consumo, Inversión, Capital y Tasa de Interés).
 4.  **Evaluar** la precisión y los límites de la aproximación linealizada frente a la solución no lineal exacta ante perturbaciones de distinta magnitud.
 5.  **Identificar** discrepancias de programación y timing en modelos macroeconómicos computacionales complejos.
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
@@ -32,7 +36,9 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
@@ -51,10 +57,14 @@ from macroaicomp.models.dge import (
     solve_blanchard_khan,
     solve_nonlinear_simulation
 )
-"""))
+"""
+    )
+)
 
 # 4. SECCIÓN 1: INTRODUCCIÓN TEÓRICA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Modelo Canónico de Equilibrio General Dinámico (DGE)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 1. El Modelo Canónico de Equilibrio General Dinámico (DGE)
 
 Los modelos de Equilibrio General Dinámico (DGE), en sus versiones deterministas o estocásticas (DSGE), constituyen el núcleo de la macroeconomía moderna. A diferencia de los modelos IS-LM, los modelos DGE se basan en la **microfundamentación**: las ecuaciones de comportamiento se derivan directamente de los problemas de optimización intertemporal de los consumidores y las empresas.
 
@@ -89,17 +99,25 @@ El equilibrio competitivo dinámico de esta economía se reduce a un sistema de 
 ### 1.3 Estado Estacionario
 Estableciendo $A = 1$ y eliminando los subíndices de tiempo en el sistema, obtenemos los valores de largo plazo:
 $$\bar{R} = \frac{1 - \beta + \beta\delta}{\beta}, \quad \bar{K} = \left( \frac{\bar{R}}{\alpha} \right)^{\frac{1}{\alpha - 1}}, \quad \bar{Y} = \bar{K}^\alpha, \quad \bar{I} = \delta \bar{K}, \quad \bar{C} = \bar{Y} - \bar{I}$$
-"""))
+"""
+    )
+)
 
 # 5. SECCIÓN 2: SIMULACIÓN INTERACTIVA DE SHOCK TECNOLÓGICO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Simulación Interactiva: Shock Tecnológico Transitorio (TFP)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2. Simulación Interactiva: Shock Tecnológico Transitorio (TFP)
 
 Imaginemos que la economía parte de su estado estacionario. En el periodo $t=1$, se produce un shock tecnológico transitorio positivo del $1\%$ ($\epsilon_1 = 0.01$) en la TFP, que decae de acuerdo con la persistencia $\rho = 0.8$.
 
 Dado que la productividad aumenta, la economía experimenta un incremento inmediato en la capacidad de producción. Los consumidores, al tener expectativas de que la productividad y la tasa de interés serán más altas, aumentan su consumo inmediatamente ($C_1$ salta). Sin embargo, al ser el capital un factor rígido, no puede saltar en el periodo del shock ($K_1 = \bar{K}$). El aumento de producción se destina tanto a consumo como a inversión, lo que genera una acumulación gradual de capital físico. Este capital alcanzará su pico varios periodos después (efecto *hump-shape* o respuesta jorobada) antes de converger lentamente hacia el equilibrio inicial.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # SIMULACIÓN INTERACTIVA EN 4 PANELES: SHOCK DE TFP
 # ==============================================================================
 
@@ -178,10 +196,14 @@ interact(
     beta_val=FloatSlider(value=0.96, min=0.90, max=0.99, step=0.01, description='Descuento (β)'),
     delta_val=FloatSlider(value=0.06, min=0.01, max=0.15, step=0.01, description='Deprec. (δ)')
 );
-"""))
+"""
+    )
+)
 
 # 6. SECCIÓN 3: BK VS SOLUCIÓN EXACTA NO LINEAL
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Límites de la Aproximación Lineal: Blanchard-Khan frente a Modelo No Lineal
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 3. Límites de la Aproximación Lineal: Blanchard-Khan frente a Modelo No Lineal
 
 El método de Blanchard-Khan (o cualquier método de linealización de primer orden) asume que la economía realiza fluctuaciones pequeñas en torno a su estado estacionario, de modo que la curvatura de las funciones de utilidad y producción puede aproximarse mediante tangencias de primer orden.
 
@@ -190,9 +212,13 @@ Sin embargo, si la economía sufre perturbaciones de gran magnitud (por ejemplo,
 A continuación, puedes simular shocks de diferente envergadura y evaluar visualmente cómo difieren las soluciones calculadas mediante:
 1. **Blanchard-Khan (Log-Linealizado)**: Resuelve el sistema linealizado mediante la descomposición de autovalores de la matriz $J$.
 2. **SciPy fsolve (No Lineal)**: Resuelve el sistema completo de ecuaciones no lineales en niveles mediante métodos iterativos de Newton.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # COMPARACIÓN DINÁMICA: BLANCHARD-KHAN VS NO LINEAL
 # ==============================================================================
 
@@ -252,10 +278,13 @@ interact(
     epsilon_shock=FloatSlider(value=0.01, min=-0.30, max=0.30, step=0.02, description='Shock TFP'),
     use_matlab_timing=Checkbox(value=False, description='Timing del libro')
 );
-"""))
+"""
+    )
+)
 
 # 7. CUADERNO DE BITÁCORA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde a las siguientes cuestiones tras interactuar con el modelo de equilibrio general dinámico:
 
@@ -267,16 +296,27 @@ Responde a las siguientes cuestiones tras interactuar con el modelo de equilibri
     *   Incrementa el shock tecnológico a $\epsilon = 0.25$ (un shock masivo de productividad del $25\%$). ¿Qué ocurre con el error relativo en consumo y capital? Explica por qué la aproximación de primer orden de Blanchard-Khan pierde validez cuando las desviaciones respecto al estado estacionario son grandes.
 3.  **Higiene IA y Validación cruzada**:
     *   Verifica que los valores de estado estacionario calculados por Python coincidan con la Tabla 8.2 del libro impreso ($\bar{K}=6.699$, $\bar{Y}=1.946$, $\bar{C}=1.544$, $\bar{R}=0.102$). Reporta el resultado en tu bitácora.
-"""))
+""")
+)
 
 # 8. BUENAS PRÁCTICAS APRENDER AQUÍ
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Aislamiento Paramétrico**: El código de las rutinas matriciales y resolvedores de Blanchard-Khan y Newton no lineal están desacoplados en el módulo [dge.py](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/dge.py), importados de manera modular.
 2.  **Corrección de Timing y Parámetros**: Hemos solucionado la discrepancia de indexación de TFP del código MATLAB impreso, ofreciendo una opción `use_matlab_timing` para que los estudiantes comprueben la equivalencia con la hoja del libro y con el modelo de Dynare correcto.
 3.  **Higiene del Repositorio**: El cuaderno se somete automáticamente a `nbstripout` mediante hooks de `pre-commit` para evitar subir gráficos cargados y metadatos volátiles de Jupyter al control de versiones.
-"""))
+""")
+)
 
 # 9. ESCRIBIR EL ARCHIVO
-os.makedirs('c:/Users/AntonioRC/Desktop/PIE/practicas/07-equilibrio-general-dinamico/', exist_ok=True)
-nbf.write(nb, 'c:/Users/AntonioRC/Desktop/PIE/practicas/07-equilibrio-general-dinamico/python.ipynb')
-print("Notebook generado con éxito en practicas/07-equilibrio-general-dinamico/python.ipynb.")
+os.makedirs(
+    "c:/Users/AntonioRC/Desktop/PIE/practicas/07-equilibrio-general-dinamico/",
+    exist_ok=True,
+)
+nbf.write(
+    nb,
+    "c:/Users/AntonioRC/Desktop/PIE/practicas/07-equilibrio-general-dinamico/python.ipynb",
+)
+print(
+    "Notebook generado con éxito en practicas/07-equilibrio-general-dinamico/python.ipynb."
+)

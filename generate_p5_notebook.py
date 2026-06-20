@@ -4,7 +4,8 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# Práctica P5: El Gobierno y la Política Fiscal
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""# Práctica P5: El Gobierno y la Política Fiscal
 **Proyecto MACRO-AI-COMP (Convocatoria INNOVA26, UMA / Banco Santander)**
 *   **Código de Práctica**: LAB-P5-v1.0
 *   **Capítulo de Referencia**: Capítulo 6, *An Introduction to Computational Macroeconomics* (Bongers, Gómez y Torres, Vernon Press, 2019)
@@ -23,7 +24,8 @@ Al finalizar esta práctica, serás capaz de:
 3.  **Simular** el impacto de las distorsiones impositivas sobre la oferta de trabajo y la trayectoria intertemporal de consumo y ahorro.
 4.  **Modelar** un sistema de Seguridad Social de capitalización y comprender la sustitución perfecta entre ahorro forzoso y voluntario.
 5.  **Resolver** de forma exacta equilibria descentralizados con impuestos empleando el resolvedor de FOCs (`fsolve`) y la optimización convexa equivalente (`cvxpy`).
-"""))
+""")
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
@@ -35,7 +37,9 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
@@ -56,10 +60,14 @@ from macroaicomp.models.fiscal_policy import (
     solve_distortionary_cvxpy,
     solve_social_security
 )
-"""))
+"""
+    )
+)
 
 # 4. SECCIÓN 1: IMPUESTOS NO DISTORSIONADORES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. Impuestos de Suma Fija (Lump-Sum) y Equivalencia Ricardiana
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 1. Impuestos de Suma Fija (Lump-Sum) y Equivalencia Ricardiana
 
 Un impuesto es **no distorsionador** (lump-sum) si la carga impositiva es fija e independiente de las decisiones de los agentes. En este caso, el impuesto de ingresos exógenos es equivalente a un impuesto de suma fija porque el agente no puede alterar su base imponible (el salario es exógeno y no hay elección de ocio).
 
@@ -76,10 +84,14 @@ Si el gobierno financia un gasto público devolviendo toda la recaudación de im
 $$C_t + B_t = W_t + (1+R)B_{t-1}$$
 
 En este caso, la trayectoria óptima de consumo y ahorro es **completamente insensible** a la tasa impositiva. Si las transferencias no se devuelven ($G_t = 0$), se produce un efecto renta puro: los agentes consumen y ahorran menos, pero la pendiente del consumo (la ecuación de Euler) permanece idéntica.
-"""))
+"""
+    )
+)
 
 # 5. CÓDIGO INTERACTIVO SECCIÓN 1
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # SIMULACIÓN INTERACTIVA: IMPUESTO DE SUMA FIJA Y EQUIVALENCIA RICARDIANA
 # ==============================================================================
 
@@ -127,10 +139,14 @@ interact(
     tauw_val=FloatSlider(value=0.40, min=0.0, max=0.80, step=0.05, description='Impuesto (τw)'),
     return_transfers=Checkbox(value=True, description='Devolver recaudación (G=T)')
 );
-"""))
+"""
+    )
+)
 
 # 6. SECCIÓN 2: IMPUESTOS DISTORSIONADORES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Impuestos Distorsionadores (Consumo, Trabajo y Ahorro)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2. Impuestos Distorsionadores (Consumo, Trabajo y Ahorro)
 
 Cuando la oferta de trabajo es endógena (decisión intratemporal entre consumo y ocio) y el ahorro genera rentas financieras, las tasas impositivas sobre el consumo ($\tau^c$), el salario ($\tau^w$) y los rendimientos financieros ($\tau^r$) alteran los precios relativos.
 
@@ -148,10 +164,14 @@ Las distorsiones de la política fiscal actúan directamente a través de las co
 2.  **Distorsión Intertemporal (Ahorro):**
     $$(1+\tau^c_{t+1}) C_{t+1} = \beta [1 + (1-\tau^r_t)R] (1+\tau^c_t) C_t$$
     El impuesto sobre el capital ($\tau^r$) reduce el rendimiento neto del ahorro, lo que hace al consumidor más propenso a consumir hoy que mañana (la trayectoria de consumo se aplana y el ahorro cae).
-"""))
+"""
+    )
+)
 
 # 7. COMPARATIVA DE SOLVERS P5
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # COMPARACIÓN NUMÉRICA: FOC (fsolve) vs OPTIMIZACIÓN DIRECTA (cvxpy)
 # ==============================================================================
 
@@ -183,10 +203,14 @@ if diff_C < 1e-4 and diff_L < 1e-4:
     print("✅ ¡Los resolvedores numéricos son perfectamente equivalentes!")
 else:
     print("❌ Discrepancia detectada entre solucionadores.")
-"""))
+"""
+    )
+)
 
 # 8. CÓDIGO GRAFICACIÓN INTERACTIVA SECCIÓN 2
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # SIMULACIÓN INTERACTIVA EN 3 PANELES: IMPUESTOS DISTORSIONADORES
 # ==============================================================================
 
@@ -249,10 +273,13 @@ interact(
     taur_val=FloatSlider(value=0.25, min=0.0, max=0.80, step=0.05, description='Capital (τr)'),
     return_transfers=Checkbox(value=False, description='Equilibrio G = Recaudación')
 );
-"""))
+"""
+    )
+)
 
 # 9. SECCIÓN 3: SEGURIDAD SOCIAL
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. El Sistema de Seguridad Social de Capitalización
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 3. El Sistema de Seguridad Social de Capitalización
 
 En un sistema de Seguridad Social de capitalización, los trabajadores contribuyen obligatoriamente con una fracción $\tau^{ss}$ de su salario durante su periodo activo ($t < t^*$). Estas contribuciones se acumulan en un fondo de pensiones $D_t$ que obtiene rentabilidad a la tasa de interés de mercado $R$.
 
@@ -261,10 +288,13 @@ Al jubilarse ($t = t^*$), el individuo recibe el fondo acumulado como un pago ú
 ### 3.1 Sustitución Perfecta de Ahorro
 En este modelo, el agente tiene previsión perfecta y libre acceso al mercado financiero (sin restricciones de liquidez). Por lo tanto, el ahorro forzoso de la Seguridad Social es un **sustituto perfecto** del ahorro privado voluntario.
 Si el gobierno aumenta la tasa impositiva $\tau^{ss}$, el consumo óptimo del agente **no varía**. En su lugar, el agente reduce proporcionalmente su ahorro privado voluntario (llegando a ser negativo si es necesario tomar prestado contra el fondo de jubilación bloqueado) para mantener la misma trayectoria de consumo.
-"""))
+""")
+)
 
 # 10. CÓDIGO GRAFICACIÓN INTERACTIVA SECCIÓN 3
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # SIMULACIÓN INTERACTIVA: SEGURIDAD SOCIAL Y ACTIVOS
 # ==============================================================================
 
@@ -327,10 +357,13 @@ interact(
     tau_ss_val=FloatSlider(value=0.36, min=0.0, max=0.60, step=0.05, description='Cotización (τss)'),
     t_star_val=IntSlider(value=26, min=15, max=28, step=1, description='Jubilación (t*)')
 );
-"""))
+"""
+    )
+)
 
 # 11. CUADERNO DE BITÁCORA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde a las siguientes cuestiones tras interactuar con las simulaciones de política fiscal:
 
@@ -344,15 +377,22 @@ Responde a las siguientes cuestiones tras interactuar con las simulaciones de po
 3.  **Seguridad Social e Implicaciones de Ahorro**:
     *   En la simulación 3, aumenta la cotización obligatoria $\tau^{ss}$ de 0.0 a 0.45. ¿Cambia el consumo óptimo del agente?
     *   Describe qué le ocurre a los activos privados (Panel 2) durante el periodo de vida laboral activa (antes de $t^* = 26$). ¿Por qué los activos privados caen a niveles fuertemente negativos (deuda)? Explica la lógica de "sustitución de ahorro" bajo previsión perfecta.
-"""))
+""")
+)
 
 # 12. BUENAS PRÁCTICAS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Aislamiento Paramétrico**: Las rutinas matemáticas y de simulación están completamente desacopladas de la interfaz visual, residiendo en `src/macroaicomp/models/fiscal_policy.py`.
 2.  **Modelización Equivalente de Equilibria**: La resolución de CVXPY para el caso de transferencias devueltas ha sido implementada mediante un modelo equivalente surrogate en un solo paso, optimizando estabilidad numérica y eficiencia de cálculo.
 3.  **Control de Versiones Limpio**: Este cuaderno ha sido limpiado de metadatos volátiles mediante `nbstripout` antes de guardarse en el repositorio.
-"""))
+""")
+)
 
-os.makedirs('c:/Users/AntonioRC/Desktop/PIE/practicas/05-gobierno-fiscal/', exist_ok=True)
-nbf.write(nb, 'c:/Users/AntonioRC/Desktop/PIE/practicas/05-gobierno-fiscal/python.ipynb')
+os.makedirs(
+    "c:/Users/AntonioRC/Desktop/PIE/practicas/05-gobierno-fiscal/", exist_ok=True
+)
+nbf.write(
+    nb, "c:/Users/AntonioRC/Desktop/PIE/practicas/05-gobierno-fiscal/python.ipynb"
+)
 print("Notebook generado con éxito en practicas/05-gobierno-fiscal/python.ipynb.")

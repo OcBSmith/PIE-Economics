@@ -4,7 +4,9 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P7: El Modelo de Equilibrio General Dinámico Básico (DGE) (Julia)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# LAB-P7: El Modelo de Equilibrio General Dinámico Básico (DGE) (Julia)
 - **ID de práctica:** LAB-P7-v1.0-julia
 - **Capítulo del libro:** Cap. 8 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
 - **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
@@ -13,12 +15,18 @@ nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P7: El Modelo de Equilibrio G
 - **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
 
 Objetivo: Desarrollar e interactuar con el modelo canónico de Equilibrio General Dinámico (DGE) en tiempo discreto, resolviendo y comparando la aproximación linealizada de Blanchard-Khan frente a la solución numérica no lineal exacta. Versión en Julia.
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(nbf.v4.new_code_cell(r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""))
+"""
+    )
+)
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
 nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
@@ -31,7 +39,9 @@ using NLsolve
 """))
 
 # 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: DGE y Estabilidad de Blanchard-Khan
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 1. El Marco Teórico: DGE y Estabilidad de Blanchard-Khan
 
 El equilibrio de la economía DGE canónica se reduce a:
 1. **Dinámica del Capital:**
@@ -40,7 +50,9 @@ El equilibrio de la economía DGE canónica se reduce a:
    $$C_{t+1} = \beta [ \alpha A_{t+1} K_{t+1}^{\alpha-1} + 1 - \delta ] C_t$$
 3. **Proceso TFP:**
    $$\ln(A_t) = \rho \ln(A_{t-1}) + \epsilon_t$$
-"""))
+"""
+    )
+)
 
 # 5. CALIBRACIÓN DE PARÁMETROS
 nb.cells.append(nbf.v4.new_code_cell(r"""params = default_calibration(DGEParams)
@@ -48,8 +60,10 @@ println(params)
 """))
 
 # 6. ESTADO ESTACIONARIO Y EQUILIBRIO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
-"""))
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
+""")
+)
 
 nb.cells.append(nbf.v4.new_code_cell(r"""ss = compute_steady_state(params)
 
@@ -73,10 +87,14 @@ println("OK: coincide con el oráculo.")
 """))
 
 # 8. SHOCK E COMPARACIÓN DE SOLUCIONADORES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Análisis de Shock y Comparación de Solucionadores (Blanchard-Khan vs No Lineal)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 4. Análisis de Shock y Comparación de Solucionadores (Blanchard-Khan vs No Lineal)
 
 Simulamos un shock tecnológico transitorio positivo del $1\%$ en el período $t=2$ (segundo elemento del vector).
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_code_cell(r"""K0 = ss["K"]
 T = 60
@@ -118,7 +136,8 @@ nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Simulación interactiva / mod
 Define una función para graficar la respuesta dinámica ante cualquier magnitud del shock sobre la TFP.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""function graficar_shock_tfp(epsilon_val::Float64)
+nb.cells.append(
+    nbf.v4.new_code_cell(r"""function graficar_shock_tfp(epsilon_val::Float64)
     a_sh = zeros(T)
     a_sh[1] = 0.0
     a_sh[2] = epsilon_val
@@ -139,31 +158,34 @@ end
 
 # Ejemplo de ejecución
 graficar_shock_tfp(0.05)
-"""))
+""")
+)
 
 # 10. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
 
 Este modelo dinámico de equilibrio general canónico muestra el efecto hump-shape (respuesta jorobada) en la acumulación de capital físico ante un shock transitorio positivo de productividad, retornando gradualmente al estado de pleno empleo de largo plazo.
-"""))
+""")
+)
 
 # METADATOS DEL CUADERNO (KERNEL DE JULIA)
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",
         "language": "julia",
-        "name": "julia-1.12"
+        "name": "julia-1.12",
     },
     "language_info": {
         "file_extension": ".jl",
         "mimetype": "application/julia",
         "name": "julia",
-        "version": "1.12.6"
-    }
+        "version": "1.12.6",
+    },
 }
 
-dir_path = 'practicas/07-equilibrio-general-dinamico/'
+dir_path = "practicas/07-equilibrio-general-dinamico/"
 os.makedirs(dir_path, exist_ok=True)
-notebook_path = os.path.join(dir_path, 'julia.ipynb')
+notebook_path = os.path.join(dir_path, "julia.ipynb")
 nbf.write(nb, notebook_path)
 print(f"Notebook generado con éxito en {notebook_path}.")

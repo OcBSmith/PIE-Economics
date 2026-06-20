@@ -8,18 +8,20 @@ R_init = 0.04
 R_final = 0.03
 T = 100
 
+
 # Steady states
 def compute_ss(R_val):
     K_ss = ((R_val + delta) / alpha) ** (1.0 / (alpha - 1.0))
     q_ss = 1.0
     return K_ss, q_ss
 
+
 K_ss_init, q_ss_init = compute_ss(R_init)
 K_ss_final, q_ss_final = compute_ss(R_final)
 
 # Linearized system for final R
 A11 = (R_final * phi - (alpha - 1.0) * (R_final + delta)) / phi
-A12 = - (alpha - 1.0) * (R_final + delta)
+A12 = -(alpha - 1.0) * (R_final + delta)
 A21 = 1.0 / phi
 A22 = 0.0
 A = np.array([[A11, A12], [A21, A22]])
@@ -51,7 +53,7 @@ for t in range(1, T):
     # k_hat_t = (1 + lambda_1) * k_hat_{t-1}
     k_hat[t] = (1.0 + lambda_1) * k_hat[t - 1]
     q_hat[t] = theta * k_hat[t]
-    
+
     K[t] = K_ss_final * np.exp(k_hat[t])
     q[t] = q_ss_final * np.exp(q_hat[t])
 

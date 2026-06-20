@@ -164,10 +164,8 @@ Utiliza los deslizadores a continuación para simular este y otros shocks intera
 # ==============================================================================
 
 def plot_shock_response(m0_shock=110.0, beta0_shock=2100.0):
-    """
-    Simula la respuesta dinámica ante shocks en la oferta monetaria y el gasto autónomo.
-    Muestra gráficamente las trayectorias de transición temporal para la renta (Y) y precios (P).
-    """
+    # Simula la respuesta dinámica ante shocks en la oferta monetaria y el gasto autónomo.
+    # Muestra gráficamente las trayectorias de transición temporal para la renta (Y) y precios (P).
     # Cargar calibración por defecto (pre-shock)
     params_sim = default_calibration()
     

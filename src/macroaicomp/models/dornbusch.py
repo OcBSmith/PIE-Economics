@@ -73,18 +73,22 @@ def steady_state(params: DornbuschParameters) -> Dict[str, float]:
     #    Cuando la producción está en su nivel potencial (ypot0) y el interés nacional iguala al extranjero (istar0):
     #    p = m - psi * ypot + theta * istar
     p_ss = params.m0 - params.psi * params.ypot0 + params.theta * params.istar0
-    
+
     # 2. El tipo de cambio nominal de largo plazo (s_ss) equilibra la demanda agregada (IS).
     #    Despejando s de la ecuación IS cuando yd = ypot:
-    s_ss = p_ss + (params.ypot0 - params.beta0 + params.beta2 * params.istar0) / params.beta1 - params.pstar0
-    
+    s_ss = (
+        p_ss
+        + (params.ypot0 - params.beta0 + params.beta2 * params.istar0) / params.beta1
+        - params.pstar0
+    )
+
     return {
         "p": p_ss,
         "s": s_ss,
-        "i": params.istar0,   # Por la condición de paridad de intereses (UIP), i = istar
-        "yd": params.ypot0,   # En el largo plazo la demanda agregada coincide con el producto potencial
-        "dp": 0.0,            # En el estado estacionario, los precios no varían (dp = 0)
-        "ds": 0.0,            # Tampoco varía el tipo de cambio nominal (ds = 0)
+        "i": params.istar0,  # Por la condición de paridad de intereses (UIP), i = istar
+        "yd": params.ypot0,  # En el largo plazo la demanda agregada coincide con el producto potencial
+        "dp": 0.0,  # En el estado estacionario, los precios no varían (dp = 0)
+        "ds": 0.0,  # Tampoco varía el tipo de cambio nominal (ds = 0)
     }
 
 
@@ -109,17 +113,22 @@ def coefficient_matrices(params: DornbuschParameters) -> Tuple[np.ndarray, np.nd
     # Matriz A (2x2): Matriz de coeficientes del sistema dinámico lineal para las variables
     # endógenas de estado y expectativa: [p_t, s_t]'.
     # Modela el efecto cruzado de los precios nacionales y el tipo de cambio.
-    A = np.array([
-        [-mi * (beta1 + beta2 / theta), mi * beta1],
-        [1.0 / theta, 0.0]
-    ])
+    A = np.array([[-mi * (beta1 + beta2 / theta), mi * beta1], [1.0 / theta, 0.0]])
 
     # Matriz B (2x5): Matriz de impacto de los shocks exógenos.
     # El vector de variables exógenas z_t se compone de: [beta0, m_t, ypot0, istar0, pstar0]'
-    B = np.array([
-        [mi, mi * beta2 / theta, -mi * (1.0 + psi * beta2 / theta), 0.0, mi * beta1],
-        [0.0, -1.0 / theta, psi / theta, -1.0, 0.0]
-    ])
+    B = np.array(
+        [
+            [
+                mi,
+                mi * beta2 / theta,
+                -mi * (1.0 + psi * beta2 / theta),
+                0.0,
+                mi * beta1,
+            ],
+            [0.0, -1.0 / theta, psi / theta, -1.0, 0.0],
+        ]
+    )
 
     return A, B
 
@@ -192,17 +201,31 @@ def simulate_shock(
     """
     # 1. Estado estacionario inicial previo al shock
     params_pre = DornbuschParameters(
-        psi=params.psi, theta=params.theta, beta1=params.beta1, beta2=params.beta2, mi=params.mi,
-        beta0=float(z_initial[0]), m0=float(z_initial[1]), ypot0=float(z_initial[2]),
-        istar0=float(z_initial[3]), pstar0=float(z_initial[4])
+        psi=params.psi,
+        theta=params.theta,
+        beta1=params.beta1,
+        beta2=params.beta2,
+        mi=params.mi,
+        beta0=float(z_initial[0]),
+        m0=float(z_initial[1]),
+        ypot0=float(z_initial[2]),
+        istar0=float(z_initial[3]),
+        pstar0=float(z_initial[4]),
     )
     ss_pre = steady_state(params_pre)
 
     # 2. Estado estacionario final post-shock
     params_post = DornbuschParameters(
-        psi=params.psi, theta=params.theta, beta1=params.beta1, beta2=params.beta2, mi=params.mi,
-        beta0=float(z_final[0]), m0=float(z_final[1]), ypot0=float(z_final[2]),
-        istar0=float(z_final[3]), pstar0=float(z_final[4])
+        psi=params.psi,
+        theta=params.theta,
+        beta1=params.beta1,
+        beta2=params.beta2,
+        mi=params.mi,
+        beta0=float(z_final[0]),
+        m0=float(z_final[1]),
+        ypot0=float(z_final[2]),
+        istar0=float(z_final[3]),
+        pstar0=float(z_final[4]),
     )
     ss_post = steady_state(params_post)
 
@@ -231,19 +254,31 @@ def simulate_shock(
     # Período de impacto del shock (t=shock_period):
     # Los precios (p) son rígidos/predeterminados, pero el tipo de cambio (s) salta a la senda estable
     p_path[shock_period] = ss_pre["p"]
-    s_path[shock_period] = ss_post["s"] + (v_s[1] / v_s[0]) * (p_path[shock_period] - ss_post["p"])
+    s_path[shock_period] = ss_post["s"] + (v_s[1] / v_s[0]) * (
+        p_path[shock_period] - ss_post["p"]
+    )
 
     # Simulación temporal periodo a periodo a partir de la ley lineal
     for tt in range(shock_period + 1, periods):
-        dp = A[0,0] * (p_path[tt-1] - ss_post["p"]) + A[0,1] * (s_path[tt-1] - ss_post["s"])
-        ds = A[1,0] * (p_path[tt-1] - ss_post["p"]) + A[1,1] * (s_path[tt-1] - ss_post["s"])
-        p_path[tt] = p_path[tt-1] + dp
-        s_path[tt] = s_path[tt-1] + ds
+        dp = A[0, 0] * (p_path[tt - 1] - ss_post["p"]) + A[0, 1] * (
+            s_path[tt - 1] - ss_post["s"]
+        )
+        ds = A[1, 0] * (p_path[tt - 1] - ss_post["p"]) + A[1, 1] * (
+            s_path[tt - 1] - ss_post["s"]
+        )
+        p_path[tt] = p_path[tt - 1] + dp
+        s_path[tt] = s_path[tt - 1] + ds
 
     # Reconstrucción de variables secundarias de interés y demanda agregada post-shock
     for tt in range(shock_period, periods):
-        i_path[tt] = (p_path[tt] - params_post.m0 + params_post.psi * params_post.ypot0) / params_post.theta
-        yd_path[tt] = params_post.beta0 + params_post.beta1 * (s_path[tt] - p_path[tt] + params_post.pstar0) - params_post.beta2 * i_path[tt]
+        i_path[tt] = (
+            p_path[tt] - params_post.m0 + params_post.psi * params_post.ypot0
+        ) / params_post.theta
+        yd_path[tt] = (
+            params_post.beta0
+            + params_post.beta1 * (s_path[tt] - p_path[tt] + params_post.pstar0)
+            - params_post.beta2 * i_path[tt]
+        )
 
     return {
         "t": t,

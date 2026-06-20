@@ -4,7 +4,9 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# Práctica P6: La Empresa y la Decisión de Inversión (Modelo Q de Tobin)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# Práctica P6: La Empresa y la Decisión de Inversión (Modelo Q de Tobin)
 **Proyecto MACRO-AI-COMP (Convocatoria INNOVA26, UMA / Banco Santander)**
 *   **Código de Práctica**: LAB-P6-v1.0
 *   **Capítulo de Referencia**: Capítulo 7, *An Introduction to Computational Macroeconomics* (Bongers, Gómez y Torres, Vernon Press, 2019)
@@ -26,7 +28,9 @@ Al finalizar esta práctica, serás capaz de:
 4.  **Resolver** la condición de salto de las expectativas para determinar el comportamiento instantáneo de las variables flexibles (jump variables).
 5.  **Comparar** de forma crítica la precisión de la aproximación linealizada frente al modelo no lineal exacto.
 6.  **Graficar e interpretar** un diagrama de fases dinámico con curvas de demarcación y campos de vectores en el plano de fases.
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
@@ -38,7 +42,9 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
@@ -58,10 +64,13 @@ from macroaicomp.models.tobin_q import (
     solve_linearized_simulation,
     solve_nonlinear_simulation
 )
-"""))
+"""
+    )
+)
 
 # 4. SECCIÓN 1: INTRODUCCIÓN TEÓRICA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Modelo Q de Tobin con Costos de Ajuste
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 1. El Modelo Q de Tobin con Costos de Ajuste
 
 En el modelo neoclásico estándar sin costos de ajuste, la empresa ajusta su stock de capital de forma instantánea ante cualquier perturbación, de modo que la productividad marginal del capital se iguala en cada instante con el coste de uso del capital. 
 
@@ -90,17 +99,22 @@ De las condiciones de primer orden (FOCs), definimos la **q marginal** como el m
 ### 1.2 Estado Estacionario
 En el estado estacionario, el capital no cambia ($\Delta K_t = 0$), lo que implica que la Q de Tobin es igual a la unidad, y el stock de capital viene determinado por la tasa de interés real y la depreciación:
 $$\bar{q} = 1.0, \quad \bar{K} = \left( \frac{R + \delta}{\alpha} \right)^{\frac{1}{\alpha - 1}}$$
-"""))
+""")
+)
 
 # 5. SECCIÓN 2: SIMULACIÓN INTERACTIVA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Simulación Interactiva: Shock de Tasa de Interés
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 2. Simulación Interactiva: Shock de Tasa de Interés
 
 Supongamos que la economía se encuentra inicialmente en su estado estacionario correspondiente a una tasa de interés del $4\%$ ($R_0 = 0.04$). En el período $t=1$, se produce una caída permanente e inesperada de la tasa de interés real al $3\%$ ($R_f = 0.03$).
 
 Dado que la tasa de interés representa el coste de financiación y la tasa de descuento de los beneficios futuros, una reducción de la misma aumenta el valor de sombra del capital ($q_t$). Al ser el capital una variable rígida (predeterminada), su valor no puede saltar en $t=1$ ($K_1 = \bar{K}_{init}$). Sin embargo, la variable de expectativas $q_1$ dará un **salto instantáneo hacia arriba** para situarse sobre la nueva trayectoria estable de transición.
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # GRAFICACIÓN INTERACTIVA EN 3 PANELES: SHOCK DE TASA DE INTERÉS
 # ==============================================================================
 
@@ -171,10 +185,14 @@ interact(
     delta_val=FloatSlider(value=0.06, min=0.01, max=0.15, step=0.01, description='Deprec. (δ)'),
     alpha_val=FloatSlider(value=0.35, min=0.20, max=0.50, step=0.05, description='Elasticidad (α)')
 );
-"""))
+"""
+    )
+)
 
 # 6. SECCIÓN 3: LOG-LINEALIZACIÓN VS NO LINEAL
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Log-Linealización frente a Solución No Lineal Exacta
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 3. Log-Linealización frente a Solución No Lineal Exacta
 
 En la teoría macroeconómica, el método estándar consiste en linealizar (o log-linealizar) el sistema no lineal alrededor de su estado estacionario. Utilizando la aproximación de Uhlig (1999), definimos las desviaciones logarítmicas:
 $$\hat{k}_t = \ln(K_t) - \ln(\bar{K}), \quad \hat{q}_t = \ln(q_t) - \ln(\bar{q}) = \ln(q_t)$$
@@ -206,9 +224,13 @@ $$\hat{q}_1 = \theta \hat{k}_1$$
 Donde la pendiente de la trayectoria estable es simplemente $\theta = \phi \lambda_1$.
 
 A continuación, comparamos gráficamente la solución analítica aproximada (log-linealizada) frente a la solución numérica exacta calculada por `fsolve`.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # COMPARACIÓN GRÁFICA DE SOLUCIONADORES (LINEALIZADO VS NO LINEAL)
 # ==============================================================================
 
@@ -254,7 +276,9 @@ diff_K = np.max(np.abs(res_lin["K"] - res_nonlin["K"]))
 diff_q = np.max(np.abs(res_lin["q"] - res_nonlin["q"]))
 print(f"Discrepancia máxima en Capital (K) : {diff_K:.6f}")
 print(f"Discrepancia máxima en Ratio q      : {diff_q:.6f}")
-"""))
+"""
+    )
+)
 
 # 7. SECCIÓN 4: DIAGRAMA DE FASES
 nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Diagrama de Fases Interactivo
@@ -271,7 +295,9 @@ El capital inicial $\hat{k}_1$ está a la izquierda del origen (dado que el nuev
 3. A partir del punto de salto, las fuerzas dinámicas del sistema empujan a la economía de forma gradual a lo largo del saddle path hasta alcanzar el nuevo estado estacionario en el origen (estrella verde).
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # DIAGRAMA DE FASES INTERACTIVO Y CAMPO DE VECTORES
 # ==============================================================================
 
@@ -363,10 +389,13 @@ interact(
     delta_val=FloatSlider(value=0.06, min=0.01, max=0.15, step=0.01, description='Deprec. (δ)'),
     alpha_val=FloatSlider(value=0.35, min=0.20, max=0.50, step=0.05, description='Elasticidad (α)')
 );
-"""))
+"""
+    )
+)
 
 # 8. CUADERNO DE BITÁCORA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Cuaderno de Bitácora (Actividades para el Alumno)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 5. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde a las siguientes cuestiones tras interactuar con las simulaciones de la inversión empresarial:
 
@@ -379,16 +408,19 @@ Responde a las siguientes cuestiones tras interactuar con las simulaciones de la
 3.  **Diagrama de Fases y Estabilidad**:
     *   Utilizando el diagrama de fases interactivo, describe detalladamente la transición del sistema desde el pre-shock (punto rojo) hasta el post-shock inmediato (punto naranja) y la subsecuente trayectoria continua hasta el origen (estrella verde).
     *   ¿Qué ocurriría si $q_t$ diera un salto incorrecto (por ejemplo, a un valor de $q_1 = 1.05$ en lugar de su valor teórico estable de $1.1033$)? Observa las líneas de flujo del campo vectorial fuera del saddle path para razonar tu respuesta.
-"""))
+""")
+)
 
 # 9. BUENAS PRÁCTICAS APRENDER AQUÍ
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Aislamiento de Lógica Computacional**: La resolución numérica no lineal y el análisis matricial están desacoplados de las celdas didácticas de visualización, residiendo enteramente en el módulo [tobin_q.py](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/tobin_q.py).
 2.  **Identidad Algebraica en Códigos**: Hemos verificado en los unit tests que la fórmula simplificada de salto estable ($\theta = \phi \lambda_1$) y la ecuación extendida del libro son exactamente idénticas, simplificando el código didáctico notablemente.
 3.  **Higiene del Repositorio**: Antes de cada confirmación de commit, los outputs de este cuaderno se eliminan automáticamente mediante `nbstripout` para evitar el almacenamiento ineficiente de imágenes y datos pesados.
-"""))
+""")
+)
 
 # 10. ESCRIBIR EL ARCHIVO
-os.makedirs('c:/Users/AntonioRC/Desktop/PIE/practicas/06-tobin-q/', exist_ok=True)
-nbf.write(nb, 'c:/Users/AntonioRC/Desktop/PIE/practicas/06-tobin-q/python.ipynb')
+os.makedirs("c:/Users/AntonioRC/Desktop/PIE/practicas/06-tobin-q/", exist_ok=True)
+nbf.write(nb, "c:/Users/AntonioRC/Desktop/PIE/practicas/06-tobin-q/python.ipynb")
 print("Notebook generado con éxito en practicas/06-tobin-q/python.ipynb.")

@@ -139,16 +139,32 @@ def solve_distortionary_foc(
 
         # 3. Transferencias fiscales (si se devuelven)
         if return_transfers:
-            transfer = tauw * W * L + tauc * C + params.taur * params.R * np.maximum(0.0, np.concatenate([[B0], np.zeros(T - 1)]))
+            transfer = (
+                tauw * W * L
+                + tauc * C
+                + params.taur
+                * params.R
+                * np.maximum(0.0, np.concatenate([[B0], np.zeros(T - 1)]))
+            )
         else:
             transfer = np.zeros(T)
 
         # 4. Acumulación intertemporal de activos privados
         B = np.zeros(T)
-        B[0] = (1.0 + params.R) * B0 + W[0] * L[0] * (1.0 - tauw) - C[0] * (1.0 + tauc) + transfer[0]
+        B[0] = (
+            (1.0 + params.R) * B0
+            + W[0] * L[0] * (1.0 - tauw)
+            - C[0] * (1.0 + tauc)
+            + transfer[0]
+        )
         for t in range(1, T):
             R_asset = params.R * (1.0 - params.taur)
-            B[t] = (1.0 + R_asset) * B[t - 1] + W[t] * L[t] * (1.0 - tauw) - C[t] * (1.0 + tauc) + transfer[t]
+            B[t] = (
+                (1.0 + R_asset) * B[t - 1]
+                + W[t] * L[t] * (1.0 - tauw)
+                - C[t] * (1.0 + tauc)
+                + transfer[t]
+            )
         return C, L, B
 
     def _residuals(C0_arr):
@@ -205,20 +221,20 @@ def solve_distortionary_cvxpy(
     # 1. Definimos las restricciones presupuestarias intertemporales
     if return_transfers:
         # En caso de devolución de impuestos neutra, los impuestos y transferencias se cancelan netos
-        constraints.append(
-            B[0] == (1.0 + R_asset) * B0 + W[0] * L[0] - C[0]
-        )
+        constraints.append(B[0] == (1.0 + R_asset) * B0 + W[0] * L[0] - C[0])
         for t in range(1, T):
-            constraints.append(
-                B[t] == (1.0 + R_asset) * B[t - 1] + W[t] * L[t] - C[t]
-            )
+            constraints.append(B[t] == (1.0 + R_asset) * B[t - 1] + W[t] * L[t] - C[t])
     else:
         constraints.append(
-            B[0] == (1.0 + R_asset) * B0 + W[0] * (1.0 - tauw) * L[0] - (1.0 + tauc) * C[0]
+            B[0]
+            == (1.0 + R_asset) * B0 + W[0] * (1.0 - tauw) * L[0] - (1.0 + tauc) * C[0]
         )
         for t in range(1, T):
             constraints.append(
-                B[t] == (1.0 + R_asset) * B[t - 1] + W[t] * (1.0 - tauw) * L[t] - (1.0 + tauc) * C[t]
+                B[t]
+                == (1.0 + R_asset) * B[t - 1]
+                + W[t] * (1.0 - tauw) * L[t]
+                - (1.0 + tauc) * C[t]
             )
 
     constraints.append(B[T - 1] == 0.0)
@@ -237,11 +253,17 @@ def solve_distortionary_cvxpy(
         discount @ (gamma_eff * cp.log(C) + (1.0 - gamma_eff) * cp.log(1.0 - L))
     )
     prob = cp.Problem(objective, constraints)
-    for solver_name in ['CLARABEL', 'SCS', None]:
+    for solver_name in ["CLARABEL", "SCS", None]:
         try:
-            if solver_name == 'CLARABEL':
-                prob.solve(solver=cp.CLARABEL, tol_gap_abs=1e-11, tol_gap_rel=1e-11, tol_feas=1e-11, verbose=False)
-            elif solver_name == 'SCS':
+            if solver_name == "CLARABEL":
+                prob.solve(
+                    solver=cp.CLARABEL,
+                    tol_gap_abs=1e-11,
+                    tol_gap_rel=1e-11,
+                    tol_feas=1e-11,
+                    verbose=False,
+                )
+            elif solver_name == "SCS":
                 prob.solve(solver=cp.SCS, eps_abs=1e-9, eps_rel=1e-9, verbose=False)
             else:
                 prob.solve(verbose=False)

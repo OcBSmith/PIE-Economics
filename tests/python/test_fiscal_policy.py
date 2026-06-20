@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 from macroaicomp.models.fiscal_policy import (
     FiscalPolicyParameters,
@@ -23,13 +22,21 @@ def test_non_distortionary_ricardian_equivalence():
 
     # 2. Tax with returned transfers (Ricardian Equivalence)
     params_tax_returned = FiscalPolicyParameters(tauw=0.40)
-    res_tax_returned = solve_non_distortionary(params_tax_returned, W, return_transfers=True)
+    res_tax_returned = solve_non_distortionary(
+        params_tax_returned, W, return_transfers=True
+    )
 
-    np.testing.assert_allclose(res_no_tax["C"], res_tax_returned["C"], rtol=1e-6, atol=1e-6)
-    np.testing.assert_allclose(res_no_tax["B"], res_tax_returned["B"], rtol=1e-6, atol=1e-6)
+    np.testing.assert_allclose(
+        res_no_tax["C"], res_tax_returned["C"], rtol=1e-6, atol=1e-6
+    )
+    np.testing.assert_allclose(
+        res_no_tax["B"], res_tax_returned["B"], rtol=1e-6, atol=1e-6
+    )
 
     # 3. Tax without returned transfers (Income effect only, consumption and savings drop)
-    res_tax_not_returned = solve_non_distortionary(params_tax_returned, W, return_transfers=False)
+    res_tax_not_returned = solve_non_distortionary(
+        params_tax_returned, W, return_transfers=False
+    )
     assert np.all(res_tax_not_returned["C"] < res_no_tax["C"])
     assert np.all(np.abs(res_tax_not_returned["B"]) < np.abs(res_no_tax["B"]))
 
@@ -96,7 +103,7 @@ def test_social_security_substitution():
     params_ss = FiscalPolicyParameters(tau_ss=0.36, t_star=26)
     W = np.zeros(params_ss.T)
     # Wage profile: constant at 10.0 during working life
-    W[:params_ss.t_star] = 10.0
+    W[: params_ss.t_star] = 10.0
 
     # 1. Social Security capitalization system
     res_ss = solve_social_security(params_ss, W)

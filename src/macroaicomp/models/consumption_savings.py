@@ -10,8 +10,8 @@ Two solvers are provided:
 2. solve_direct_cvxpy: Solves the consumer problem directly via cvxpy convex optimization.
 """
 
-from dataclasses import dataclass, field
-from typing import Dict, List
+from dataclasses import dataclass
+from typing import Dict
 
 import numpy as np
 from scipy.optimize import fsolve
@@ -173,13 +173,19 @@ def solve_direct_cvxpy(
     objective = cp.Maximize(discount @ cp.log(C))
 
     prob = cp.Problem(objective, constraints)
-    
+
     # 3. Resolvedor numérico convexo
-    for solver_name in ['CLARABEL', 'SCS', None]:
+    for solver_name in ["CLARABEL", "SCS", None]:
         try:
-            if solver_name == 'CLARABEL':
-                prob.solve(solver=cp.CLARABEL, tol_gap_abs=1e-11, tol_gap_rel=1e-11, tol_feas=1e-11, verbose=False)
-            elif solver_name == 'SCS':
+            if solver_name == "CLARABEL":
+                prob.solve(
+                    solver=cp.CLARABEL,
+                    tol_gap_abs=1e-11,
+                    tol_gap_rel=1e-11,
+                    tol_feas=1e-11,
+                    verbose=False,
+                )
+            elif solver_name == "SCS":
                 prob.solve(solver=cp.SCS, eps_abs=1e-9, eps_rel=1e-9, verbose=False)
             else:
                 prob.solve(verbose=False)

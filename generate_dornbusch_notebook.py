@@ -3,7 +3,9 @@ import nbformat as nbf
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# Práctica P2: El Modelo de Overshooting de Dornbusch en Tiempo Discreto
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# Práctica P2: El Modelo de Overshooting de Dornbusch en Tiempo Discreto
 **Proyecto MACRO-AI-COMP (Convocatoria INNOVA26, UMA / Banco Santander)**
 *   **Código de Práctica**: LAB-P2-v1.0
 *   **Capítulo de Referencia**: Capítulo 3, *An Introduction to Computational Macroeconomics* (Bongers, Gómez y Torres, Vernon Press, 2019)
@@ -18,7 +20,9 @@ Al finalizar esta práctica, serás capaz de:
 2.  **Visualizar** el fenómeno de *overshooting* del tipo de cambio y su posterior convergencia dinámica.
 3.  **Identificar** y analizar sistemas dinámicos con estabilidad de **punto de silla** (saddle point) en tiempo discreto.
 4.  **Representar** e interpretar la transición de una economía en un **Diagrama de Fases** bidimensional que contenga curvas de demarcación, el camino de silla estable y el campo de vectores.
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
@@ -30,7 +34,9 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
@@ -49,16 +55,21 @@ sys.path.append('../../src')
 
 # Importar funciones del modelo modularizado (Core de la biblioteca)
 from macroaicomp.models.dornbusch import (
+    DornbuschParameters,
     default_calibration,
     steady_state,
     simulate_shock,
     eigenvalues,
     coefficient_matrices
 )
-"""))
+"""
+    )
+)
 
 # 4. MARCO TEÓRICO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Ecuaciones y Estabilidad de Punto de Silla
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 1. El Marco Teórico: Ecuaciones y Estabilidad de Punto de Silla
 
 El modelo de Dornbusch describe una economía pequeña y abierta con perfecta movilidad de capitales bajo las siguientes ecuaciones:
 
@@ -90,10 +101,14 @@ $$\mathbf{A} = \begin{bmatrix} -\mu\left( \beta_1 + \frac{\beta_2}{\theta} \righ
 $$\mathbf{B} = \begin{bmatrix} \mu & \frac{\mu\beta_{2}}{\theta} & - \mu\left(\frac{\psi\beta_{2}}{\theta} + 1\right) & 0 & \mu\beta_{1} \\ 0 & - \frac{1}{\theta} & \frac{\psi}{\theta} & - 1 & 0 \end{bmatrix}$$
 
 Este sistema dinámico tiene una estructura de **punto de silla** (saddle point): posee un autovalor estable (cuyo módulo de $1+\lambda$ es menor a la unidad) y otro inestable. La variable de precios ($p$) es lenta y rígida a corto plazo, mientras que el tipo de cambio ($s$) es una variable forward-looking flexible que "salta" instantáneamente ante shocks para situar a la economía en la trayectoria de convergencia estable.
-"""))
+"""
+    )
+)
 
 # 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # CALIBRACIÓN DE PARÁMETROS BASE (Capítulo 3 - Libro original)
 # ==============================================================================
 
@@ -123,10 +138,13 @@ for param_name, value in vars(params).items():
     desc = descriptions.get(param_name, "Parámetro del modelo")
     print(f"  {param_name:<10} | {value:<6} | {desc:<50}")
 print("=" * 78)
-"""))
+"""
+    )
+)
 
 # 6. ESTADO ESTACIONARIO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
 
 En el largo plazo, las variables se estabilizan, por lo que las variaciones temporales son nulas ($\Delta p_t = 0$ y $\Delta s_t = 0$). Resolviendo analíticamente:
 1.  **De la ecuación de precios:** $\Delta p_t = 0 \Rightarrow y^d_t = y^n_t = \bar{Y}$.
@@ -137,10 +155,13 @@ En el largo plazo, las variables se estabilizan, por lo que las variaciones temp
     $$s^* = m_t - \frac{\beta_0}{\beta_1} + \left( \frac{1 - \psi\beta_1}{\beta_1} \right) y^n_t + \left( \frac{\theta\beta_1 + \beta_2}{\beta_1} \right) i^*_t - p^*_t$$
 
 *Nota sobre fe errata del libro:* En el texto del Capítulo 3, por un error de imprenta, el denominador de la última fracción de la ecuación del tipo de cambio estacionario se imprime como $\beta_2$ en lugar de $\beta_1$. El código de la biblioteca `macroaicomp` implementa la fórmula matemáticamente correcta con el denominador $\beta_1$, lo que reproduce el valor numérico exacto de equilibrio del libro ($s^* = 76.52$).
-"""))
+""")
+)
 
 # 7. CÁLCULO DEL ESTADO ESTACIONARIO
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # CÁLCULO NUMÉRICO DEL ESTADO ESTACIONARIO ANALÍTICO
 # ==============================================================================
 
@@ -156,10 +177,14 @@ print(f"  Demanda agregada (yd*)     : {ss['yd']:.2f} (Igual a producción poten
 print(f"  Tasa de inflación (dp)     : {ss['dp']:.4f} (Sin variaciones de precios)")
 print(f"  Depreciación cambiaria (ds): {ss['ds']:.4f} (Sin variaciones del tipo de cambio)")
 print("-" * 65)
-"""))
+"""
+    )
+)
 
 # 8. DETRÁS DE LA ESCENA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Detrás de la Escena: El Salto del Tipo de Cambio al Camino de Silla Estable
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 3. Detrás de la Escena: El Salto del Tipo de Cambio al Camino de Silla Estable
 
 En un sistema dinámico con un punto de silla, si la economía sufre un shock imprevisto, la única forma de evitar que las variables exploten y diverjan hacia el infinito a largo plazo es que la variable flexible (el tipo de cambio, $s$) **salte instantáneamente en el periodo del shock** hacia la trayectoria estable (el *camino de silla* o *stable path*).
 
@@ -171,10 +196,14 @@ $$\lambda_1(s_1 - \bar{s}_1) = -\frac{1}{\theta}(m_1 - p_1 - \psi y^n_1) - i^*_1
 $$s_1 = \frac{-(m_1 - p_1 - \psi y^n_1)}{\theta \lambda_1} - \frac{i^*_1}{\lambda_1} + \bar{s}_1$$
 
 Dado que los precios son rígidos en el primer período, $p_1$ se mantiene en su nivel antiguo pre-shock. Sin embargo, dado que $\lambda_1$ es negativo (aproximadamente $-0.74$), el tipo de cambio nominal experimenta una **sobrerreacción inicial** ($s_1$ sube de golpe por encima de su nivel de equilibrio final $\bar{s}_1$).
-"""))
+"""
+    )
+)
 
 # 9. SIMULACIÓN DE DINÁMICA DE JUMP MANUAL
-nb.cells.append(nbf.v4.new_code_cell(r'''# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r'''# ==============================================================================
 # SIMULACIÓN MANUAL DE LA DINÁMICA CON JUMP DE EXPECTATIVAS
 # ==============================================================================
 
@@ -236,10 +265,14 @@ def simulate_dornbusch_manual(params, z_init, z_final, periods=30, shock_period=
     return p, s
 
 print("Función de simulación manual registrada con éxito.")
-'''))
+'''
+    )
+)
 
 # 10. TRANSMISIÓN ECONÓMICA Y DIAGRAMA DE FASES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Transmisión Económica e Interactividad (Diagrama de Fases)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 4. Transmisión Económica e Interactividad (Diagrama de Fases)
 
 ### 4.1 El Mecanismo de Overshooting
 Cuando la oferta monetaria se incrementa ($M_0 \uparrow$):
@@ -252,10 +285,14 @@ Cuando la oferta monetaria se incrementa ($M_0 \uparrow$):
     $$s_t = \frac{\beta_0 + p^*_t \beta_1 + \frac{\beta_2}{\theta}(m_t - \psi y^n_t) - y^n_t \left(1 + \frac{\psi \beta_2}{\theta}\right)}{\beta_1} + \left(1 + \frac{\beta_2}{\theta \beta_1}\right) p_t$$
 *   **Saddle Path (Camino de Silla Estable):** Línea con pendiente negativa ($k \approx -2.70$):
     $$s_t - \bar{s} = k(p_t - \bar{p})$$
-"""))
+"""
+    )
+)
 
 # 11. SIMULACIÓN INTERACTIVA (3 PANELES)
-nb.cells.append(nbf.v4.new_code_cell(r'''# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r'''# ==============================================================================
 # SIMULACIÓN INTERACTIVA DE SHOCKS Y REPRESENTACIÓN EN 3 PANELES (CON DIAGRAMA DE FASES)
 # ==============================================================================
 
@@ -392,10 +429,13 @@ interact(
     m0_shock=FloatSlider(value=101.0, min=98.0, max=104.0, step=0.5, description='Dinero (M)'),
     beta0_shock=FloatSlider(value=500.0, min=450.0, max=550.0, step=10.0, description='Gasto (B0)')
 );
-'''))
+'''
+    )
+)
 
 # 12. VERIFICACIÓN CONTRA EL ORÁCULO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Verificación Numérica contra el Oráculo (Libro)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 5. Verificación Numérica contra el Oráculo (Libro)
 
 Para certificar la robustez del modelo, validamos nuestras trayectorias temporales contra el **Oráculo de DYNARE** (Apéndice F) y la hoja de cálculo de referencia **"ICM-3.xls"** del libro:
 
@@ -407,19 +447,23 @@ Para certificar la robustez del modelo, validamos nuestras trayectorias temporal
 | **Tipo de interés final ($i^*$)** | 3.00% | 3.00% | ✅ Verificado (tolerancia < 1e-6) |
 
 Esta validación cruzada garantiza la rigurosidad científica de la portabilidad computacional de la práctica.
-"""))
+""")
+)
 
 # 13. BUENAS PRÁCTICAS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
 
 Fíjate en las siguientes decisiones de diseño técnico que hacen de este código un estándar ejemplar:
 1.  **Higiene de Datos de Entrada**: Se aíslan los parámetros estructurales en un dataclass `DornbuschParameters` para evitar valores ocultos dentro de las ecuaciones.
 2.  **Lógica Externa Reutilizable**: Las rutinas matriciales complejas residen en `src/macroaicomp/models/dornbusch.py` facilitando el testeo y mantenimiento.
 3.  **Higiene de Control de Versiones**: Las celdas de este cuaderno se han limpiado de outputs volátiles mediante `nbstripout` antes de confirmar la versión en el repositorio de código.
-"""))
+""")
+)
 
 # 14. PREGUNTAS DE BITÁCORA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 7. Cuaderno de Bitácora (Actividades para el Alumno)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 7. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde en tu Cuaderno de Bitácora las siguientes preguntas analíticas tras experimentar con la simulación interactiva:
 
@@ -432,9 +476,16 @@ Responde en tu Cuaderno de Bitácora las siguientes preguntas analíticas tras e
     *   Explica visualmente a partir del Panel 3 por qué la trayectoria de transición no es una línea recta directa desde el equilibrio inicial al equilibrio final.
     *   ¿Qué representa el segmento vertical denotado como "Jump" y por qué se produce de forma instantánea sin variaciones en el eje horizontal de precios?
     *   Describe qué ocurre una vez que el sistema alcanza la línea del Camino de Silla Estable. ¿Hacia dónde se desliza y cuál es la dirección de las fuerzas del campo vectorial?
-"""))
+""")
+)
 
 import os
-os.makedirs('c:/Users/AntonioRC/Desktop/PIE/practicas/02-overshooting-dornbusch/', exist_ok=True)
-nbf.write(nb, 'c:/Users/AntonioRC/Desktop/PIE/practicas/02-overshooting-dornbusch/python.ipynb')
+
+os.makedirs(
+    "c:/Users/AntonioRC/Desktop/PIE/practicas/02-overshooting-dornbusch/", exist_ok=True
+)
+nbf.write(
+    nb,
+    "c:/Users/AntonioRC/Desktop/PIE/practicas/02-overshooting-dornbusch/python.ipynb",
+)
 print("Notebook generado con éxito.")

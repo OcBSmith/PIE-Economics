@@ -40,7 +40,9 @@ class SolowSwanParameters:
     alpha: float = 0.35
     delta: float = 0.08
     s: float = 0.20
-    n: float = 0.0  # Sin crecimiento poblacional por defecto (línea base del Capítulo 9)
+    n: float = (
+        0.0  # Sin crecimiento poblacional por defecto (línea base del Capítulo 9)
+    )
     A: float = 1.0
 
 
@@ -81,13 +83,13 @@ def compute_solow_steady_state(
 
     # 1. Capital por trabajador estacionario de largo plazo
     k_ss = (s_val * A_val / (delta + n_val)) ** (1.0 / (1.0 - alpha))
-    
+
     # 2. Producción per cápita estacionaria
     y_ss = A_val * k_ss**alpha
-    
+
     # 3. Inversión per cápita estacionaria (reproduce la depreciación y la dilución)
     i_ss = s_val * y_ss
-    
+
     # 4. Consumo per cápita estacionario de equilibrio
     c_ss = (1.0 - s_val) * y_ss
 
@@ -146,7 +148,9 @@ def simulate_solow_swan(
     # Simulación paso a paso periodo a periodo
     for t in range(1, T):
         # Ley de movimiento del capital por trabajador (considera depreciación y crecimiento poblacional)
-        k[t] = (1.0 - delta - n_path[t - 1]) * k[t - 1] + s_path[t - 1] * A_path[t - 1] * k[t - 1] ** alpha
+        k[t] = (1.0 - delta - n_path[t - 1]) * k[t - 1] + s_path[t - 1] * A_path[
+            t - 1
+        ] * k[t - 1] ** alpha
         y[t] = A_path[t] * k[t] ** alpha
         c[t] = (1.0 - s_path[t]) * y[t]
         inv[t] = s_path[t] * y[t]

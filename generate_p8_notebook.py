@@ -4,7 +4,9 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# Práctica P8: El Modelo Neoclásico de Crecimiento Exógeno (Solow-Swan)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# Práctica P8: El Modelo Neoclásico de Crecimiento Exógeno (Solow-Swan)
 **Proyecto MACRO-AI-COMP (Convocatoria INNOVA26, UMA / Banco Santander)**
 *   **Código de Práctica**: LAB-P8-v1.0
 *   **Capítulo de Referencia**: Capítulo 9, *An Introduction to Computational Macroeconomics* (Bongers, Gómez y Torres, Vernon Press, 2019)
@@ -20,7 +22,9 @@ Al finalizar esta práctica, serás capaz de:
 3.  **Analizar** la transición dinámica de las variables per cápita (capital, producción, consumo e inversión) tras shocks estructurales.
 4.  **Diferenciar** entre el efecto impacto (corto plazo) y el efecto de largo plazo sobre el bienestar tras un incremento del ahorro.
 5.  **Explicar** analítica y visualmente el concepto de la **Regla de Oro** y las consecuencias de la ineficiencia dinámica (infra-acumulación vs. sobre-acumulación).
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
@@ -32,7 +36,9 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
@@ -50,10 +56,13 @@ from macroaicomp.models.growth import (
     compute_solow_steady_state,
     simulate_solow_swan
 )
-"""))
+"""
+    )
+)
 
 # 4. INTRODUCCIÓN TEÓRICA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Modelo Neoclásico de Crecimiento (Solow-Swan)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 1. El Modelo Neoclásico de Crecimiento (Solow-Swan)
 
 El modelo de Solow-Swan es el bloque fundamental de la teoría moderna del crecimiento económico. A diferencia de los modelos de equilibrio general dinámico con agentes optimizadores (como Ramsey o DGE básico), este modelo asume que **la tasa de ahorro es exógena y constante**. 
 
@@ -82,17 +91,24 @@ $$\bar{k} = \left( \frac{\delta + n}{s A} \right)^{\frac{1}{\alpha - 1}}$$
 
 Una vez obtenido $\bar{k}$, las demás variables se calculan de manera directa:
 $$\bar{y} = A \bar{k}^\alpha, \quad \bar{c} = (1 - s)\bar{y}, \quad \bar{i} = s\bar{y}$$
-"""))
+""")
+)
 
 # 5. SIMULACIÓN INTERACTIVA DE SHOCKS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Simulación Interactiva: Transición Dinámica y Shocks
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2. Simulación Interactiva: Transición Dinámica y Shocks
 
 Supongamos que la economía parte de su estado estacionario base con una tasa de ahorro del $20\%$ ($s_0 = 0.20$), depreciación del $6\%$ ($\delta = 0.06$) y crecimiento poblacional del $2\%$ ($n_0 = 0.02$). En el período $t = 5$, la economía sufre una perturbación permanente en su tasa de ahorro (por ejemplo, sube al $25\%$).
 
 Con el siguiente panel interactivo, puedes mover la tasa de ahorro final ($s_1$), el crecimiento poblacional final ($n_1$), y la TFP final ($A_1$) para analizar cómo responde la economía período a período.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # SIMULACIÓN DINÁMICA DE SHOCKS ESTRUCTURALES
 # ==============================================================================
 
@@ -176,10 +192,14 @@ interact(
     n_final=FloatSlider(value=0.02, min=0.00, max=0.10, step=0.01, description='Pob. (n)'),
     A_final=FloatSlider(value=1.00, min=0.50, max=2.00, step=0.05, description='TFP (A)')
 );
-"""))
+"""
+    )
+)
 
 # 6. LA REGLA DE ORO DE ACUMULACIÓN DE CAPITAL
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. La Regla de Oro (Golden Rule) de Acumulación de Capital
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 3. La Regla de Oro (Golden Rule) de Acumulación de Capital
 
 Dado que un mayor ahorro implica mayor capital y producción de largo plazo, ¿debe una economía ahorrar tanto como sea posible? La respuesta es **no**. 
 
@@ -198,9 +218,13 @@ $$s^{gold} = \alpha$$
 
 *   **Ineficiencia Dinámica:** Si $s > \alpha$, la economía está sobre-acumulando capital. Podría aumentar el consumo tanto hoy como a largo plazo simplemente reduciendo su tasa de ahorro.
 *   **Bajo-acumulación:** Si $s < \alpha$, la economía está consumiendo demasiado a corto plazo, de modo que un incremento del ahorro aumentaría el consumo en el futuro.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # DEMOSTRACIÓN VISUAL DE LA REGLA DE ORO
 # ==============================================================================
 
@@ -257,10 +281,13 @@ interact(
     plot_golden_rule,
     s_current=FloatSlider(value=0.20, min=0.02, max=0.90, step=0.02, description='Tasa Ahorro')
 );
-"""))
+"""
+    )
+)
 
 # 7. CUADERNO DE BITÁCORA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde a las siguientes cuestiones tras interactuar con las simulaciones del modelo de crecimiento de Solow-Swan:
 
@@ -272,16 +299,19 @@ Responde a las siguientes cuestiones tras interactuar con las simulaciones del m
 3.  **Transición Demográfica y TFP**:
     *   En la simulación de shocks (Sección 2), devuelve el ahorro al $20\%$ y reduce la tasa de crecimiento demográfico de $n_0 = 0.02$ a $n_1 = 0.00$. Describe la dinámica del capital per cápita y de la producción per cápita. ¿Por qué una población constante ($n=0$) eleva la riqueza por trabajador a largo plazo?
     *   Ahora, aplica un incremento permanente de la TFP del $5\%$ ($A = 1.05$). ¿Qué ocurre con la tasa de crecimiento del PIB per cápita en el año del shock y a largo plazo? Explica por qué, en ausencia de crecimiento continuo de la TFP ($g_A = 0$), el crecimiento de la renta per cápita a largo plazo acaba siendo cero en este modelo.
-"""))
+""")
+)
 
 # 8. BUENAS PRÁCTICAS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Modularización del Modelo**: Las ecuaciones y simulaciones del modelo de Solow-Swan no están dispersas, sino importadas del módulo de biblioteca [`growth.py`](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/growth.py), aislando la visualización del backend computacional.
 2.  **Diseño Paramétrico Limpio**: La calibración y los shocks se definen mediante objetos `SolowSwanParameters` y vectores ordenados de tiempo, facilitando la escalabilidad del simulador.
 3.  **Higiene del Repositorio**: El cuaderno está integrado en el flujo de trabajo de Git con `nbstripout` y controles linter en el hook de `pre-commit`, previniendo que los gráficos pesados contaminen el repositorio y asegurando un arranque limpio.
-"""))
+""")
+)
 
 # 9. ESCRIBIR EL ARCHIVO
-os.makedirs('c:/Users/AntonioRC/Desktop/PIE/practicas/08-solow-swan/', exist_ok=True)
-nbf.write(nb, 'c:/Users/AntonioRC/Desktop/PIE/practicas/08-solow-swan/python.ipynb')
+os.makedirs("c:/Users/AntonioRC/Desktop/PIE/practicas/08-solow-swan/", exist_ok=True)
+nbf.write(nb, "c:/Users/AntonioRC/Desktop/PIE/practicas/08-solow-swan/python.ipynb")
 print("Notebook generado con éxito en practicas/08-solow-swan/python.ipynb.")

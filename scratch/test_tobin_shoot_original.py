@@ -9,10 +9,12 @@ R_init = 0.04
 R_final = 0.03
 T = 100
 
+
 def compute_ss(R_val):
     K_ss = ((R_val + delta) / alpha) ** (1.0 / (alpha - 1.0))
     q_ss = 1.0
     return K_ss, q_ss
+
 
 K_ss_init, _ = compute_ss(R_init)
 K_ss_final, _ = compute_ss(R_final)
@@ -24,13 +26,14 @@ R_path[0] = R_init
 # trace = R, det = -R*delta - ...
 # Matriz A en desviaciones logarítmicas:
 A11 = (R_final * phi - (alpha - 1.0) * (R_final + delta)) / phi
-A12 = - (alpha - 1.0) * (R_final + delta)
+A12 = -(alpha - 1.0) * (R_final + delta)
 A21 = 1.0 / phi
 A22 = 0.0
 A = np.array([[A11, A12], [A21, A22]])
 eigenvals = np.real(np.linalg.eigvals(A))
 lambda_1 = np.sort(eigenvals)[0]
 theta_log = phi * lambda_1
+
 
 def simulate_nonlinear(q0):
     K = np.zeros(T)
@@ -48,9 +51,11 @@ def simulate_nonlinear(q0):
         q[t + 1] = (1.0 + R_t) * q[t] - mpk + delta + (q[t] - 1.0) ** 2 / (2.0 * phi)
     return K, q
 
+
 def residuals(q0_arr):
     K, q = simulate_nonlinear(q0_arr[0])
     return [q[-1] - 1.0]
+
 
 # Initial guess from log-linearized solution converted to level q0:
 q0_guess = np.exp(theta_log * np.log(K_ss_init / K_ss_final))

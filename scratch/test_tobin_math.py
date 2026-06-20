@@ -6,7 +6,7 @@ phi = 10.0
 R = 0.04
 
 A11 = (R * phi - (alpha - 1.0) * (R + delta)) / phi
-A12 = - (alpha - 1.0) * (R + delta)
+A12 = -(alpha - 1.0) * (R + delta)
 A21 = 1.0 / phi
 A22 = 0.0
 

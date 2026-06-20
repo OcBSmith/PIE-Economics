@@ -4,7 +4,9 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P0: Introducción a los sistemas dinámicos computacionales (Julia)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# LAB-P0: Introducción a los sistemas dinámicos computacionales (Julia)
 
 - **ID de práctica:** LAB-P0-v1.0-julia
 - **Capítulo del libro:** Cap. 1 — *An introduction to computational dynamic systems* (Bongers, Gómez y Torres, 2019)
@@ -17,13 +19,17 @@ Modelo de carrera de armamentos de Richardson: un sistema dinámico lineal de
 dos ecuaciones que sirve de introducción a los conceptos de estado
 estacionario, autovalores y estabilidad antes de abordar modelos
 macroeconómicos concretos (IS-LM, Dornbusch, DGE...). Versión en Julia.
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(nbf.v4.new_code_cell(r"""# En Google Colab, se instalarían los paquetes necesarios.
+nb.cells.append(
+    nbf.v4.new_code_cell(r"""# En Google Colab, se instalarían los paquetes necesarios.
 # En el entorno local, se asume que las dependencias ya están resueltas.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""))
+""")
+)
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
 nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
@@ -57,8 +63,12 @@ presenta un **punto de silla** si solo uno de los dos cumple esa condición
 """))
 
 # 5. CALIBRACIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Calibración — Caso 1: estabilidad global (Tablas 1.1 y 1.2)
-"""))
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2. Calibración — Caso 1: estabilidad global (Tablas 1.1 y 1.2)
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_code_cell(r"""params_global = ArmsRaceParams(
     0.50,  # alpha: sensibilidad de Delta x1 a su propio nivel x1
@@ -74,8 +84,10 @@ params_global
 """))
 
 # 6. RESOLUCIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Resolución: estado estacionario y estabilidad
-"""))
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 3. Resolución: estado estacionario y estabilidad
+""")
+)
 
 nb.cells.append(nbf.v4.new_code_cell(r"""x_bar = steady_state(params_global, z_initial)
 lambdas = eigenvalues(params_global)
@@ -129,10 +141,14 @@ plot(p1, p2, layout=(1,2), size=(800, 350))
 """))
 
 # 9. DIAGRAMA DE FASES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Diagrama de fases (Figura B.1 del Apéndice B)
-"""))
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 6. Diagrama de fases (Figura B.1 del Apéndice B)
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# En Julia, podemos generar el diagrama de fases dibujando las flechas (quiver) en una malla
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# En Julia, podemos generar el diagrama de fases dibujando las flechas (quiver) en una malla
 a, b = coefficient_matrices(params_global)
 
 # Crear la malla de puntos para x1 y x2
@@ -161,17 +177,23 @@ plt = plot(x, y, seriestype=:scatter, markersize=1, color=:gray, label="",
 quiver!(x, y, quiver=(arrow_u, arrow_v), color=:gray)
 scatter!([x_bar[1]], [x_bar[2]], color=:black, markersize=8, label="Estado Estacionario")
 plot!(size=(500, 500))
-"""))
+"""
+    )
+)
 
 # 10. SENSIBILIDAD
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 7. Análisis de sensibilidad (Sección 1.6.1)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 7. Análisis de sensibilidad (Sección 1.6.1)
 
 Aumentamos $\alpha$ de 0.50 a 0.70: el país 1 se vuelve más sensible a su
 propio stock de armamento, lo que reduce el estado estacionario de ambos
 países y rompe la simetría entre ellos.
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""params_sensitivity = ArmsRaceParams(0.70, 0.25, 0.25, 0.50, 1.00, 1.00)
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""params_sensitivity = ArmsRaceParams(0.70, 0.25, 0.25, 0.50, 1.00, 1.00)
 x_bar_sensitivity = steady_state(params_sensitivity, z_initial)
 lambdas_sensitivity = eigenvalues(params_sensitivity)
 
@@ -181,7 +203,9 @@ println("Punto de silla                       = ", is_saddle_path(params_sensiti
 
 @assert isapprox(x_bar_sensitivity, [2.61, 3.30]; atol=1e-2)
 @assert isapprox(sort(lambdas_sensitivity), [-0.87, -0.33]; atol=1e-2)
-"""))
+"""
+    )
+)
 
 # 11. PUNTO DE SILLA
 nb.cells.append(nbf.v4.new_markdown_cell(r"""## 8. Punto de silla (Sección 1.6.2)
@@ -193,7 +217,9 @@ reajusta instantáneamente sobre la senda estable ante una perturbación
 (ec. 1.39), mientras $x_2$ evoluciona de forma estándar.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""params_saddle = ArmsRaceParams(0.25, 0.50, 0.50, 0.25, 1.00, 1.00)
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""params_saddle = ArmsRaceParams(0.25, 0.50, 0.50, 0.25, 1.00, 1.00)
 z_initial_saddle = [-1.0, -1.0]
 z_final_saddle = [-0.5, -1.0]
 
@@ -222,13 +248,17 @@ title!("Respuesta de x2")
 xlabel!("Periodos")
 
 plot(p_s1, p_s2, layout=(1,2), size=(800, 350))
-"""))
+"""
+    )
+)
 
 # 12. SIMULACIÓN ALTERNATIVA SHOCK Z1
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 9. Simulación alternativa ante variaciones de shock
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 9. Simulación alternativa ante variaciones de shock
 
 En lugar de un widget interactivo (que puede requerir configuraciones de Jupyter complejas en Julia), definimos una función modularizada para graficar la transición del sistema para cualquier magnitud de shock sobre $z_1$. Puedes llamar a esta función cambiando el parámetro `z1_final` para ver el efecto.
-"""))
+""")
+)
 
 nb.cells.append(nbf.v4.new_code_cell(r"""function graficar_shock_z1(z1_final::Float64)
     x1_p, x2_p = simulate(params_global, z_initial, [z1_final, 1.0], 30, 2)
@@ -250,14 +280,16 @@ graficar_shock_z1(3.0)
 """))
 
 # 13. BUENAS PRÁCTICAS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 10. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 10. Buenas Prácticas Aplicadas en este Laboratorio
 
 Observa que `steady_state()`, `eigenvalues()`, `simulate()` y
 `simulate_saddle_path()` están documentadas, tienen restricciones de tipo y viven en
 `src/models/ArmsRace.jl` — no en este notebook. La lógica del modelo está separada
 de la visualización. Cuando hagas tu ABP, haz lo mismo: funciones reutilizables a `src/`,
 el notebook solo para exponer y narrar el análisis.
-"""))
+""")
+)
 
 # 14. CONCLUSIÓN
 nb.cells.append(nbf.v4.new_markdown_cell(r"""## 11. Conclusión
@@ -279,19 +311,19 @@ nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",
         "language": "julia",
-        "name": "julia-1.12"
+        "name": "julia-1.12",
     },
     "language_info": {
         "file_extension": ".jl",
         "mimetype": "application/julia",
         "name": "julia",
-        "version": "1.12.6"
-    }
+        "version": "1.12.6",
+    },
 }
 
 # Escribir el archivo
-dir_path = 'practicas/00-introduccion-sistemas-dinamicos/'
+dir_path = "practicas/00-introduccion-sistemas-dinamicos/"
 os.makedirs(dir_path, exist_ok=True)
-notebook_path = os.path.join(dir_path, 'julia.ipynb')
+notebook_path = os.path.join(dir_path, "julia.ipynb")
 nbf.write(nb, notebook_path)
 print(f"Notebook generado con éxito en {notebook_path}.")

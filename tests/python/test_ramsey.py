@@ -5,8 +5,9 @@ from macroaicomp.models.ramsey import (
     compute_ramsey_steady_state,
     compute_ramsey_transition_matrix,
     solve_ramsey_linearized,
-    solve_ramsey_nonlinear
+    solve_ramsey_nonlinear,
 )
+
 
 def test_ramsey_steady_state_calibration():
     """Verify that steady state values match Table 10.2 of the book."""
@@ -56,27 +57,26 @@ def test_ramsey_tfp_shock_simulation():
         n_final=0.02,
         beta_final=params.beta,
         T=T,
-        t_shock=t_shock
+        t_shock=t_shock,
     )
 
     # Capital cannot jump at shock period
     assert res_lin["k"][t_shock] == pytest.approx(ss_init["k"])
     # Deviation at shock period must be on saddle path
-    assert res_lin["c_hat"][t_shock] == pytest.approx(res_lin["k_hat"][t_shock] * 0.5751, abs=1e-3)
+    assert res_lin["c_hat"][t_shock] == pytest.approx(
+        res_lin["k_hat"][t_shock] * 0.5751, abs=1e-3
+    )
 
     # 2. Solve using non-linear fsolve
     res_nonlin = solve_ramsey_nonlinear(
-        params,
-        ss_init["k"],
-        A_path,
-        n_path,
-        T=T,
-        t_shock=t_shock
+        params, ss_init["k"], A_path, n_path, T=T, t_shock=t_shock
     )
 
     # Verify initial and final values match
     ss_final = compute_ramsey_steady_state(
-        RamseyParameters(alpha=params.alpha, beta=params.beta, delta=params.delta, n=0.02, A=1.05)
+        RamseyParameters(
+            alpha=params.alpha, beta=params.beta, delta=params.delta, n=0.02, A=1.05
+        )
     )
 
     # Capital transition is slow

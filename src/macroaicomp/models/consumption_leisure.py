@@ -35,7 +35,9 @@ class ConsumptionLeisureParameters:
     T: int = 30  # Horizonte temporal (número de períodos)
     beta: float = 0.97  # Factor de descuento del hogar (paciencia)
     R: float = 0.02  # Tipo de interés real neto
-    gamma: float = 0.5  # Peso del consumo en la función de utilidad Cobb-Douglas (el resto es ocio)
+    gamma: float = (
+        0.5  # Peso del consumo en la función de utilidad Cobb-Douglas (el resto es ocio)
+    )
     B0: float = 0.0  # Riqueza o activos financieros iniciales
 
 
@@ -150,13 +152,19 @@ def solve_direct_cvxpy(
         discount @ (gamma * cp.log(C) + (1.0 - gamma) * cp.log(1.0 - L))
     )
     prob = cp.Problem(objective, constraints)
-    
+
     # 3. Intentamos resolver con resolvedores convexos de alta precisión
-    for solver_name in ['CLARABEL', 'SCS', None]:
+    for solver_name in ["CLARABEL", "SCS", None]:
         try:
-            if solver_name == 'CLARABEL':
-                prob.solve(solver=cp.CLARABEL, tol_gap_abs=1e-11, tol_gap_rel=1e-11, tol_feas=1e-11, verbose=False)
-            elif solver_name == 'SCS':
+            if solver_name == "CLARABEL":
+                prob.solve(
+                    solver=cp.CLARABEL,
+                    tol_gap_abs=1e-11,
+                    tol_gap_rel=1e-11,
+                    tol_feas=1e-11,
+                    verbose=False,
+                )
+            elif solver_name == "SCS":
                 prob.solve(solver=cp.SCS, eps_abs=1e-9, eps_rel=1e-9, verbose=False)
             else:
                 prob.solve(verbose=False)

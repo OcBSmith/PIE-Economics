@@ -16,7 +16,7 @@ from scipy.integrate import solve_ivp
 @dataclass
 class ISLMParameters:
     """Parámetros de calibración para el modelo IS-LM dinámico.
-    
+
     Campos:
     - theta: Sensibilidad de la demanda de dinero al tipo de interés [θ] (cuánto cae la demanda si sube el interés)
     - psi: Sensibilidad de la demanda de dinero a la renta [ψ] (cuánto sube la demanda por motivo transacción)
@@ -40,7 +40,7 @@ class ISLMParameters:
 
 def default_calibration() -> ISLMParameters:
     """
-    Devuelve una instancia de `ISLMParameters` con los valores por defecto. 
+    Devuelve una instancia de `ISLMParameters` con los valores por defecto.
     Estos valores coinciden con el oráculo de MATLAB provisto en los apéndices.
     """
     return ISLMParameters()
@@ -63,17 +63,17 @@ def steady_state(params: ISLMParameters) -> Dict[str, float]:
     """
     # 1. En el equilibrio de largo plazo, la producción es igual a la potencial por la Curva de Phillips.
     y_bar = params.ypot0
-    
+
     # 2. Despejamos el nivel de precios P igualando la oferta y demanda de bienes y dinero.
     p_bar = (
         (params.theta * params.beta0) / params.beta1
         + params.m0
         - (params.psi + params.theta / params.beta1) * y_bar
     )
-    
+
     # 3. Sustituyendo P en la ecuación de la LM, obtenemos el tipo de interés de equilibrio.
     i_bar = (p_bar - params.m0 + params.psi * y_bar) / params.theta
-    
+
     # 4. La demanda agregada es la parte autónoma menos la parte sensible al interés.
     yd_bar = params.beta0 - params.beta1 * i_bar
 
@@ -118,7 +118,7 @@ def system_dynamics(t: float, state: np.ndarray, params: ISLMParameters) -> np.n
     # 3. Leyes de Movimiento (Derivadas temporales)
     # Ajuste gradual de la producción según exceso de demanda (mercado de bienes)
     dY = params.ni * (Yd - Y)
-    
+
     # Ajuste gradual de los precios (inflación) según la brecha de producción (Curva de Phillips)
     dP = params.mi * (Y - params.ypot0)
 

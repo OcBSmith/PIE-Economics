@@ -1,6 +1,6 @@
 import ast
 
-with open('generate_notebook.py', 'r', encoding='utf-8') as f:
+with open("generate_notebook.py", "r", encoding="utf-8") as f:
     code = f.read()
 
 try:

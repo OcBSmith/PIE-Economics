@@ -95,7 +95,7 @@ def compute_linearized_system(params: TobinQParameters) -> Dict[str, float]:
 
     # Coeficientes de la matriz de transición A del sistema dinámico linealizado:
     A11 = (R * phi - (alpha - 1.0) * (R + delta)) / phi
-    A12 = - (alpha - 1.0) * (R + delta)
+    A12 = -(alpha - 1.0) * (R + delta)
     A21 = 1.0 / phi
     A22 = 0.0
 
@@ -170,7 +170,9 @@ def solve_linearized_simulation(
 
     # 3. Inicialización usando desviaciones logarítmicas (hat) respecto al nuevo steady state:
     k_hat[0] = np.log(K0 / K_ss)
-    q_hat[0] = theta * k_hat[0]  # El ratio Q salta inmediatamente a la senda de silla estable
+    q_hat[0] = (
+        theta * k_hat[0]
+    )  # El ratio Q salta inmediatamente a la senda de silla estable
 
     K[0] = K0
     q[0] = np.exp(q_hat[0])
@@ -179,7 +181,7 @@ def solve_linearized_simulation(
     for t in range(1, T):
         k_hat[t] = (1.0 + lambda_1) * k_hat[t - 1]
         q_hat[t] = theta * k_hat[t]
-        
+
         K[t] = K_ss * np.exp(k_hat[t])
         q[t] = np.exp(q_hat[t])
 
@@ -200,7 +202,7 @@ def solve_nonlinear_simulation(
     """
     Simula la dinámica no lineal exacta del modelo mediante un resolvedor de ecuaciones simultáneas sobre toda la senda.
 
-    Encuentra las sendas de K y q que satisfacen conjuntamente la ecuación de Euler no lineal 
+    Encuentra las sendas de K y q que satisfacen conjuntamente la ecuación de Euler no lineal
     y la ley exacta de acumulación de capital.
 
     Parameters
@@ -232,21 +234,24 @@ def solve_nonlinear_simulation(
         K = np.zeros(T)
         q = np.zeros(T)
         K[0] = K0
-        K[1:] = vars_flat[:T-1]
-        q[:] = vars_flat[T-1:]
+        K[1:] = vars_flat[: T - 1]
+        q[:] = vars_flat[T - 1 :]
 
         eqs = []
 
         # A. Acumulación exacta de capital: K[t+1] = (1-delta)*K[t] + I_t, donde I_t considera costes de ajuste
         for t in range(T - 1):
             I_t = delta * K[t] + K[t] * (q[t] - 1.0) / phi
-            eqs.append(K[t+1] - ((1.0 - delta) * K[t] + I_t))
+            eqs.append(K[t + 1] - ((1.0 - delta) * K[t] + I_t))
 
         # B. Dinámica temporal de la Q de Euler: q[t+1] = (1+R_t)*q[t] - PMK_t + delta - (q[t]-1)^2 / (2*phi)
         for t in range(T - 1):
             R_t = R_path[min(t, len(R_path) - 1)]
             mpk = alpha * K[t] ** (alpha - 1.0)
-            eqs.append(q[t+1] - ((1.0 + R_t) * q[t] - mpk + delta - (q[t] - 1.0) ** 2 / (2.0 * phi)))
+            eqs.append(
+                q[t + 1]
+                - ((1.0 + R_t) * q[t] - mpk + delta - (q[t] - 1.0) ** 2 / (2.0 * phi))
+            )
 
         # C. Condición terminal (Condición de Transversalidad aproximada en T):
         eqs.append(q[-1] - 1.0)
@@ -260,8 +265,8 @@ def solve_nonlinear_simulation(
     K = np.zeros(T)
     q = np.zeros(T)
     K[0] = K0
-    K[1:] = sol[:T-1]
-    q[:] = sol[T-1:]
+    K[1:] = sol[: T - 1]
+    q[:] = sol[T - 1 :]
 
     I = delta * K + K * (q - 1.0) / phi
     Y = K**alpha

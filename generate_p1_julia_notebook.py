@@ -5,7 +5,9 @@ nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
 # Inyectamos una celda Markdown inicial con información del curso.
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P1: El Modelo IS-LM Dinámico en Tiempo Continuo (Julia)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# LAB-P1: El Modelo IS-LM Dinámico en Tiempo Continuo (Julia)
 - **ID de práctica:** LAB-P1-v1.0-julia
 - **Capítulo del libro:** Cap. 2 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
 - **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
@@ -14,22 +16,32 @@ nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P1: El Modelo IS-LM Dinámico
 - **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
 
 Objetivo: Analizar la respuesta dinámica y la transición temporal de una economía IS-LM cerrada ante shocks de políticas macroeconómicas (monetarias y fiscales) bajo un ajuste gradual de la producción e inflación por curva de Phillips. Versión en Julia.
-"""))
+"""
+    )
+)
 
 # 1.B. INSTRUCCIONES BÁSICAS (PEDAGÓGICAS) PARA ALUMNOS
 # Celda anti-frustración para usuarios que no conocen Jupyter.
-nb.cells.append(nbf.v4.new_markdown_cell(r"""> **👋 ¡Bienvenido/a a tu primer Cuaderno Interactivo!**
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""> **👋 ¡Bienvenido/a a tu primer Cuaderno Interactivo!**
 > Si nunca has usado Jupyter, aquí tienes las reglas básicas:
 > 1. Este documento está compuesto por **celdas** de texto (como esta) y de código.
 > 2. Para **ejecutar** una celda de código, haz clic en ella y pulsa `Shift + Enter` (o el botón ▶️ Play arriba).
 > 3. Las variables se guardan en memoria. Ejecuta las celdas **en orden** (de arriba a abajo).
 > 4. Si algo falla o se queda colgado, ve al menú superior: `Kernel` -> `Restart Kernel and Clear All Outputs` y empieza de nuevo. ¡No tengas miedo de romper nada!
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(nbf.v4.new_code_cell(r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""))
+"""
+    )
+)
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
 nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
@@ -42,7 +54,8 @@ using DifferentialEquations
 """))
 
 # 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Ecuaciones y Parámetros
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Ecuaciones y Parámetros
 
 El modelo IS-LM dinámico en tiempo continuo describe una economía cerrada con las siguientes relaciones estructurales:
 
@@ -54,7 +67,8 @@ El modelo IS-LM dinámico en tiempo continuo describe una economía cerrada con 
    $$\frac{dP}{dt} = \mu(Y - \bar{Y})$$
 4. **Ajuste del Producto (Dinámica de Producción):**
    $$\frac{dY}{dt} = \nu(Y^d - Y)$$
-"""))
+""")
+)
 
 # 5. CALIBRACIÓN DE PARÁMETROS
 nb.cells.append(nbf.v4.new_code_cell(r"""params = default_calibration(ISLMParams)
@@ -62,8 +76,10 @@ println(params)
 """))
 
 # 6. ESTADO ESTACIONARIO Y EQUILIBRIO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
-"""))
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
+""")
+)
 
 nb.cells.append(nbf.v4.new_code_cell(r"""ss = steady_state(params)
 
@@ -126,7 +142,8 @@ nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Simulación modular interacti
 Define una función para graficar la respuesta dinámica ante cualquier magnitud del shock sobre la oferta monetaria $m_0$.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""function graficar_shock_monetario(m0_val::Float64)
+nb.cells.append(
+    nbf.v4.new_code_cell(r"""function graficar_shock_monetario(m0_val::Float64)
     p_shock = ISLMParams(
         params.theta, params.psi, params.beta1, params.mi, params.ni, params.beta0,
         m0_val,
@@ -145,31 +162,34 @@ end
 
 # Ejemplo de ejecución
 graficar_shock_monetario(103.0)
-"""))
+""")
+)
 
 # 10. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
 
 El mismo modelo IS-LM dinámico muestra cómo la oferta monetaria tiene efectos reales a corto plazo (la producción responde y oscila), pero a largo plazo el dinero es neutral (la producción retorna a su nivel potencial $Y^*$ y solo cambian los precios nominales).
-"""))
+""")
+)
 
 # METADATOS DEL CUADERNO (KERNEL DE JULIA)
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",
         "language": "julia",
-        "name": "julia-1.12"
+        "name": "julia-1.12",
     },
     "language_info": {
         "file_extension": ".jl",
         "mimetype": "application/julia",
         "name": "julia",
-        "version": "1.12.6"
-    }
+        "version": "1.12.6",
+    },
 }
 
-dir_path = 'practicas/01-is-lm-dinamico/'
+dir_path = "practicas/01-is-lm-dinamico/"
 os.makedirs(dir_path, exist_ok=True)
-notebook_path = os.path.join(dir_path, 'julia.ipynb')
+notebook_path = os.path.join(dir_path, "julia.ipynb")
 nbf.write(nb, notebook_path)
 print(f"Notebook generado con éxito en {notebook_path}.")

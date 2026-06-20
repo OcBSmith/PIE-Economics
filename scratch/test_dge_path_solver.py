@@ -42,12 +42,13 @@ P_sorted[:, 1] = P[:, sorted_idx[1]]
 Q = np.linalg.inv(P_sorted)
 
 QM = Q @ M
-N2 = - QM[1, 0] / (mu_u - rho)
+N2 = -QM[1, 0] / (mu_u - rho)
 
-eta_ck = - Q[1, 1] / Q[1, 0]
+eta_ck = -Q[1, 1] / Q[1, 0]
 eta_ca = N2 / Q[1, 0]
 eta_kk = J[1, 0] * eta_ck + J[1, 1]
 eta_ka = J[1, 0] * eta_ca + M[1, 0]
+
 
 def solve_blanchard_khan(K0, A_path, T=100):
     k_hat = np.zeros(T)
@@ -59,7 +60,7 @@ def solve_blanchard_khan(K0, A_path, T=100):
     for t in range(T - 1):
         c_hat[t] = eta_ck * k_hat[t] + eta_ca * a_hat[t]
         k_hat[t + 1] = eta_kk * k_hat[t] + eta_ka * a_hat[t]
-        
+
     c_hat[-1] = eta_ck * k_hat[-1] + eta_ca * a_hat[-1]
 
     K = K_ss * (1.0 + k_hat)
@@ -68,60 +69,62 @@ def solve_blanchard_khan(K0, A_path, T=100):
     I = np.zeros(T)
 
     for t in range(T):
-        Y[t] = A_path[t] * K[t]**alpha
+        Y[t] = A_path[t] * K[t] ** alpha
         I[t] = Y[t] - C[t]
 
     return {"K": K, "C": C, "Y": Y, "I": I}
+
 
 def solve_nonlinear_simulation_path(K0, A_path, T=100):
     res_bk = solve_blanchard_khan(K0, A_path, T=T)
     K_guess = res_bk["K"]
     C_guess = res_bk["C"]
-    
+
     # Variables to solve: K[1], ..., K[T-1] (length T-1) and C[0], ..., C[T-1] (length T)
     def system_equations(vars_flat):
         K = np.zeros(T)
         C = np.zeros(T)
         K[0] = K0
-        K[1:] = vars_flat[:T-1]
-        C[:] = vars_flat[T-1:]
-        
+        K[1:] = vars_flat[: T - 1]
+        C[:] = vars_flat[T - 1 :]
+
         eqs = []
-        
+
         # 1. Capital accumulation: K[t+1] = (1-delta)*K[t] + Y_t - C[t]
         for t in range(T - 1):
             A_t = A_path[min(t, len(A_path) - 1)]
             Y_t = A_t * K[t] ** alpha
-            eqs.append(K[t+1] - ((1.0 - delta) * K[t] + Y_t - C[t]))
-            
+            eqs.append(K[t + 1] - ((1.0 - delta) * K[t] + Y_t - C[t]))
+
         # 2. Consumption Euler: C[t]^-1 = beta * E_t [ C[t+1]^-1 * (1 + R_{t+1} - delta) ]
         # which means: C[t+1] = beta * (1 + R_{t+1} - delta) * C[t]
         for t in range(T - 1):
             A_t1 = A_path[min(t + 1, len(A_path) - 1)]
-            R_t1 = alpha * A_t1 * K[t+1] ** (alpha - 1.0)
-            eqs.append(C[t+1] - (beta * (1.0 + R_t1 - delta) * C[t]))
-            
+            R_t1 = alpha * A_t1 * K[t + 1] ** (alpha - 1.0)
+            eqs.append(C[t + 1] - (beta * (1.0 + R_t1 - delta) * C[t]))
+
         # 3. Terminal condition: K[-1] = K_ss (or C[-1] = C_ss_final)
         eqs.append(K[-1] - K_ss)
-        
+
         return eqs
 
     guess_flat = np.concatenate([K_guess[1:], C_guess])
     sol = fsolve(system_equations, guess_flat)
-    
+
     K = np.zeros(T)
     C = np.zeros(T)
     K[0] = K0
-    K[1:] = sol[:T-1]
-    C[:] = sol[T-1:]
-    
+    K[1:] = sol[: T - 1]
+    C[:] = sol[T - 1 :]
+
     Y = np.zeros(T)
     I = np.zeros(T)
     for t in range(T):
-        Y[t] = A_path[min(t, len(A_path) - 1)] * K[t]**alpha
+        Y[t] = A_path[min(t, len(A_path) - 1)] * K[t] ** alpha
         I[t] = Y[t] - C[t]
-        
+
     return {"K": K, "C": C, "Y": Y, "I": I}
+
 
 # Test shock simulation
 T = 100
@@ -129,7 +132,7 @@ a_hat = np.zeros(T)
 a_hat[0] = 0.0
 a_hat[1] = 0.01
 for t in range(2, T):
-    a_hat[t] = rho * a_hat[t-1]
+    a_hat[t] = rho * a_hat[t - 1]
 A_path = np.exp(a_hat)
 
 res_nonlin = solve_nonlinear_simulation_path(K_ss, A_path, T=T)

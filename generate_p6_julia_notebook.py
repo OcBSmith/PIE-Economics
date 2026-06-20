@@ -4,7 +4,9 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P6: La Empresa y la Decisión de Inversión (Modelo Q de Tobin) (Julia)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# LAB-P6: La Empresa y la Decisión de Inversión (Modelo Q de Tobin) (Julia)
 - **ID de práctica:** LAB-P6-v1.0-julia
 - **Capítulo del libro:** Cap. 7 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
 - **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
@@ -13,12 +15,18 @@ nb.cells.append(nbf.v4.new_markdown_cell(r"""# LAB-P6: La Empresa y la Decisión
 - **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
 
 Objetivo: Modelar la decisión de inversión de una empresa competitiva que enfrenta costos de ajuste cuadráticos en la instalación del capital físico. Compararemos el solucionador log-linealizado frente al exacto no lineal. Versión en Julia.
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(nbf.v4.new_code_cell(r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""))
+"""
+    )
+)
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
 nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
@@ -31,14 +39,16 @@ using NLsolve
 """))
 
 # 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Tobin's Q y Costos de Ajuste
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Tobin's Q y Costos de Ajuste
 
 El problema de inversión intertemporal de la empresa con costos de ajuste cuadráticos es:
 $$\max_{\{I_t, K_{t+1}\}} \sum_{t=0}^{\infty} \frac{1}{(1+R)^t} \left[ K_t^\alpha - I_t - \frac{\phi}{2} \left( \frac{I_t - \delta K_t}{K_t} \right)^2 K_t \right]$$
 
 Sujeto a:
 $$K_{t+1} = (1-\delta) K_t + I_t$$
-"""))
+""")
+)
 
 # 5. CALIBRACIÓN DE PARÁMETROS
 nb.cells.append(nbf.v4.new_code_cell(r"""params = default_calibration(TobinQParams)
@@ -46,8 +56,10 @@ println(params)
 """))
 
 # 6. ESTADO ESTACIONARIO Y EQUILIBRIO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
-"""))
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
+""")
+)
 
 nb.cells.append(nbf.v4.new_code_cell(r"""ss = compute_steady_state(params)
 
@@ -70,10 +82,14 @@ println("OK: coincide con el oráculo.")
 """))
 
 # 8. SHOCK E COMPARACIÓN DE SOLUCIONADORES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Análisis de Shock y Comparación de Solucionadores (Lineal vs No Lineal)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 4. Análisis de Shock y Comparación de Solucionadores (Lineal vs No Lineal)
 
 Simulamos una caída permanente de la tasa de interés real del $4\%$ al $3\%$ en el período $t=2$ (segundo elemento del vector).
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_code_cell(r"""# Initial steady state capital at R = 4%
 ss_init = compute_steady_state(params, 0.04)
@@ -113,7 +129,8 @@ nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Simulación interactiva / mod
 Define una función para graficar la respuesta de la inversión ante cualquier tasa de interés de shock final.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""function graficar_shock_interes(R_final_val::Float64)
+nb.cells.append(
+    nbf.v4.new_code_cell(r"""function graficar_shock_interes(R_final_val::Float64)
     R_sh = zeros(T)
     R_sh[1] = 0.04
     R_sh[2:end] .= R_final_val
@@ -130,31 +147,34 @@ end
 
 # Ejemplo de ejecución
 graficar_shock_interes(0.02)
-"""))
+""")
+)
 
 # 10. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
 
 Este modelo ejemplifica cómo los costes de instalación retrasan la acumulación de capital. La variable flexible (Q de Tobin) salta instantáneamente para situarse sobre el camino de silla estable, guiando la acumulación lenta y gradual del capital hacia el nuevo estado estacionario.
-"""))
+""")
+)
 
 # METADATOS DEL CUADERNO (KERNEL DE JULIA)
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",
         "language": "julia",
-        "name": "julia-1.12"
+        "name": "julia-1.12",
     },
     "language_info": {
         "file_extension": ".jl",
         "mimetype": "application/julia",
         "name": "julia",
-        "version": "1.12.6"
-    }
+        "version": "1.12.6",
+    },
 }
 
-dir_path = 'practicas/06-tobin-q/'
+dir_path = "practicas/06-tobin-q/"
 os.makedirs(dir_path, exist_ok=True)
-notebook_path = os.path.join(dir_path, 'julia.ipynb')
+notebook_path = os.path.join(dir_path, "julia.ipynb")
 nbf.write(nb, notebook_path)
 print(f"Notebook generado con éxito en {notebook_path}.")

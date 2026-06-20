@@ -1,6 +1,11 @@
 import sys
-sys.path.append('c:/Users/AntonioRC/Desktop/PIE/src')
-from macroaicomp.models.ramsey import RamseyParameters, compute_ramsey_transition_matrix, compute_ramsey_steady_state
+
+sys.path.append("c:/Users/AntonioRC/Desktop/PIE/src")
+from macroaicomp.models.ramsey import (
+    RamseyParameters,
+    compute_ramsey_transition_matrix,
+    compute_ramsey_steady_state,
+)
 
 params = RamseyParameters()
 J, r_stable, r_unstable, theta = compute_ramsey_transition_matrix(params)

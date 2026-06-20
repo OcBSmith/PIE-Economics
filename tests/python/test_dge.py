@@ -31,7 +31,9 @@ def test_blanchard_khan_stability():
     Omega = 1.0 - params.beta + params.beta * params.delta
     Phi = 1.0 - params.beta + (1.0 - params.alpha) * params.beta * params.delta
 
-    A_static = np.array([[1.0, 0.0], [Omega, -params.alpha * params.beta * params.delta]])
+    A_static = np.array(
+        [[1.0, 0.0], [Omega, -params.alpha * params.beta * params.delta]]
+    )
     B = np.array([[0.0, params.alpha], [Phi, 0.0]])
     A_inv = np.linalg.inv(A_static)
 

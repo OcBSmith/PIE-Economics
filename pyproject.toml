@@ -24,7 +24,16 @@ where = ["src"]
 [tool.black]
 line-length = 88
 target-version = ["py311"]
+extend-exclude = 'scratch/'
 
 [tool.ruff]
 line-length = 88
 target-version = "py311"
+extend-exclude = ["scratch"]
+
+[tool.ruff.lint]
+ignore = [
+    "E741", # Ambiguous variable name (e.g. I for investment, O for ocio)
+    "F841", # Unused variable assignment
+    "E402", # Module level import not at top of file
+]

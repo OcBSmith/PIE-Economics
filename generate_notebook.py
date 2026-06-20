@@ -3,7 +3,9 @@ import nbformat as nbf
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# Práctica P1: El Modelo IS-LM Dinámico en Tiempo Continuo
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# Práctica P1: El Modelo IS-LM Dinámico en Tiempo Continuo
 **Proyecto MACRO-AI-COMP (Convocatoria INNOVA26, UMA / Banco Santander)**
 *   **Código de Práctica**: LAB-P1-v1.0
 *   **Capítulo de Referencia**: Capítulo 2, *An Introduction to Computational Macroeconomics* (Bongers, Gómez y Torres, Vernon Press, 2019)
@@ -18,7 +20,9 @@ Al finalizar esta práctica, serás capaz de:
 2.  **Visualizar** el principio de *neutralidad del dinero* a largo plazo y la no neutralidad a corto plazo.
 3.  **Aprender** a integrar sistemas de ecuaciones diferenciales ordinarias (ODEs) en Python utilizando `scipy.integrate.solve_ivp`.
 4.  **Evaluar** críticamente los resultados simulados comparándolos contra el "oráculo" analítico y los apéndices numéricos del libro.
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE REACTIVOS DIGITALES (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
@@ -30,7 +34,9 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIÓN DE MÓDULOS Y DEPENDENCIAS
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
@@ -53,10 +59,13 @@ sys.path.append('../../src')
 # - system_dynamics: Ecuaciones diferenciales dY/dt y dP/dt del modelo
 # - simulate_shock: Integra numéricamente la trayectoria temporal ante un shock
 from macroaicomp.models.islm import default_calibration, steady_state, simulate_shock, system_dynamics
-"""))
+"""
+    )
+)
 
 # 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Ecuaciones y Parámetros
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Ecuaciones y Parámetros
 
 El modelo IS-LM dinámico en tiempo continuo describe una economía cerrada con las siguientes relaciones estructurales:
 
@@ -106,10 +115,13 @@ $$\frac{dY}{dt} = \nu \left[ \beta_0 - \beta_1 \left( \frac{P - M + \psi Y}{\the
 $$\frac{dP}{dt} = \mu(Y - \bar{Y})$$
 
 Este es el sistema continuo bidimensional que resolveremos numéricamente. Las variables $Y$ y $P$ se comportan como variables de estado lentas (continuas), mientras que $i$ y $Y^d$ son variables algebraicas que pueden dar saltos discretos e instantáneos cuando ocurre una política económica imprevista.
-"""))
+""")
+)
 
 # 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # CALIBRACIÓN DE PARÁMETROS BASE (Apéndice D - MATLAB del Libro)
 # ==============================================================================
 
@@ -139,10 +151,13 @@ for param_name, value in vars(params).items():
     desc = descriptions.get(param_name, "Parámetro del modelo")
     print(f"  {param_name:<10} | {value:<6} | {desc:<50}")
 print("=" * 75)
-"""))
+"""
+    )
+)
 
 # 6. ESTADO ESTACIONARIO Y EQUILIBRIO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
 
 En el largo plazo, todas las variables dinámicas se estabilizan. Esto significa que las derivadas temporales son nulas:
 $$\frac{dY}{dt} = 0 \quad \text{y} \quad \frac{dP}{dt} = 0$$
@@ -161,9 +176,12 @@ A partir de estas dos condiciones de equilibrio de largo plazo, podemos deducir 
     *   *Cálculo:* $P^* = 0.5 \cdot 2.0 + 100.0 - 0.01 \cdot 2000.0 = 1.0 + 100.0 - 20.0 = 81.0$.
 
 A continuación, ejecutamos la función de cálculo numérico para confirmar que obtenemos los mismos resultados.
-"""))
+""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # CÁLCULO NUMÉRICO DEL ESTADO ESTACIONARIO ANALÍTICO
 # ==============================================================================
 
@@ -182,10 +200,14 @@ print(f"  Demanda agregada (Yd*)     : {ss['Yd']:.2f} (debe ser idéntica a Y*)"
 print(f"  Tasa de inflación (dP/dt)  : {ss['dP']:.2f} (estabilidad absoluta de precios)")
 print(f"  Ajuste del producto (dY/dt): {ss['dY']:.2f} (estabilidad de la producción)")
 print("-" * 65)
-"""))
+"""
+    )
+)
 
 # 6.5. DETRÁS DE LA ESCENA (RESOLUCIÓN NUMÉRICA)
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Detrás de la Escena: Resolución Numérica de ODEs en Python
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 3. Detrás de la Escena: Resolución Numérica de ODEs en Python
 
 Para simular una economía dinámica en tiempo continuo, debemos resolver el sistema de ecuaciones diferenciales:
 $$\frac{d\mathbf{x}}{dt} = \mathbf{f}(t, \mathbf{x}, \mathbf{\theta})$$
@@ -198,9 +220,13 @@ Donde el vector de estado es $\mathbf{x}(t) = [Y(t), P(t)]^T$ y los parámetros 
 4. **Condiciones Iniciales (`y0`):** La posición de partida del sistema en el instante $t=0$ (en este caso, los valores de producción y precios en el estado estacionario inicial pre-shock).
 
 A continuación se muestra de forma explícita cómo programar la dinámica del modelo utilizando la biblioteca estándar y los parámetros cargados. De este modo puedes ver la lógica que opera dentro de la biblioteca `macroaicomp`:
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r'''# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r'''# ==============================================================================
 # DEFINICIÓN DETALLADA Y COMENTADA DEL SISTEMA DINÁMICO IS-LM
 # ==============================================================================
 
@@ -256,10 +282,14 @@ def custom_system_dynamics(t, state, params):
     
     # Devolver las derivadas como un vector columna para que solve_ivp las integre
     return np.array([dY_dt, dP_dt])
-'''))
+'''
+    )
+)
 
 # 7. SIMULACIÓN INTERACTIVA ANTE SHOCKS Y DIAGRAMA DE FASES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Transición Dinámica y Shocks de Política (Simulación Interactiva)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 4. Transición Dinámica y Shocks de Política (Simulación Interactiva)
 
 ### 4.1 El Mecanismo de Transmisión Económica
 Cuando se produce un **shock monetario expansivo** ($M_0 \uparrow$):
@@ -276,9 +306,13 @@ Para analizar geométricamente la estabilidad y transición, construimos el diag
     Por debajo de esta curva, la producción se expande ($\dot{Y} > 0$); por encima, se contrae ($\dot{Y} < 0$).
 
 Utiliza los deslizadores a continuación para simular este comportamiento dinámico de forma interactiva:
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell(r'''# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r'''# ==============================================================================
 # SIMULACIÓN INTERACTIVA DE SHOCKS Y REPRESENTACIÓN EN 3 PANELES (CON DIAGRAMA DE FASES)
 # ==============================================================================
 
@@ -418,10 +452,13 @@ interact(
     m0_shock=FloatSlider(value=110.0, min=80.0, max=120.0, step=1.0, description='Oferta Monetaria (M0)'),
     beta0_shock=FloatSlider(value=2100.0, min=1800.0, max=2400.0, step=10.0, description='Gasto Autónomo (B0)')
 );
-'''))
+'''
+    )
+)
 
 # 8. VERIFICACIÓN CONTRA EL ORÁCULO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Verificación Numérica contra el Oráculo (Libro)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 5. Verificación Numérica contra el Oráculo (Libro)
 
 Para certificar la robustez científica de la simulación, validamos nuestros resultados frente al **Oráculo del Libro** (Apéndices D y E, resueltos originalmente en MATLAB y DYNARE).
 
@@ -432,19 +469,23 @@ Para certificar la robustez científica de la simulación, validamos nuestros re
 | **Tipo de Interés de Equilibrio ($i^*$)** | 2.00% | 2.00% | ✅ Verificado (tolerancia < 1e-6) |
 
 Esta validación cruzada garantiza que las diferencias temporales y dinámicas provienen exclusivamente de la aproximación de tiempo continuo frente a las aproximaciones discretas, sin errores conceptuales en las ecuaciones.
-"""))
+""")
+)
 
 # 9. BUENAS PRÁCTICAS ECONÓMICAS E INFORMÁTICAS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
 
 Fíjate en las siguientes decisiones de diseño técnico tomadas para estructurar esta práctica de forma ejemplar:
 1.  **Código Modular**: La lógica matemática de las ecuaciones del modelo y el solucionador numérico no están en este notebook. Están aislados en el archivo modular `src/macroaicomp/models/islm.py` para asegurar su reutilización.
 2.  **Calibración Aislada**: No hay números "mágicos" embebidos en el cálculo. Los parámetros se cargan desde un diccionario o estructura al principio.
 3.  **Independencia Didáctica**: El notebook funciona de manera autónoma como un *frontend* interactivo sin saturar al alumno con detalles de codificación de bajo nivel.
-"""))
+""")
+)
 
 # 10. PREGUNTAS DE REFLEXIÓN (BITÁCORA DEL ALUMNO)
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 7. Cuaderno de Bitácora (Actividades para el Alumno)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 7. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde en tu Cuaderno de Bitácora digital las siguientes preguntas basándote en tus observaciones de la simulación:
 
@@ -459,7 +500,7 @@ Responde en tu Cuaderno de Bitácora digital las siguientes preguntas basándote
     *   Observa la trayectoria de transición en el plano $(Y, P)$ en el Panel 3. ¿Por qué la trayectoria se inicia con un movimiento puramente horizontal hacia la derecha y no en diagonal desde el principio? Relaciona esto con el supuesto de rigidez instantánea de los precios ($P$) y el ajuste gradual de la renta ($Y$) ante excesos de demanda.
     *   Explica por qué la trayectoria cruza el locus $\dot{Y}=0$ con una tangente vertical. ¿Qué valor toma la derivada $\dot{Y}$ en ese instante exacto de cruce?
     *   ¿Cómo cambia la trayectoria en el diagrama si la velocidad de ajuste del mercado de bienes ($\nu$) disminuye drásticamente a $0.05$? Compárala con el comportamiento bajo la calibración original ($\nu=0.2$).
-"""))
+""")
+)
 
-nbf.write(nb, 'c:/Users/AntonioRC/Desktop/PIE/practicas/01-is-lm-dinamico/python.ipynb')
-
+nbf.write(nb, "c:/Users/AntonioRC/Desktop/PIE/practicas/01-is-lm-dinamico/python.ipynb")

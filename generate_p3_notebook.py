@@ -4,7 +4,8 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# Práctica P3: La Decisión Óptima de Consumo-Ahorro
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""# Práctica P3: La Decisión Óptima de Consumo-Ahorro
 **Proyecto MACRO-AI-COMP (Convocatoria INNOVA26, UMA / Banco Santander)**
 *   **Código de Práctica**: LAB-P3-v1.0
 *   **Capítulo de Referencia**: Capítulo 4, *An Introduction to Computational Macroeconomics* (Bongers, Gómez y Torres, Vernon Press, 2019)
@@ -20,7 +21,8 @@ Al finalizar esta práctica, serás capaz de:
 3.  **Analizar e Interpretar** la Ecuación de Euler y la condición de estado estacionario ($\bar{R} = \theta$).
 4.  **Resolver** sistemas de ecuaciones no lineales (FOC) usando `fsolve` y problemas de optimización convexa directamente en Python usando `cvxpy`.
 5.  **Evaluar** los efectos de shocks sobre los flujos de ingresos (salarios crecientes, jubilación) y de cambios en los parámetros del modelo ($\beta, R$) sobre los patrones de ahorro y deuda.
-"""))
+""")
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
@@ -32,7 +34,9 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
@@ -52,10 +56,14 @@ from macroaicomp.models.consumption_savings import (
     solve_foc_fsolve,
     solve_direct_cvxpy
 )
-"""))
+"""
+    )
+)
 
 # 4. MARCO TEÓRICO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Optimización Intertemporal del Consumidor
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 1. El Marco Teórico: Optimización Intertemporal del Consumidor
 
 El consumidor decide su nivel de consumo a lo largo de un ciclo de vida finito de $T$ periodos ($t = 0, 1, \dots, T-1$). Su objetivo es maximizar la suma descontada de utilidades subjetivas:
 
@@ -93,10 +101,14 @@ Esta relación revela que:
 *   Si $\beta (1+R) > 1$ (el interés real supera la impaciencia $\theta$), el consumo tiene **pendiente positiva** (crece con el tiempo).
 *   Si $\beta (1+R) < 1$ (la impaciencia supera el interés real), el consumo tiene **pendiente negativa** (decrece).
 *   Si $\beta (1+R) = 1$ (estado estacionario, $R = \theta$), el consumo es constante en todos los periodos.
-"""))
+"""
+    )
+)
 
 # 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # CALIBRACIÓN DE REFERENCIA (Capítulo 4 - Libro original)
 # ==============================================================================
 
@@ -108,10 +120,14 @@ print(f"  Duración del ciclo de vida (T)  : {params.T} periodos")
 print(f"  Factor de descuento (beta)      : {params.beta} (equivale a theta ≈ {((1-params.beta)/params.beta)*100:.2f}%)")
 print(f"  Tasa de interés real (R)        : {params.R*100:.2f}%")
 print("-" * 50)
-"""))
+"""
+    )
+)
 
 # 6. RESOLUCIÓN CON AMBOS SOLVER
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Métodos de Resolución Computacional: FOC vs Optimización Directa
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2. Métodos de Resolución Computacional: FOC vs Optimización Directa
 
 En macroeconomía aplicada, podemos resolver este tipo de modelos de dos formas:
 1.  **Resolución de FOC (`fsolve`)**: Planteando las $T$ ecuaciones no lineales de Euler y la condición terminal $B_{T-1}=0$ para hallar el vector de consumo $C$.
@@ -120,7 +136,9 @@ En macroeconomía aplicada, podemos resolver este tipo de modelos de dos formas:
 A continuación, ejecutaremos ambos métodos con la calibración base y un salario constante $W=10$ para comprobar su equivalencia numérica.
 
 *Nota sobre la errata de MATLAB:* La formulación en `fsolve` incluye la corrección terminal del salario ($W_T$) para forzar a que el saldo final $B_T$ sea exactamente $0.0$, emulando el Solver de Excel.
-"""))
+"""
+    )
+)
 
 # 7. CÓDIGO DE EJECUCIÓN DE AMBOS SOLVERS
 nb.cells.append(nbf.v4.new_code_cell(r"""# Generar salario constante
@@ -153,7 +171,9 @@ else:
 """))
 
 # 8. DETRÁS DE LA ESCENA (CÓDIGO FOC DETALLADO)
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Detrás de la Escena: El Sistema de Ecuaciones FOC de la Ecuación de Euler
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 3. Detrás de la Escena: El Sistema de Ecuaciones FOC de la Ecuación de Euler
 
 Para comprender cómo funciona el resolvedor `fsolve`, es fundamental observar las ecuaciones que plantea internamente la función. A continuación se detalla la lógica de la función residual:
 
@@ -166,10 +186,13 @@ Para comprender cómo funciona el resolvedor `fsolve`, es fundamental observar l
     $$f(T-1) = C_{T-1} - (1+R)B_{T-2} - W_{T-1} = 0$$
 
 Esto da un sistema cuadrado de $T$ ecuaciones con $T$ incógnitas ($C_0, \dots, C_{T-1}$), que `fsolve` resuelve iterativamente mediante una aproximación lineal del Jacobiano (método de tipo Newton-Raphson).
-"""))
+"""
+    )
+)
 
 # 9. SIMULACIÓN INTERACTIVA EN 3 PANELES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Simulación Interactiva y Respuesta ante Shocks
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 4. Simulación Interactiva y Respuesta ante Shocks
 
 A continuación, implementaremos la visualización didáctica en **3 paneles**:
 *   **Panel 1 (Consumo e Ingresos)**: Muestra la trayectoria de consumo óptimo $C_t$ contra el ingreso salarial $W_t$.
@@ -183,10 +206,13 @@ Podrás interactuar con los deslizadores para modificar:
     *   `constant`: Ingreso constante de 10.
     *   `increasing`: Salario creciente (representa acumulación de experiencia).
     *   `retirement`: Jubilación a partir del periodo 20 (salario cae a 0).
-"""))
+""")
+)
 
 # 10. CÓDIGO DE GRAFICACIÓN E INTERACTIVIDAD
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # FUNCIÓN DE GRAFICACIÓN INTERACTIVA EN 3 PANELES
 # ==============================================================================
 
@@ -240,17 +266,22 @@ interact(
     R_val=FloatSlider(value=0.02, min=-0.05, max=0.15, step=0.01, description='Interés (R)'),
     profile=Dropdown(options=["constant", "increasing", "retirement"], value="constant", description='Perfil Salarial')
 );
-"""))
+"""
+    )
+)
 
 # 11. BUENAS PRÁCTICAS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Higiene del Sistema de Optimización**: El modelo evita declarar variables globales. Los resolvedores reciben un dataclass `ConsumptionSavingParameters` facilitando la escalabilidad del modelo.
 2.  **Modularización Externa**: El "motor matemático" se aloja de forma independiente en `src/macroaicomp/models/consumption_savings.py`, permitiendo verificar la corrección del solver con pytest antes de renderizar la interfaz de usuario.
 3.  **Control de Versiones Limpio**: Para cumplir con la directiva del proyecto, los metadatos y outputs interactivos de este cuaderno son removidos automáticamente por `nbstripout` antes de confirmar cualquier commit.
-"""))
+""")
+)
 
 # 12. CUADERNO DE BITÁCORA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Cuaderno de Bitácora (Actividades para el Alumno)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 6. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde a las siguientes cuestiones analíticas en tu Cuaderno de Bitácora a partir del análisis interactivo:
 
@@ -263,8 +294,11 @@ Responde a las siguientes cuestiones analíticas en tu Cuaderno de Bitácora a p
     *   ¿Cómo se modifica este comportamiento si la tasa de interés real ($R$) se incrementa sustancialmente a $10\%$? ¿Qué ocurre con el nivel de consumo en la jubilación?
 3.  **Perfecta Movilidad en Mercados de Capitales**:
     *   En este modelo asumimos mercados de capitales perfectos (sin restricciones de liquidez). Si el banco impusiese una restricción que impidiera el endeudamiento ($B_t \ge 0$), ¿cómo afectaría esto a la trayectoria de consumo del perfil `increasing`? Justifica tu respuesta teóricamente.
-"""))
+""")
+)
 
-os.makedirs('c:/Users/AntonioRC/Desktop/PIE/practicas/03-consumo-ahorro/', exist_ok=True)
-nbf.write(nb, 'c:/Users/AntonioRC/Desktop/PIE/practicas/03-consumo-ahorro/python.ipynb')
+os.makedirs(
+    "c:/Users/AntonioRC/Desktop/PIE/practicas/03-consumo-ahorro/", exist_ok=True
+)
+nbf.write(nb, "c:/Users/AntonioRC/Desktop/PIE/practicas/03-consumo-ahorro/python.ipynb")
 print("Notebook generado con éxito.")

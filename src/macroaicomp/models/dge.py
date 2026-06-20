@@ -24,10 +24,12 @@ class DGEParameters:
     """Parámetros de calibración para el modelo básico de Equilibrio General Dinámico (Cap. 8)."""
 
     alpha: float = 0.35  # Participación del capital en la producción (Cobb-Douglas)
-    beta: float = 0.96   # Factor de descuento intertemporal del hogar (paciencia)
+    beta: float = 0.96  # Factor de descuento intertemporal del hogar (paciencia)
     delta: float = 0.06  # Tasa de depreciación física del capital
-    rho: float = 0.80    # Persistencia autorregresiva AR(1) del shock tecnológico (TFP)
-    A: float = 1.0       # Estado estacionario de la TFP (Productividad Total de los Factores)
+    rho: float = 0.80  # Persistencia autorregresiva AR(1) del shock tecnológico (TFP)
+    A: float = (
+        1.0  # Estado estacionario de la TFP (Productividad Total de los Factores)
+    )
 
 
 def compute_steady_state(params: DGEParameters) -> Dict[str, float]:
@@ -55,16 +57,16 @@ def compute_steady_state(params: DGEParameters) -> Dict[str, float]:
 
     # 1. Tasa de interés real de largo plazo a partir de la paciencia intertemporal:
     R_ss = 1.0 / beta - 1.0 + delta
-    
+
     # 2. Stock de capital per cápita estacionario:
     K_ss = (alpha * A / R_ss) ** (1.0 / (1.0 - alpha))
-    
+
     # 3. Producción agregada estacionaria:
     Y_ss = A * K_ss**alpha
-    
+
     # 4. Inversión para cubrir la depreciación:
     I_ss = delta * K_ss
-    
+
     # 5. Consumo de equilibrio:
     C_ss = Y_ss - I_ss
 
@@ -143,10 +145,10 @@ def solve_blanchard_khan(
 
     # Desacoplamiento del componente explosivo:
     QM = Q @ M
-    N2 = - QM[1, 0] / (mu_u - rho)
+    N2 = -QM[1, 0] / (mu_u - rho)
 
     # Coeficientes óptimos de política económica (reglas de decisión linealizadas):
-    eta_ck = - Q[1, 1] / Q[1, 0]
+    eta_ck = -Q[1, 1] / Q[1, 0]
     eta_ca = N2 / Q[1, 0]
     eta_kk = J[1, 0] * eta_ck + J[1, 1]
     eta_ka = J[1, 0] * eta_ca + M[1, 0]
@@ -161,7 +163,7 @@ def solve_blanchard_khan(
     for t in range(T - 1):
         c_hat[t] = eta_ck * k_hat[t] + eta_ca * a_hat[t]
         k_hat[t + 1] = eta_kk * k_hat[t] + eta_ka * a_hat[t]
-        
+
     c_hat[-1] = eta_ck * k_hat[-1] + eta_ca * a_hat[-1]
 
     # 6. Reconvertimos las variables de desviaciones a niveles absolutos de mercado:
@@ -171,7 +173,7 @@ def solve_blanchard_khan(
     I = np.zeros(T)
 
     for t in range(T):
-        Y[t] = A_path[t] * K[t]**alpha
+        Y[t] = A_path[t] * K[t] ** alpha
         I[t] = Y[t] - C[t]
 
     return {"K": K, "C": C, "Y": Y, "I": I}
@@ -186,7 +188,7 @@ def solve_nonlinear_simulation(
     """
     Resuelve el modelo DGE exacto no lineal mediante un solucionador de ecuaciones simultáneas sobre toda la senda.
 
-    Encuentra las sendas completas de K y C que satisfacen conjuntamente la ecuación de Euler no lineal 
+    Encuentra las sendas completas de K y C que satisfacen conjuntamente la ecuación de Euler no lineal
     y la ley exacta de acumulación de capital.
 
     Parameters
@@ -221,9 +223,9 @@ def solve_nonlinear_simulation(
         K = np.zeros(T)
         C = np.zeros(T)
         K[0] = K0
-        K[1:] = vars_flat[:T-1]
+        K[1:] = vars_flat[: T - 1]
         q = len(vars_flat)
-        C[:] = vars_flat[T-1:]
+        C[:] = vars_flat[T - 1 :]
 
         eqs = []
 
@@ -231,14 +233,14 @@ def solve_nonlinear_simulation(
         for t in range(T - 1):
             A_t = A_path[min(t, len(A_path) - 1)]
             Y_t = A_t * K[t] ** alpha
-            eqs.append(K[t+1] - ((1.0 - delta) * K[t] + Y_t - C[t]))
+            eqs.append(K[t + 1] - ((1.0 - delta) * K[t] + Y_t - C[t]))
 
         # B. Ecuación de Euler de Consumo exacta: C[t+1] = beta * (1 + R_{t+1} - delta) * C[t]
         for t in range(T - 1):
             A_t1 = A_path[min(t + 1, len(A_path) - 1)]
-            K_next_bounded = np.maximum(K[t+1], 1e-8)
+            K_next_bounded = np.maximum(K[t + 1], 1e-8)
             R_t1 = alpha * A_t1 * K_next_bounded ** (alpha - 1.0)
-            eqs.append(C[t+1] - (beta * (1.0 + R_t1 - delta) * C[t]))
+            eqs.append(C[t + 1] - (beta * (1.0 + R_t1 - delta) * C[t]))
 
         # C. Condición terminal (Transversalidad): K en el último período debe converger a K_ss
         eqs.append(K[-1] - K_ss)
@@ -252,13 +254,13 @@ def solve_nonlinear_simulation(
     K = np.zeros(T)
     C = np.zeros(T)
     K[0] = K0
-    K[1:] = sol[:T-1]
-    C[:] = sol[T-1:]
+    K[1:] = sol[: T - 1]
+    C[:] = sol[T - 1 :]
 
     Y = np.zeros(T)
     I = np.zeros(T)
     for t in range(T):
-        Y[t] = A_path[min(t, len(A_path) - 1)] * K[t]**alpha
+        Y[t] = A_path[min(t, len(A_path) - 1)] * K[t] ** alpha
         I[t] = Y[t] - C[t]
 
     return {"K": K, "C": C, "Y": Y, "I": I}

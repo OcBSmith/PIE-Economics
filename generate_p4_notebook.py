@@ -4,7 +4,9 @@ import os
 nb = nbf.v4.new_notebook()
 
 # 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""# Práctica P4: La Elección Óptima de Consumo-Ocio y Ahorro
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""# Práctica P4: La Elección Óptima de Consumo-Ocio y Ahorro
 **Proyecto MACRO-AI-COMP (Convocatoria INNOVA26, UMA / Banco Santander)**
 *   **Código de Práctica**: LAB-P4-v1.0
 *   **Capítulo de Referencia**: Capítulo 5, *An Introduction to Computational Macroeconomics* (Bongers, Gómez y Torres, Vernon Press, 2019)
@@ -20,7 +22,9 @@ Al finalizar esta práctica, serás capaz de:
 3.  **Visualizar e Interpretar** el efecto renta y el efecto sustitución ante shocks salariales sobre la oferta de trabajo.
 4.  **Resolver** sistemas de ecuaciones no lineales acoplados de tamaño $2T \times 2T$ en Python empleando `fsolve` y optimización convexa con `cvxpy`.
 5.  **Analizar** la sensibilidad del modelo ante cambios en las preferencias por el ocio (parámetro $\gamma$) y en los rendimientos financieros ($R$).
-"""))
+"""
+    )
+)
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
@@ -32,7 +36,9 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
@@ -51,10 +57,14 @@ from macroaicomp.models.consumption_leisure import (
     solve_foc_fsolve,
     solve_direct_cvxpy
 )
-"""))
+"""
+    )
+)
 
 # 4. MARCO TEÓRICO
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Consumo, Ahorro y Oferta de Trabajo Endógena
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 1. El Marco Teórico: Consumo, Ahorro y Oferta de Trabajo Endógena
 
 En este modelo, el hogar obtiene satisfacción de dos bienes: el consumo ($C_t$) y el ocio ($O_t$). El ocio representa el tiempo discrecional no dedicado a actividades laborales. Normalizando el tiempo total diario a $1$, la restricción de tiempo es:
 
@@ -81,10 +91,14 @@ El lagrangiano de este problema produce dos condiciones fundamentales:
     $$L_t = 1 - \left(\frac{1-\gamma}{\gamma}\right)\frac{C_t}{W_t}$$
 2.  **Condición Intertemporal (Ecuación de Euler):**
     $$C_{t+1} = \beta (1 + R_t) C_t$$
-"""))
+"""
+    )
+)
 
 # 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # CALIBRACIÓN DE REFERENCIA (Capítulo 5 - Libro original)
 # ==============================================================================
 
@@ -97,7 +111,9 @@ print(f"  Factor de descuento (beta)       : {params.beta} (theta ≈ {((1-param
 print(f"  Peso del consumo en utilidad (γ) : {params.gamma:.2f}")
 print(f"  Tasa de interés real (R)         : {params.R*100:.2f}%")
 print("-" * 60)
-"""))
+"""
+    )
+)
 
 # 6. COMPARATIVA DE SOLVERS
 nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Solución Numérica: fsolve vs cvxpy
@@ -156,7 +172,9 @@ Interactúa con los sliders para analizar los efectos renta y sustitución:
 """))
 
 # 9. CÓDIGO DE GRAFICACIÓN E INTERACTIVIDAD
-nb.cells.append(nbf.v4.new_code_cell(r"""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
 # FUNCIÓN DE GRAFICACIÓN INTERACTIVA EN 3 PANELES
 # ==============================================================================
 
@@ -213,10 +231,13 @@ interact(
     R_val=FloatSlider(value=0.02, min=-0.05, max=0.15, step=0.01, description='Interés (R)'),
     W_val=FloatSlider(value=30.0, min=10.0, max=100.0, step=5.0, description='Salario (W)')
 );
-"""))
+"""
+    )
+)
 
 # 10. CUADERNO DE BITÁCORA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde a las siguientes cuestiones analíticas en tu Cuaderno de Bitácora tras interactuar con la simulación:
 
@@ -229,15 +250,18 @@ Responde a las siguientes cuestiones analíticas en tu Cuaderno de Bitácora tra
 3.  **La Dinámica del Ahorro y la Tasa de Interés**:
     *   Fija $R = 10\%$ y describe la trayectoria de acumulación de activos financieros. ¿El individuo es deudor o acreedor la mayor parte de su vida?
     *   ¿Por qué el individuo reduce drásticamente su ocio (trabaja más) al principio de su ciclo de vida cuando la tasa de interés es muy elevada? Explica la ganancia intertemporal de ahorrar capital temprano.
-"""))
+""")
+)
 
 # 11. BUENAS PRÁCTICAS
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Aislamiento Paramétrico**: Las rutinas matemáticas y de simulación están completamente desacopladas de la interfaz visual, residiendo en `src/macroaicomp/models/consumption_leisure.py`.
 2.  **Control de Calidad Automático**: Se ha verificado que la simulación es robusta mediante tests unitarios automatizados (`pytest`).
 3.  **Control de Versiones Limpio**: Este cuaderno ha sido limpiado de metadatos volátiles mediante `nbstripout` antes de guardarse en el repositorio.
-"""))
+""")
+)
 
-os.makedirs('c:/Users/AntonioRC/Desktop/PIE/practicas/04-consumo-ocio/', exist_ok=True)
-nbf.write(nb, 'c:/Users/AntonioRC/Desktop/PIE/practicas/04-consumo-ocio/python.ipynb')
+os.makedirs("c:/Users/AntonioRC/Desktop/PIE/practicas/04-consumo-ocio/", exist_ok=True)
+nbf.write(nb, "c:/Users/AntonioRC/Desktop/PIE/practicas/04-consumo-ocio/python.ipynb")
 print("Notebook generado con éxito.")

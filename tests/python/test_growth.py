@@ -3,8 +3,9 @@ import pytest
 from macroaicomp.models.growth import (
     SolowSwanParameters,
     compute_solow_steady_state,
-    simulate_solow_swan
+    simulate_solow_swan,
 )
+
 
 def test_solow_steady_state_calibration():
     """Verify that steady state calculations match the values in the book Table 9.3."""
@@ -59,7 +60,9 @@ def test_savings_shock_dynamics():
     assert res["gy"][1] > 0.0
     for t in range(2, T - 1):
         assert res["gy"][t] > 0.0
-        assert res["gy"][t] < res["gy"][t - 1]  # growth slows down as it approaches steady state
+        assert (
+            res["gy"][t] < res["gy"][t - 1]
+        )  # growth slows down as it approaches steady state
     assert res["gy"][-1] == pytest.approx(0.0, abs=1e-2)
 
 

@@ -25,6 +25,7 @@ c_ss_post = y_ss_post - (delta + n) * k_ss_post
 
 k0 = k_ss_pre
 
+
 def simulate(c_shock):
     k_sim = np.zeros(T - t_shock)
     c_sim = np.zeros(T - t_shock)
@@ -40,10 +41,14 @@ def simulate(c_shock):
         c_sim[t + 1] = beta * (1.0 + mpk_t1 - delta) * c_sim[t]
     return k_sim, c_sim
 
+
 def residuals(c_shock_arr):
     k_sim, _ = simulate(c_shock_arr[0])
     return [k_sim[-1] - k_ss_post]
 
+
 c0_guess = [1.476379]
 sol = fsolve(residuals, c0_guess)
-print(f"Sol: {sol[0]:.12f}, Converged? {np.abs(simulate(sol[0])[0][-1] - k_ss_post) < 1e-5}")
+print(
+    f"Sol: {sol[0]:.12f}, Converged? {np.abs(simulate(sol[0])[0][-1] - k_ss_post) < 1e-5}"
+)

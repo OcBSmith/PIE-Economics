@@ -1,12 +1,14 @@
 import numpy as np
 from scipy.optimize import fsolve
 
+
 # Parameters class
 class TobinQParameters:
     alpha: float = 0.35
     delta: float = 0.06
     phi: float = 10.0
     R: float = 0.04
+
 
 def compute_steady_state(params, R=None):
     R_val = R if R is not None else params.R
@@ -18,6 +20,7 @@ def compute_steady_state(params, R=None):
     Y_ss = K_ss**alpha
     return {"q": q_ss, "K": K_ss, "I": I_ss, "Y": Y_ss}
 
+
 def compute_linearized_system(params):
     alpha = params.alpha
     delta = params.delta
@@ -25,7 +28,7 @@ def compute_linearized_system(params):
     R = params.R
 
     A11 = (R * phi - (alpha - 1.0) * (R + delta)) / phi
-    A12 = - (alpha - 1.0) * (R + delta)
+    A12 = -(alpha - 1.0) * (R + delta)
     A21 = 1.0 / phi
     A22 = 0.0
 
@@ -53,6 +56,7 @@ def compute_linearized_system(params):
         "theta_book": theta_book,
         "A": A,
     }
+
 
 def solve_linearized_simulation(params, K0, R_path, T=100):
     params_post = TobinQParameters()
@@ -82,7 +86,7 @@ def solve_linearized_simulation(params, K0, R_path, T=100):
     for t in range(1, T):
         k_hat[t] = (1.0 + lambda_1) * k_hat[t - 1]
         q_hat[t] = theta * k_hat[t]
-        
+
         K[t] = K_ss * np.exp(k_hat[t])
         q[t] = np.exp(q_hat[t])
 
@@ -90,6 +94,7 @@ def solve_linearized_simulation(params, K0, R_path, T=100):
     Y = K**params.alpha
 
     return {"K": K, "q": q, "I": I, "Y": Y}
+
 
 def solve_nonlinear_simulation(params, K0, R_path, T=100):
     alpha = params.alpha
@@ -104,19 +109,22 @@ def solve_nonlinear_simulation(params, K0, R_path, T=100):
         K = np.zeros(T)
         q = np.zeros(T)
         K[0] = K0
-        K[1:] = vars_flat[:T-1]
-        q[:] = vars_flat[T-1:]
-        
+        K[1:] = vars_flat[: T - 1]
+        q[:] = vars_flat[T - 1 :]
+
         eqs = []
         for t in range(T - 1):
             I_t = delta * K[t] + K[t] * (q[t] - 1.0) / phi
-            eqs.append(K[t+1] - ((1.0 - delta) * K[t] + I_t))
-            
+            eqs.append(K[t + 1] - ((1.0 - delta) * K[t] + I_t))
+
         for t in range(T - 1):
             R_t = R_path[min(t, len(R_path) - 1)]
             mpk = alpha * K[t] ** (alpha - 1.0)
-            eqs.append(q[t+1] - ((1.0 + R_t) * q[t] - mpk + delta - (q[t] - 1.0) ** 2 / (2.0 * phi)))
-            
+            eqs.append(
+                q[t + 1]
+                - ((1.0 + R_t) * q[t] - mpk + delta - (q[t] - 1.0) ** 2 / (2.0 * phi))
+            )
+
         eqs.append(q[-1] - 1.0)
         return eqs
 
@@ -126,13 +134,14 @@ def solve_nonlinear_simulation(params, K0, R_path, T=100):
     K = np.zeros(T)
     q = np.zeros(T)
     K[0] = K0
-    K[1:] = sol[:T-1]
-    q[:] = sol[T-1:]
+    K[1:] = sol[: T - 1]
+    q[:] = sol[T - 1 :]
 
     I = delta * K + K * (q - 1.0) / phi
     Y = K**alpha
 
     return {"K": K, "q": q, "I": I, "Y": Y}
+
 
 # Validate with tests:
 params = TobinQParameters()
@@ -154,7 +163,11 @@ print(f"res_lin q[0]: {res_lin['q'][0]:.6f} (expected: 1.1033)")
 print(f"res_nonlin q[0]: {res_nonlin['q'][0]:.6f}")
 
 print(f"q[-1] lin: {res_lin['q'][-1]:.6f}, nonlin: {res_nonlin['q'][-1]:.6f}")
-print(f"Max rel diff K: {np.max(np.abs(res_lin['K'] - res_nonlin['K']) / res_lin['K']):.6f}")
-print(f"Max rel diff q: {np.max(np.abs(res_lin['q'] - res_nonlin['q']) / res_lin['q']):.6f}")
+print(
+    f"Max rel diff K: {np.max(np.abs(res_lin['K'] - res_nonlin['K']) / res_lin['K']):.6f}"
+)
+print(
+    f"Max rel diff q: {np.max(np.abs(res_lin['q'] - res_nonlin['q']) / res_lin['q']):.6f}"
+)
 print(f"Allclose K? {np.allclose(res_lin['K'], res_nonlin['K'], rtol=1e-2)}")
 print(f"Allclose q? {np.allclose(res_lin['q'], res_nonlin['q'], rtol=1e-2)}")

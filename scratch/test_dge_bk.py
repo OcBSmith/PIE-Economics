@@ -53,12 +53,12 @@ Q = np.linalg.inv(P_sorted)
 # E_t y2_{t+1} = mu_u * y2_t + (Q @ M)_2 * a_hat_t
 # y2_t = N2 * a_hat_t  where N2 = - (Q @ M)_2 / (mu_u - rho)
 QM = Q @ M
-N2 = - QM[1, 0] / (mu_u - rho)
+N2 = -QM[1, 0] / (mu_u - rho)
 
 # Policy function coefficients:
 # Q21 * c_hat + Q22 * k_hat = N2 * a_hat
 # => c_hat = eta_ck * k_hat + eta_ca * a_hat
-eta_ck = - Q[1, 1] / Q[1, 0]
+eta_ck = -Q[1, 1] / Q[1, 0]
 eta_ca = N2 / Q[1, 0]
 
 # Transition function coefficients:
@@ -86,15 +86,15 @@ a_hat = np.zeros(T)
 a_hat[0] = 0.0
 a_hat[1] = 0.01
 for t in range(2, T):
-    a_hat[t] = rho * a_hat[t-1]
-    
+    a_hat[t] = rho * a_hat[t - 1]
+
 k_hat = np.zeros(T)
 c_hat = np.zeros(T)
 
 for t in range(T - 1):
     c_hat[t] = eta_ck * k_hat[t] + eta_ca * a_hat[t]
     k_hat[t + 1] = eta_kk * k_hat[t] + eta_ka * a_hat[t]
-    
+
 c_hat[-1] = eta_ck * k_hat[-1] + eta_ca * a_hat[-1]
 
 # Convert to levels
@@ -105,7 +105,7 @@ I = np.zeros(T)
 A_path = np.exp(a_hat)
 
 for t in range(T):
-    Y[t] = A_path[t] * K[t]**alpha
+    Y[t] = A_path[t] * K[t] ** alpha
     I[t] = Y[t] - C[t]
 
 print(f"\nSIMULATION (t=1):")

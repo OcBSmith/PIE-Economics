@@ -7,16 +7,19 @@ R_init = 0.04
 R_final = 0.03
 T = 100
 
+
 def compute_ss(R_val):
     K_ss = ((R_val + delta) / alpha) ** (1.0 / (alpha - 1.0))
     q_ss = 1.0
     return K_ss, q_ss
+
 
 K_ss_init, _ = compute_ss(R_init)
 K_ss_final, _ = compute_ss(R_final)
 
 R_path = np.full(T, R_final)
 R_path[0] = R_init
+
 
 def simulate(q0):
     K = np.zeros(T)
@@ -33,13 +36,14 @@ def simulate(q0):
         q[t + 1] = (1.0 + R_t) * q[t] - mpk + delta + (q[t] - 1.0) ** 2 / (2.0 * phi)
     return K, q
 
+
 low = 1.05
 high = 1.15
 for i in range(50):
     mid = (low + high) / 2.0
     K, q = simulate(mid)
     final_q = q[-1]
-    
+
     # If final_q is too large (explodes to inf), q0 is too high
     # If final_q is too small (goes to -inf), q0 is too low
     # Since we have nan or inf, let's look at where it ends up
@@ -67,7 +71,7 @@ for i in range(50):
                 high = mid
             else:
                 low = mid
-                
+
     if i % 5 == 0:
         print(f"Iter {i}: mid = {mid:.12f}, final_q = {final_q:.6f}")
 

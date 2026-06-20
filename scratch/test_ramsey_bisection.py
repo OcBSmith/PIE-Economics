@@ -24,6 +24,7 @@ c_ss_post = y_ss_post - (delta + n) * k_ss_post
 
 k0 = k_ss_pre
 
+
 def simulate(c_shock):
     k_sim = np.zeros(T - t_shock)
     c_sim = np.zeros(T - t_shock)
@@ -40,6 +41,7 @@ def simulate(c_shock):
         c_sim[t + 1] = beta * (1.0 + mpk_t1 - delta) * c_sim[t]
     return k_sim, c_sim
 
+
 # Let's search c_shock between 1.45 and 1.50
 low = 1.45
 high = 1.50
@@ -47,16 +49,18 @@ for i in range(50):
     mid = (low + high) / 2.0
     k_sim, c_sim = simulate(mid)
     final_k = k_sim[-1]
-    
+
     # If final_k is too small, it means we consumed too much (c_shock is too high)
     # If final_k is too large, it means we consumed too little (c_shock is too low)
     if final_k < k_ss_post:
         high = mid
     else:
         low = mid
-        
+
     if i % 5 == 0:
-        print(f"Iter {i}: mid = {mid:.12f}, final_k = {final_k:.6f}, target = {k_ss_post:.6f}")
+        print(
+            f"Iter {i}: mid = {mid:.12f}, final_k = {final_k:.6f}, target = {k_ss_post:.6f}"
+        )
 
 print(f"Final c_shock: {mid:.12f}")
 k_sim, c_sim = simulate(mid)

@@ -1,6 +1,9 @@
 import numpy as np
 import cvxpy as cp
-from macroaicomp.models.fiscal_policy import FiscalPolicyParameters, solve_distortionary_foc
+from macroaicomp.models.fiscal_policy import (
+    FiscalPolicyParameters,
+    solve_distortionary_foc,
+)
 
 params = FiscalPolicyParameters()
 W = np.full(params.T, 100.0)
@@ -24,22 +27,18 @@ L = cp.Variable(T)
 B = cp.Variable(T)
 
 objective = cp.Maximize(
-    cp.sum([
-        (beta_eff ** t) * (gamma_eff * cp.log(C[t]) + (1.0 - gamma_eff) * cp.log(1.0 - L[t]))
-        for t in range(T)
-    ])
+    cp.sum(
+        [
+            (beta_eff**t)
+            * (gamma_eff * cp.log(C[t]) + (1.0 - gamma_eff) * cp.log(1.0 - L[t]))
+            for t in range(T)
+        ]
+    )
 )
 
-constraints = [
-    C >= 1e-6,
-    L >= 0.0,
-    L <= 1.0 - 1e-6,
-    B[0] == W[0] * L[0] - C[0]
-]
+constraints = [C >= 1e-6, L >= 0.0, L <= 1.0 - 1e-6, B[0] == W[0] * L[0] - C[0]]
 for t in range(1, T):
-    constraints.append(
-        B[t] == (1.0 + R) * B[t - 1] + W[t] * L[t] - C[t]
-    )
+    constraints.append(B[t] == (1.0 + R) * B[t - 1] + W[t] * L[t] - C[t])
 constraints.append(B[T - 1] == 0.0)
 
 prob = cp.Problem(objective, constraints)

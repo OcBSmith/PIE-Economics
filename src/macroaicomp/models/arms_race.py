@@ -192,7 +192,9 @@ def simulate_saddle_path(
         Trayectorias temporales (x1, x2), ambas de longitud `periods`.
     """
     if not is_saddle_path(params):
-        raise ValueError("La calibración no produce un estado estacionario de punto de silla.")
+        raise ValueError(
+            "La calibración no produce un estado estacionario de punto de silla."
+        )
 
     a, b = coefficient_matrices(params)
     lambdas = eigenvalues(params)

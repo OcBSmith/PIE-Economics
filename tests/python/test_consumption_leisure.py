@@ -1,4 +1,3 @@
-import pytest
 import numpy as np
 from macroaicomp.models.consumption_leisure import (
     ConsumptionLeisureParameters,
@@ -69,4 +68,4 @@ def test_interest_rate_slope():
 
     # Consumption should have a positive slope
     for t in range(params.T - 1):
-        assert res["C"][t+1] > res["C"][t]
+        assert res["C"][t + 1] > res["C"][t]

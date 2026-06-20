@@ -64,17 +64,17 @@ def compute_ramsey_steady_state(params: RamseyParameters) -> Dict[str, float]:
     #    La tasa de interés real (R_ss) se iguala a la tasa de descuento intertemporal modificada por la depreciación:
     #    Por la regla de oro modificada, 1/beta = 1 + R_ss - delta
     R_ss = 1.0 / beta - 1.0 + delta
-    
+
     # 2. El capital per cápita estacionario (k_ss) despejado de la productividad marginal del capital:
     #    f'(k) = alpha * A * k^(alpha - 1) = R_ss
     k_ss = (alpha * A / R_ss) ** (1.0 / (1.0 - alpha))
-    
+
     # 3. Producción per cápita estacionaria y de pleno empleo (y_ss):
     y_ss = A * k_ss**alpha
-    
+
     # 4. Inversión bruta per cápita estacionaria para reponer depreciación y absorber crecimiento poblacional:
     i_ss = (delta + n) * k_ss  # Gross investment includes population growth
-    
+
     # 5. Consumo per cápita de equilibrio estacionario (c_ss) a partir de la restricción agregada:
     c_ss = y_ss - i_ss
 
@@ -121,9 +121,9 @@ def compute_ramsey_transition_matrix(
     Gamma = Omega - alpha * beta * (delta + n)
 
     # Elementos de la matriz Jacobiana J para el sistema en diferencias logarítmicas [c_hat, k_hat]':
-    J11 = - (alpha - 1.0) * Omega * Gamma / (alpha * beta * (1.0 + n))
+    J11 = -(alpha - 1.0) * Omega * Gamma / (alpha * beta * (1.0 + n))
     J12 = (alpha - 1.0) * Omega / (beta * (1.0 + n))
-    J21 = - Gamma / (alpha * beta * (1.0 + n))
+    J21 = -Gamma / (alpha * beta * (1.0 + n))
     J22 = (1.0 - beta * (1.0 + n)) / (beta * (1.0 + n))
 
     J = np.array([[J11, J12], [J21, J22]])
@@ -138,7 +138,12 @@ def compute_ramsey_transition_matrix(
     lambda_2 = eigenvals[sorted_idx[1]]  # Autovalor inestable (positivo, mayor que 0)
 
     # Pendiente analítica (theta) de la senda estable o saddle path para el consumo (c_hat = theta * k_hat)
-    theta = alpha * (alpha - 1.0) * Omega / ((alpha - 1.0) * Omega * Gamma + alpha * beta * (1.0 + n) * lambda_1)
+    theta = (
+        alpha
+        * (alpha - 1.0)
+        * Omega
+        / ((alpha - 1.0) * Omega * Gamma + alpha * beta * (1.0 + n) * lambda_1)
+    )
 
     return J, lambda_1, lambda_2, theta
 
@@ -222,7 +227,7 @@ def solve_ramsey_linearized(
     #    El consumo (c) es flexible y salta de inmediato a la senda estable del nuevo steady state:
     c_hat[t_shock] = theta * k_hat[t_shock]
     c[t_shock] = c_ss_new * np.exp(c_hat[t_shock])
-    y[t_shock] = A_final * k[t_shock]**params.alpha
+    y[t_shock] = A_final * k[t_shock] ** params.alpha
     i[t_shock] = y[t_shock] - c[t_shock]
 
     # 6. Evolución temporal sobre la senda estable post-shock
@@ -231,7 +236,7 @@ def solve_ramsey_linearized(
         c_hat[t] = theta * k_hat[t]
         k[t] = k_ss_new * np.exp(k_hat[t])
         c[t] = c_ss_new * np.exp(c_hat[t])
-        y[t] = A_final * k[t]**params.alpha
+        y[t] = A_final * k[t] ** params.alpha
         i[t] = y[t] - c[t]
 
     return {"k": k, "c": c, "y": y, "i": i, "k_hat": k_hat, "c_hat": c_hat}
