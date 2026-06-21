@@ -37,6 +37,7 @@ Pkg.activate("../..")
 
 using MacroAIComp
 using Plots
+import Plots: mm          # Para usar unidades de margen (p.ej. top_margin=10mm)
 using LinearAlgebra
 using Interact   # Para el widget interactivo equivalente a ipywidgets en Python
 """))
@@ -126,19 +127,20 @@ println("Nuevo estado estacionario (x1_bar, x2_bar) = (",
         round(x1_path[end], digits=2), ", ", round(x2_path[end], digits=2), 
         ")  (esperado: 6.67, 5.33)")
 
-# Gráfico de respuesta a impulso en Julia usando Plots
+# Gráfico de respuesta a impulso — equivalente a plot_irf() del notebook Python
 t = 0:29
-p1 = plot(t, x1_path, label="x1", color=:blue, linewidth=2.5, marker=:circle, markersize=3)
-title!("Respuesta dinámica de x1")
-xlabel!("Periodos")
-ylabel!("Stock de armamento")
+p1 = plot(t, x1_path,
+          label="x1", color=:steelblue, linewidth=2.5, marker=:circle, markersize=3,
+          title="Variable x1", xlabel="Periodos", ylabel="Stock de armamento")
 
-p2 = plot(t, x2_path, label="x2", color=:green, linewidth=2.5, marker=:circle, markersize=3)
-title!("Respuesta dinámica de x2")
-xlabel!("Periodos")
-ylabel!("Stock de armamento")
+p2 = plot(t, x2_path,
+          label="x2", color=:forestgreen, linewidth=2.5, marker=:circle, markersize=3,
+          title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento")
 
-plot(p1, p2, layout=(1,2), size=(800, 350))
+# top_margin reserva espacio para el plot_title y evita solapamiento con los títulos de subplot
+plot(p1, p2, layout=(1, 2), size=(800, 400),
+     plot_title="Respuesta dinámica a un aumento de z1 (1 -> 2)",
+     top_margin=10mm)
 """))
 
 # 9. DIAGRAMA DE FASES
@@ -240,15 +242,18 @@ println("Nuevo estado estacionario (x1, x2) = (",
 
 # Graficar la trayectoria del punto de silla
 t_axis = 0:29
-p_s1 = plot(t_axis, x1_saddle, label="x1 (salto)", color=:purple, linewidth=2.5, marker=:circle, markersize=3)
-title!("Respuesta de x1 (Senda estable)")
-xlabel!("Periodos")
+p_s1 = plot(t_axis, x1_saddle,
+            label="x1 (salto)", color=:purple, linewidth=2.5, marker=:circle, markersize=3,
+            title="Variable x1", xlabel="Periodos", ylabel="Stock de armamento")
 
-p_s2 = plot(t_axis, x2_saddle, label="x2", color=:orange, linewidth=2.5, marker=:circle, markersize=3)
-title!("Respuesta de x2")
-xlabel!("Periodos")
+p_s2 = plot(t_axis, x2_saddle,
+            label="x2", color=:orange, linewidth=2.5, marker=:circle, markersize=3,
+            title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento")
 
-plot(p_s1, p_s2, layout=(1,2), size=(800, 350))
+# top_margin reserva espacio para el plot_title y evita solapamiento
+plot(p_s1, p_s2, layout=(1, 2), size=(800, 400),
+     plot_title="Punto de silla: ajuste instantáneo de x1 ante el shock en z1",
+     top_margin=10mm)
 """
     )
 )
@@ -277,8 +282,10 @@ nb.cells.append(nbf.v4.new_code_cell(r"""# Widget interactivo equivalente al Flo
                label="x2", color=:forestgreen, linewidth=2.5,
                title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento")
 
-    plot(p_a, p_b, layout=(1, 2), size=(820, 370),
-         plot_title="Shock z1: 1 -> $z1_final")
+    # top_margin reserva espacio para el plot_title y evita solapamiento con los títulos de subplot
+    plot(p_a, p_b, layout=(1, 2), size=(820, 400),
+         plot_title="Shock z1: 1 -> $z1_final",
+         top_margin=10mm)
 end
 """))
 
