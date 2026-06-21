@@ -1,179 +1,159 @@
 import nbformat as nbf
 import os
+import json
+import sys
 
+sys.path.append('scratch')
+import md_extractor
+
+md_cells = md_extractor.get_markdown_cells(r"practicas\08-solow-swan\python.ipynb")
 nb = nbf.v4.new_notebook()
 
-# 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""# LAB-P8: El Modelo Neoclásico de Crecimiento Exógeno (Solow-Swan) (Julia)
-- **ID de práctica:** LAB-P8-v1.0-julia
-- **Capítulo del libro:** Cap. 9 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
-- **Fecha:** 2026-06-20
-- **Versión:** 1.0
-- **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-Objetivo: Simular y analizar la dinámica de acumulación de capital en tiempo discreto, el proceso de transición hacia el estado estacionario, los efectos de perturbaciones estructurales (tasa de ahorro, demografía y TFP), y el principio de la Regla de Oro. Versión en Julia.
-"""
-    )
-)
-
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(nbf.v4.new_code_cell("""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""
-    )
-)
+"""))
 
-# 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""using Pkg
 Pkg.activate("../..")
 
 using MacroAIComp
 using Plots
+import Plots: mm
 using LinearAlgebra
+using Interact
+using BenchmarkTools
 """))
 
-# 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Crecimiento de Solow-Swan
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-El modelo de acumulación de capital per cápita se describe mediante:
-$$k_{t+1} = \frac{(1 - \delta)k_t + s A_t k_t^\alpha}{1 + n}$$
+nb.cells.append(nbf.v4.new_code_cell("""params_base = default_calibration(SolowSwanParameters)
+ss = compute_solow_steady_state(params_base)
 
-Y las variables de bienestar en estado estacionario se derivan de:
-$$\bar{k} = \left( \frac{\delta + n}{s A} \right)^{\frac{1}{\alpha - 1}}$$
-""")
-)
-
-# 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(
-    nbf.v4.new_code_cell(r"""params = default_calibration(SolowSwanParameters)
-println(params)
-""")
-)
-
-# 6. ESTADO ESTACIONARIO Y EQUILIBRIO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
-""")
-)
-
-nb.cells.append(nbf.v4.new_code_cell(r"""ss = compute_solow_steady_state(params)
-
-println("VALORES DE EQUILIBRIO DE LARGO PLAZO:")
-println("  Capital per cápita (k*)     : ", ss["k"])
-println("  Producción per cápita (y*)  : ", ss["y"])
-println("  Consumo per cápita (c*)     : ", ss["c"])
-println("  Inversión per cápita (i*)   : ", ss["i"])
+println("VALORES DE ESTADO ESTACIONARIO:")
+println("  Capital por trabajador (k*)   : ", round(ss["k"], digits=4))
+println("  Producción por trabajador (y*): ", round(ss["y"], digits=4))
+println("  Consumo por trabajador (c*)   : ", round(ss["c"], digits=4))
+println("  Inversión por trabajador (i*) : ", round(ss["i"], digits=4))
 """))
 
-# 7. VERIFICACIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-Comparamos contra los valores reportados en el libro y en `oraculo.md`: $k^* = 4.0946$, $c^* = 1.3103$.
-"""))
-
-nb.cells.append(nbf.v4.new_code_cell(r"""@assert isapprox(ss["k"], 4.0946; atol=1e-4)
-@assert isapprox(ss["c"], 1.3103; atol=1e-4)
-println("OK: coincide con el oráculo.")
-"""))
-
-# 8. SHOCK DE TASA DE AHORRO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 4. Análisis de Shock y Transición Dinámica
-
-Simulamos un incremento en la tasa de ahorro del $20\%$ al $25\%$ en el período $t=5$ (índice 5 en Julia).
-""")
-)
-
-nb.cells.append(nbf.v4.new_code_cell(r"""T = 150
-s_path = fill(0.25, T)
-n_path = fill(params.n, T)
-A_path = fill(1.00, T)
-
-res = simulate_solow_swan(params, ss["k"], s_path, n_path, A_path, T)
-
-# Graficar
-t = 0:(T-1)
-p1 = plot(t, res["k"], label="Capital (k_t)", color=:green, lw=2.5)
-title!("Acumulación de Capital")
-xlabel!("Periodos")
-
-p2 = plot(t, res["c"], label="Consumo (c_t)", color=:purple, lw=2.5)
-title!("Consumo per cápita")
-xlabel!("Periodos")
-
-plot(p1, p2, layout=(1,2), size=(800, 350))
-"""))
-
-# 9. REGLA DE ORO DE ACUMULACIÓN
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 5. Demostración Visual de la Regla de Oro
-
-El consumo de estado estacionario se maximiza cuando la tasa de ahorro equivale a la participación del capital en el PIB ($s = \alpha$).
-""")
-)
-
-nb.cells.append(nbf.v4.new_code_cell(r"""s_grid = range(0.01, 0.95, length=100)
-c_ss_grid = [compute_solow_steady_state(params, s_val)["c"] for s_val in s_grid]
-
-# Encontrar el óptimo (Regla de Oro)
-alpha = params.alpha
-ss_gold = compute_solow_steady_state(params, alpha)
-c_gold = ss_gold["c"]
-
-plot(s_grid, c_ss_grid, label="c estacionario", color=:purple, lw=2.5,
-     title="Regla de Oro de Solow-Swan", xlabel="Tasa de Ahorro (s)", ylabel="Consumo (c)")
-scatter!([alpha], [c_gold], label="Regla de Oro (s = alpha)", color=:green, markersize=8)
-"""))
-
-# 10. SIMULACIÓN MODULAR INTERACTIVA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 6. Simulación modular interactiva
-
-Define una función para graficar la transición del capital ante shocks permanentes de ahorro o demografía.
-"""))
-
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""function graficar_solow_shocks(s_fn::Float64, n_fn::Float64)
-    T_sh = 100
-    s_p = fill(params.s, T_sh)
-    n_p = fill(params.n, T_sh)
-    A_p = fill(params.A, T_sh)
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición Dinámica de Solow
+@manipulate for s_final in 0.10:0.01:0.50, n_final in 0.00:0.005:0.05, A_final in 0.5:0.1:2.0
     
-    s_p[5:end] .= s_fn
-    n_p[5:end] .= n_fn
+    params_init = default_calibration(SolowSwanParameters)
+    ss_init = compute_solow_steady_state(params_init)
+    k0 = ss_init["k"]
+    T_sim = 100
     
-    res_sh = simulate_solow_swan(params, ss["k"], s_p, n_p, A_p, T_sh)
+    # Send shocks at t=10
+    s_path = fill(params_init.s, T_sim)
+    s_path[11:end] .= s_final
     
-    p1 = plot(0:99, res_sh["k"], label="k", color=:green, lw=2)
-    title!("k (s -> $s_fn, n -> $n_fn)")
+    n_path = fill(params_init.n, T_sim)
+    n_path[11:end] .= n_final
     
-    p2 = plot(0:99, res_sh["c"], label="c", color=:purple, lw=2)
-    title!("c (s -> $s_fn, n -> $n_fn)")
+    A_path = fill(params_init.A, T_sim)
+    A_path[11:end] .= A_final
     
-    plot(p1, p2, layout=(1,2), size=(800, 300))
+    res = simulate_solow_swan(params_init, k0, s_path, n_path, A_path, T_sim)
+    
+    params_fin = SolowSwanParameters(params_init.alpha, params_init.delta, s_final, n_final, A_final)
+    ss_fin = compute_solow_steady_state(params_fin)
+    
+    t_axis = 0:(T_sim - 1)
+    
+    p1 = plot(t_axis, res["k"], color=:blue, lw=2.5, label="Capital (k)")
+    hline!([ss_init["k"]], color=:gray, ls=:dot, label="")
+    hline!([ss_fin["k"]], color=:black, ls=:dash, label="k* Final")
+    title!("Capital por trabajador")
+    xlabel!("Tiempo")
+    
+    p2 = plot(t_axis, res["y"], color=:purple, lw=2.5, label="Renta (y)")
+    hline!([ss_init["y"]], color=:gray, ls=:dot, label="")
+    hline!([ss_fin["y"]], color=:black, ls=:dash, label="y* Final")
+    title!("Renta per cápita")
+    xlabel!("Tiempo")
+    
+    p3 = plot(t_axis, res["c"], color=:forestgreen, lw=2.5, label="Consumo (c)")
+    hline!([ss_init["c"]], color=:gray, ls=:dot, label="")
+    hline!([ss_fin["c"]], color=:black, ls=:dash, label="c* Final")
+    title!("Consumo per cápita")
+    xlabel!("Tiempo")
+    
+    plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
+         plot_title="Ajuste hacia el Nuevo Estado Estacionario", top_margin=10mm)
 end
+"""))
 
-# Ejemplo de ejecución
-graficar_solow_shocks(0.30, 0.01)
-"""
-    )
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-# 11. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 7. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Oro
+@manipulate for s_current in 0.05:0.01:0.60
+    
+    params = default_calibration(SolowSwanParameters)
+    alpha_val = params.alpha
+    delta_val = params.delta
+    n_val = params.n
+    A_val = params.A
+    
+    # Calcular la tasa de ahorro de la regla de oro (s_gold = alpha en Solow simple)
+    s_gold = alpha_val
+    k_gold = (s_gold * A_val / (delta_val + n_val))^(1 / (1 - alpha_val))
+    c_gold = A_val * k_gold^alpha_val - (delta_val + n_val) * k_gold
+    
+    # Estado estacionario actual
+    k_curr = (s_current * A_val / (delta_val + n_val))^(1 / (1 - alpha_val))
+    y_curr = A_val * k_curr^alpha_val
+    i_curr = s_current * y_curr
+    c_curr = y_curr - i_curr
+    
+    # Crear malla de capitales para graficar
+    k_vals = range(0.1, 50.0, length=200)
+    y_vals = A_val .* k_vals .^ alpha_val
+    inv_vals = s_current .* y_vals
+    req_inv = (delta_val + n_val) .* k_vals
+    
+    # Gráfica
+    p1 = plot(k_vals, y_vals, color=:purple, lw=3, label="Producción f(k)")
+    plot!(k_vals, inv_vals, color=:blue, lw=2.5, label="Ahorro/Inv. s_current")
+    plot!(k_vals, req_inv, color=:red, lw=2.5, label="Inv. Requerida (n+δ)k")
+    
+    # Marcar el punto actual
+    vline!([k_curr], color=:gray, ls=:dot, lw=2, label="k* Actual")
+    scatter!([k_curr], [y_curr], color=:purple, markersize=6, label="")
+    scatter!([k_curr], [req_inv[argmin(abs.(k_vals .- k_curr))]], color=:red, markersize=6, label="")
+    
+    # Llenar área de consumo actual
+    plot!( [k_curr, k_curr], [i_curr, y_curr], color=:forestgreen, lw=5, label="Consumo actual: $(round(c_curr, digits=2))" )
+    
+    # Marcar Golden Rule
+    vline!([k_gold], color=:orange, ls=:dash, lw=2, label="k* Golden Rule")
+    scatter!([k_gold], [A_val * k_gold^alpha_val], color=:orange, markersize=8, marker=:star, label="Max Consumo")
+    
+    title!("Regla de Oro en Solow-Swan")
+    xlabel!("Capital por trabajador (k)")
+    ylabel!("Renta, Inversión")
+    
+    plot(p1, size=(700, 450), plot_title="Comparativa Consumo vs Golden Rule", top_margin=10mm)
+end
+"""))
 
-Este laboratorio demuestra cómo la ineficiencia dinámica puede producir sobreacumulación de capital, reduciendo el consumo a largo plazo. La regla de oro nos muestra la tasa de ahorro óptima que maximiza el consumo intertemporal.
-""")
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-# METADATOS DEL CUADERNO (KERNEL DE JULIA)
+nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
+
+nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+T_bench = 100
+s_path = fill(0.20, T_bench); n_path = fill(0.015, T_bench); A_path = fill(1.0, T_bench)
+@btime simulate_solow_swan($params_base, $ss["k"], $s_path, $n_path, $A_path, $T_bench)
+"""))
+
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",

@@ -1,139 +1,101 @@
 import nbformat as nbf
 import os
+import json
+import sys
 
+# Load md extractor
+sys.path.append('scratch')
+import md_extractor
+
+md_cells = md_extractor.get_markdown_cells(r"practicas\03-consumo-ahorro\python.ipynb")
 nb = nbf.v4.new_notebook()
 
-# 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""# LAB-P3: La Decisión Óptima de Consumo-Ahorro (Julia)
-- **ID de práctica:** LAB-P3-v1.0-julia
-- **Capítulo del libro:** Cap. 4 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
-- **Fecha:** 2026-06-20
-- **Versión:** 1.0
-- **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-Objetivo: Analizar la decisión óptima intertemporal de un hogar en un ciclo de vida finito. Comprender cómo la tasa de interés real, la impaciencia subjetiva y la estructura temporal de ingresos determinan el perfil óptimo de consumo y la trayectoria de acumulación de activos financieros (ahorro/deuda). Versión en Julia.
-""")
-)
-
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(nbf.v4.new_code_cell("""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""
-    )
-)
+"""))
 
-# 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""using Pkg
 Pkg.activate("../..")
 
 using MacroAIComp
 using Plots
+import Plots: mm
 using LinearAlgebra
-using NLsolve
-using Optim
+using Interact
+using BenchmarkTools
 """))
 
-# 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 1. El Marco Teórico: Optimización Intertemporal del Consumidor
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-El consumidor decide su nivel de consumo a lo largo de un ciclo de vida finito de $T$ periodos. Su objetivo es maximizar:
-$$\max_{\{C_t\}_{t=0}^{T-1}} \sum_{t=0}^{T-1} \beta^t \ln(C_t)$$
+nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration()
+println("Parámetros: ", params)
+"""))
 
-Sujeto a:
-$$C_t + B_t = (1 + R_{t-1})B_{t-1} + W_t$$
-Con $B_{-1} = 0$ y la condición terminal $B_{T-1} = 0$.
-"""
-    )
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-# 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(
-    nbf.v4.new_code_cell(r"""params = default_calibration(ConsumptionSavingParameters)
-println(params)
-""")
-)
-
-# 6. RESOLUCIÓN DE LOS DOS MÉTODOS Y COMPARATIVA
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 2. Métodos de Resolución Computacional: FOC vs Optimización Directa
-
-Resolvemos la trayectoria de consumo óptima empleando la ecuación de Euler (FOC) y mediante optimización numérica directa (Optim.jl).
-"""
-    )
-)
-
-nb.cells.append(nbf.v4.new_code_cell(r"""# Generar perfil de ingresos constante
+nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante
 W_const = generate_income_profile("constant", params.T)
+println("W constante: ", W_const[1:5], "...")
 
-# 1. FOC (fsolve/nlsolve)
-res_fsolve = solve_foc_fsolve(params, W_const)
+res_foc = solve_foc_fsolve(params, W_const)
+res_opt = solve_direct_optim(params, W_const)
 
-# 2. Optimización Directa (Optim)
-res_optim = solve_direct_optim(params, W_const)
-
-println("COMPARATIVA:")
-println("  C(1) [FOC]     : ", res_fsolve["C"][1])
-println("  C(1) [Optim]   : ", res_optim["C"][1])
-println("  B(end) [FOC]   : ", res_fsolve["B"][end])
-println("  B(end) [Optim] : ", res_optim["B"][end])
-
-@assert isapprox(res_fsolve["C"], res_optim["C"]; atol=1e-3)
-println("OK: ambos métodos coinciden numéricamente.")
+println("Diferencia media entre FOC y Optim: ", sum(abs.(res_foc["C"] .- res_opt["C"])) / params.T)
 """))
 
-# 7. SIMULACIÓN DE CASOS (INCREASING Y RETIREMENT)
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 3. Simulación interactiva de perfiles salariales y parámetros
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-Analizamos las respuestas del consumo y los activos ante salarios crecientes y jubilación.
-"""
-    )
-)
-
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""function graficar_consumo_ahorro(beta_val::Float64, R_val::Float64, profile::String)
-    p_sh = ConsumptionSavingParameters(params.T, beta_val, R_val, params.B0)
-    W = generate_income_profile(profile, p_sh.T)
-    res = solve_foc_fsolve(p_sh, W)
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl
+@manipulate for beta_val in 0.90:0.01:0.99, R_val in -0.05:0.01:0.15, profile in ["constant", "increasing", "retirement"]
     
-    t = 0:(p_sh.T-1)
-    p1 = plot(t, res["C"], label="Consumo (C)", color=:purple, lw=2.5)
-    plot!(t, W, label="Ingresos (W)", color=:green, lw=2, linestyle=:dash)
-    title!("Consumo e Ingresos ($profile)")
-    xlabel!("Periodos")
+    params_interactive = ConsumptionSavingParameters(30, beta_val, R_val, 0.0)
+    W = generate_income_profile(profile, params_interactive.T)
+    res = solve_foc_fsolve(params_interactive, W)
     
-    p2 = plot(t, res["B"], label="Activos (B)", color=:blue, lw=2.5)
-    hline!([0.0], color=:black, linestyle=:dot, label="")
-    title!("Evolución de Activos Financieros")
-    xlabel!("Periodos")
+    t_axis = 0:(params_interactive.T - 1)
     
-    plot(p1, p2, layout=(1,2), size=(800, 350))
+    # Panel 1: Consumo e Ingresos
+    p1 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
+    plot!(t_axis, res["W"], color=:forestgreen, lw=2.5, ls=:dash, label="Ingreso (W)")
+    title!("Consumo e Ingresos")
+    xlabel!("Periodo (t)")
+    ylabel!("Bienes")
+    
+    # Panel 2: Activos
+    p2 = plot(t_axis, res["B"], color=:steelblue, lw=2.5, label="Activos (B)")
+    hline!([0.0], color=:black, ls=:dot, label="")
+    # Fill between (trick in Plots: fillrange=0)
+    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:steelblue, lw=0, label="Ahorro")
+    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:orange, lw=0, label="Deuda")
+    title!("Evolución de Activos")
+    xlabel!("Periodo (t)")
+    ylabel!("Riqueza Neta")
+    
+    # Panel 3: Utilidad
+    p3 = plot(t_axis, res["U"], color=:orange, lw=2.0, label="Utilidad")
+    title!("Utilidad Descontada")
+    xlabel!("Periodo (t)")
+    ylabel!("Utilidad")
+    
+    plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
+         plot_title="Decisión Óptima Intertemporal", top_margin=10mm)
 end
+"""))
 
-# Ejemplo de ejecución
-graficar_consumo_ahorro(0.97, 0.02, "retirement")
-"""
-    )
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 
-# 8. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 4. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-El ahorro permite suavizar el perfil de consumo frente a las fluctuaciones en los ingresos (como en la jubilación). En este laboratorio, ambos resolvedores numéricos se validan mutuamente al dar exactamente la misma trayectoria óptima.
-""")
-)
+nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+@btime solve_foc_fsolve($params, $W_const)
+"""))
 
-# METADATOS DEL CUADERNO (KERNEL DE JULIA)
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",

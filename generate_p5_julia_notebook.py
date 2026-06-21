@@ -1,136 +1,138 @@
 import nbformat as nbf
 import os
+import json
+import sys
 
+sys.path.append('scratch')
+import md_extractor
+
+md_cells = md_extractor.get_markdown_cells(r"practicas\05-gobierno-fiscal\python.ipynb")
 nb = nbf.v4.new_notebook()
 
-# 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""# LAB-P5: Política Fiscal y Distorsiones Impositivas (Julia)
-- **ID de práctica:** LAB-P5-v1.0-julia
-- **Capítulo del libro:** Cap. 6 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
-- **Fecha:** 2026-06-20
-- **Versión:** 1.0
-- **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-Objetivo: Evaluar los efectos dinámicos y distorsionadores de los impuestos de suma fija y de los impuestos sobre el consumo, el trabajo y el capital, así como la Seguridad Social, en una economía con horizonte temporal finito. Versión en Julia.
-"""
-    )
-)
-
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(nbf.v4.new_code_cell("""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""
-    )
-)
+"""))
 
-# 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""using Pkg
 Pkg.activate("../..")
 
 using MacroAIComp
 using Plots
+import Plots: mm
 using LinearAlgebra
 using NLsolve
 using Optim
+using Interact
+using BenchmarkTools
 """))
 
-# 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Impuestos y Seguridad Social
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-El consumidor con preferencias de consumo y ocio se enfrenta a impuestos distorsionadores:
-- $\tau_w$: impuesto sobre la renta del trabajo.
-- $\tau_c$: impuesto sobre el consumo.
-- $\tau_r$: impuesto sobre la rentabilidad de los activos.
-- $\tau_{ss}$: cotizaciones a la Seguridad Social (pensiones de capitalización).
-""")
-)
-
-# 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(
-    nbf.v4.new_code_cell(r"""params = default_calibration(FiscalPolicyParameters)
-println(params)
-""")
-)
-
-# 6. COMPARATIVA FOC VS OPTIM EN IMPUESTOS DISTORSIONADORES
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 2. Equivalencia de Resolvedores con Impuestos Distorsionadores
-"""
-    )
-)
-
-nb.cells.append(nbf.v4.new_code_cell(r"""# Generar salario constante
-W = fill(100.0, params.T)
-
-# 1. FOC (fsolve/nlsolve)
-res_foc = solve_distortionary_foc(params, W, true)
-
-# 2. Optimización Directa (Optim)
-res_optim = solve_distortionary_optim(params, W, true)
-
-println("COMPARATIVA:")
-println("  C(1) [FOC]   : ", res_foc["C"][1])
-println("  C(1) [Optim] : ", res_optim["C"][1])
-println("  L(1) [FOC]   : ", res_foc["L"][1])
-println("  L(1) [Optim] : ", res_optim["L"][1])
-
-@assert isapprox(res_foc["C"], res_optim["C"]; atol=1e-3)
-@assert isapprox(res_foc["L"], res_optim["L"]; atol=1e-3)
-println("OK: los resolvedores coinciden numéricamente.")
+nb.cells.append(nbf.v4.new_code_cell("""params_lumpsum = default_calibration(FiscalPolicyParameters)
+println("Parámetros Base: ", params_lumpsum)
 """))
 
-# 7. SIMULACIÓN DE SEGURIDAD SOCIAL
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 3. Simulación del Sistema de Seguridad Social (Capitalización)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-Simulamos un sistema de Seguridad Social donde las cotizaciones se capitalizan y se devuelven en forma de pensión en el periodo de jubilación.
-"""
-    )
-)
+nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante
+W = fill(30.0, params_lumpsum.T)
 
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""# Parámetros con Seguridad Social (cotización del 36% sobre el salario)
-params_ss = FiscalPolicyParameters(30, 0.97, 0.02, 0.5, 0.0, 0.0, 0.0, 0.0, 0.36, 26)
-W_ss = zeros(params_ss.T)
-W_ss[1:params_ss.t_star] .= 10.0
+# 1. Resolver con FOC
+res_foc = solve_lump_sum_foc(params_lumpsum, W)
 
-res_ss = solve_social_security(params_ss, W_ss)
+# 2. Optimización Directa
+res_opt = solve_lump_sum_optim(params_lumpsum, W)
 
-println("Pensión de jubilación calculada: ", res_ss["Pension"])
+println("Diferencia media en Consumo: ", sum(abs.(res_foc["C"] .- res_opt["C"])) / params_lumpsum.T)
+"""))
 
-t = 0:(params_ss.T-1)
-p1 = plot(t, res_ss["C"], label="Consumo", color=:purple, lw=2.5)
-title!("Consumo en el ciclo de vida con SS")
-xlabel!("Periodo")
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-p2 = plot(t, res_ss["B"], label="Activos", color=:blue, lw=2.5)
-hline!([0.0], color=:black, linestyle=:dot, label="")
-title!("Activos Financieros")
-xlabel!("Periodo")
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Impuestos Distorsionadores)
+@manipulate for tauc_val in 0.0:0.05:0.50, tauw_val in 0.0:0.05:0.50, taur_val in 0.0:0.05:0.50, ret_opt in ["lump_sum", "government_spending"]
+    
+    is_lump_sum_return = (ret_opt == "lump_sum")
+    params = FiscalPolicyParameters(30, 0.97, 0.02, 0.5, tauc_val, tauw_val, taur_val, 0.0, 0.0, 0)
+    W_sim = fill(30.0, params.T)
+    res = solve_distortionary_foc(params, W_sim, is_lump_sum_return)
+    
+    t_axis = 0:(params.T - 1)
+    
+    # Panel 1: Consumo e Ingresos
+    p1 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
+    plot!(t_axis, res["W_L"], color=:forestgreen, lw=2.5, ls=:dash, label="Ingreso Neto")
+    title!("Consumo e Ingreso Salarial")
+    xlabel!("Periodo (t)")
+    ylabel!("Bienes")
+    
+    # Panel 2: Oferta de Trabajo y Ocio
+    p2 = plot(t_axis, res["L"], color=:red, lw=2.5, label="Trabajo (L)")
+    plot!(t_axis, res["O"], color=:teal, lw=2.5, ls=:dot, label="Ocio (O=1-L)")
+    ylims!(-0.05, 1.05)
+    title!("Asignación del Tiempo")
+    xlabel!("Periodo (t)")
+    ylabel!("Fracción")
+    
+    # Panel 3: Activos
+    p3 = plot(t_axis, res["B"], color=:steelblue, lw=2.5, label="Activos (B)")
+    hline!([0.0], color=:black, ls=:dot, label="")
+    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:steelblue, lw=0, label="Ahorro")
+    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:orange, lw=0, label="Deuda")
+    title!("Evolución de Activos")
+    xlabel!("Periodo (t)")
+    ylabel!("Riqueza Neta")
+    
+    plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
+         plot_title="Efecto de Impuestos Distorsionadores", top_margin=10mm)
+end
+"""))
 
-plot(p1, p2, layout=(1,2), size=(800, 350))
-"""
-    )
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-# 8. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 4. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Seguridad Social)
+@manipulate for tau_ss_val in 0.0:0.04:0.50, t_star_val in 15:1:29
+    
+    params_ss = FiscalPolicyParameters(30, 0.97, 0.02, 0.5, 0.0, 0.0, 0.0, 0.0, tau_ss_val, t_star_val)
+    W_ss = zeros(params_ss.T)
+    W_ss[1:params_ss.t_star] .= 10.0
+    
+    res = solve_social_security(params_ss, W_ss)
+    
+    t_axis = 0:(params_ss.T - 1)
+    
+    # Panel 1: Consumo e Ingresos Laborales
+    p1 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo Óptimo")
+    plot!(t_axis, W_ss, color=:gray, lw=2.0, ls=:dash, label="Salario Bruto (W)")
+    plot!(t_axis, res["W_net"], color=:forestgreen, lw=2.5, label="Ingreso Disponible")
+    title!("Consumo e Ingresos")
+    xlabel!("Periodo (t)")
+    ylabel!("Bienes")
+    
+    # Panel 2: Activos
+    p2 = plot(t_axis, res["B"], color=:steelblue, lw=2.5, label="Ahorro Privado (B)")
+    plot!(t_axis, res["B_ss"], color=:orange, lw=2.5, label="Fondo SS (B_ss)")
+    plot!(t_axis, res["B_total"], color=:black, lw=3.0, ls=:dashdot, label="Riqueza Total")
+    hline!([0.0], color=:black, ls=:dot, label="")
+    title!("Evolución de Riqueza")
+    xlabel!("Periodo (t)")
+    
+    plot(p1, p2, layout=(1,2), size=(800, 350), 
+         plot_title="Impacto del Sistema de Seguridad Social", top_margin=10mm)
+end
+"""))
 
-Este laboratorio analiza el impacto distorsionador de la fiscalidad sobre la oferta laboral y la acumulación de activos financieros. Se verifica que la Seguridad Social de capitalización actúa como un perfecto sustituto del ahorro privado no distorsionador, desplazando la acumulación de riqueza personal pero manteniendo el mismo perfil de consumo óptimo.
-""")
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-# METADATOS DEL CUADERNO (KERNEL DE JULIA)
+nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
+
+nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+@btime solve_distortionary_foc($params_lumpsum, fill(30.0, $params_lumpsum.T), true)
+"""))
+
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",

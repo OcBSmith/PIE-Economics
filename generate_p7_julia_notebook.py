@@ -1,175 +1,152 @@
 import nbformat as nbf
 import os
+import json
+import sys
 
+sys.path.append('scratch')
+import md_extractor
+
+md_cells = md_extractor.get_markdown_cells(r"practicas\07-equilibrio-general-dinamico\python.ipynb")
 nb = nbf.v4.new_notebook()
 
-# 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""# LAB-P7: El Modelo de Equilibrio General Dinámico Básico (DGE) (Julia)
-- **ID de práctica:** LAB-P7-v1.0-julia
-- **Capítulo del libro:** Cap. 8 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
-- **Fecha:** 2026-06-20
-- **Versión:** 1.0
-- **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-Objetivo: Desarrollar e interactuar con el modelo canónico de Equilibrio General Dinámico (DGE) en tiempo discreto, resolviendo y comparando la aproximación linealizada de Blanchard-Khan frente a la solución numérica no lineal exacta. Versión en Julia.
-"""
-    )
-)
-
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(nbf.v4.new_code_cell("""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""
-    )
-)
+"""))
 
-# 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""using Pkg
 Pkg.activate("../..")
 
 using MacroAIComp
 using Plots
+import Plots: mm
 using LinearAlgebra
 using NLsolve
+using Interact
+using BenchmarkTools
 """))
 
-# 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 1. El Marco Teórico: DGE y Estabilidad de Blanchard-Khan
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-El equilibrio de la economía DGE canónica se reduce a:
-1. **Dinámica del Capital:**
-   $$K_{t+1} = (1-\delta)K_t + A_t K_t^\alpha - C_t$$
-2. **Ecuación de Euler:**
-   $$C_{t+1} = \beta [ \alpha A_{t+1} K_{t+1}^{\alpha-1} + 1 - \delta ] C_t$$
-3. **Proceso TFP:**
-   $$\ln(A_t) = \rho \ln(A_{t-1}) + \epsilon_t$$
-"""
-    )
-)
+nb.cells.append(nbf.v4.new_code_cell("""params_base = default_calibration(DGEParams)
+ss = compute_steady_state(params_base)
 
-# 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(nbf.v4.new_code_cell(r"""params = default_calibration(DGEParams)
-println(params)
+println("VALORES DE EQUILIBRIO (SS):")
+println("  Capital (K*)   : ", round(ss["K"], digits=4))
+println("  Consumo (C*)   : ", round(ss["C"], digits=4))
+println("  Producción (Y*): ", round(ss["Y"], digits=4))
+println("  Inversión (I*) : ", round(ss["I"], digits=4))
 """))
 
-# 6. ESTADO ESTACIONARIO Y EQUILIBRIO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
-""")
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""ss = compute_steady_state(params)
-
-println("VALORES DE EQUILIBRIO DE LARGO PLAZO:")
-println("  Stock de capital (K*)          : ", ss["K"])
-println("  Producción (Y*)                : ", ss["Y"])
-println("  Consumo (C*)                   : ", ss["C"])
-println("  Inversión bruta (I*)           : ", ss["I"])
-println("  Tipo de interés real (R*)      : ", round(ss["R"] * 100, digits=2), "%")
-"""))
-
-# 7. VERIFICACIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Verificación frente al oráculo
-
-Comparamos contra los valores reportados en el libro y en `oraculo.md`: $K^* = 6.6986$, $Y^* = 1.9458$.
-"""))
-
-nb.cells.append(nbf.v4.new_code_cell(r"""@assert isapprox(ss["K"], 6.698596; atol=1e-5)
-@assert isapprox(ss["Y"], 1.945783; atol=1e-5)
-println("OK: coincide con el oráculo.")
-"""))
-
-# 8. SHOCK E COMPARACIÓN DE SOLUCIONADORES
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 4. Análisis de Shock y Comparación de Solucionadores (Blanchard-Khan vs No Lineal)
-
-Simulamos un shock tecnológico transitorio positivo del $1\%$ en el período $t=2$ (segundo elemento del vector).
-"""
-    )
-)
-
-nb.cells.append(nbf.v4.new_code_cell(r"""K0 = ss["K"]
-T = 60
-
-# Generar trayectoria de shock de TFP
-a_hat = zeros(T)
-a_hat[1] = 0.0
-a_hat[2] = 0.01
-for t in 3:T
-    a_hat[t] = params.rho * a_hat[t - 1]
-end
-A_path = exp.(a_hat)
-
-# Resolver lineal (BK) y no lineal
-res_bk = solve_blanchard_khan(params, K0, A_path, T)
-res_nonlin = solve_nonlinear_simulation(params, K0, A_path, T)
-
-println("Consumo inicial (shock) [BK]        : ", res_bk["C"][2])
-println("Consumo inicial (shock) [No Lineal] : ", res_nonlin["C"][2])
-
-# Graficar
-t_axis = 0:(T-1)
-p1 = plot(t_axis, res_bk["C"], label="BK (Lineal)", color=:purple, linestyle=:dash, lw=2)
-plot!(t_axis, res_nonlin["C"], label="No Lineal", color=:purple, lw=2)
-title!("Consumo Privado (C_t)")
-xlabel!("Periodos")
-
-p2 = plot(t_axis, res_bk["K"], label="BK (Lineal)", color=:green, linestyle=:dash, lw=2)
-plot!(t_axis, res_nonlin["K"], label="No Lineal", color=:green, lw=2)
-title!("Stock de Capital (K_t)")
-xlabel!("Periodos")
-
-plot(p1, p2, layout=(1,2), size=(800, 350))
-"""))
-
-# 9. SIMULACIÓN MODULAR INTERACTIVA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Simulación interactiva / modular
-
-Define una función para graficar la respuesta dinámica ante cualquier magnitud del shock sobre la TFP.
-"""))
-
-nb.cells.append(
-    nbf.v4.new_code_cell(r"""function graficar_shock_tfp(epsilon_val::Float64)
-    a_sh = zeros(T)
-    a_sh[1] = 0.0
-    a_sh[2] = epsilon_val
-    for t in 3:T
-        a_sh[t] = params.rho * a_sh[t - 1]
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tecnológico Transitorio
+@manipulate for epsilon in 0.00:0.005:0.05, rho_val in 0.5:0.05:0.95, alpha_val in 0.2:0.05:0.5, beta_val in 0.90:0.01:0.99
+    
+    params = DGEParams(alpha_val, beta_val, 0.05, rho_val, 1.0)
+    ss_sim = compute_steady_state(params)
+    K0 = ss_sim["K"]
+    T_sim = 50
+    
+    # Path del TFP
+    A_path = ones(T_sim)
+    a_shock = zeros(T_sim)
+    a_shock[1] = epsilon
+    for t in 2:T_sim
+        a_shock[t] = rho_val * a_shock[t-1]
     end
-    A_sh = exp.(a_sh)
-    res_sh = solve_nonlinear_simulation(params, K0, A_sh, T)
+    A_path .= exp.(a_shock)
     
-    p1 = plot(0:(T-1), res_sh["C"], label="C", color=:purple, lw=2)
-    title!("Consumo C (TFP shock -> $epsilon_val)")
+    res = solve_nonlinear_simulation(params, K0, A_path, T_sim)
     
-    p2 = plot(0:(T-1), res_sh["K"], label="K", color=:green, lw=2)
-    title!("Capital K (TFP shock -> $epsilon_val)")
+    t_axis = 0:(T_sim - 1)
     
-    plot(p1, p2, layout=(1,2), size=(800, 300))
+    p1 = plot(t_axis, res["Y"], color=:blue, lw=2.5, label="Producción (Y)")
+    hline!([ss_sim["Y"]], color=:gray, ls=:dot, label="")
+    title!("Producción (Y)")
+    xlabel!("Periodos")
+    
+    p2 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
+    hline!([ss_sim["C"]], color=:gray, ls=:dot, label="")
+    title!("Consumo (C)")
+    xlabel!("Periodos")
+    
+    p3 = plot(t_axis, res["I"], color=:orange, lw=2.5, label="Inversión (I)")
+    hline!([ss_sim["I"]], color=:gray, ls=:dot, label="")
+    title!("Inversión (I)")
+    xlabel!("Periodos")
+    
+    p4 = plot(t_axis, res["K"], color=:forestgreen, lw=2.5, label="Capital (K)")
+    hline!([ss_sim["K"]], color=:gray, ls=:dot, label="")
+    title!("Capital (K)")
+    xlabel!("Periodos")
+    
+    plot(p1, p2, p3, p4, layout=(2,2), size=(900, 600), 
+         plot_title="Ajuste Dinámico frente a Shock TFP (No Lineal)", top_margin=10mm)
 end
+"""))
 
-# Ejemplo de ejecución
-graficar_shock_tfp(0.05)
-""")
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-# 10. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) vs No Lineal
+@manipulate for epsilon_shock in 0.01:0.01:0.10
+    
+    params = default_calibration(DGEParams)
+    ss_comp = compute_steady_state(params)
+    K0 = ss_comp["K"]
+    T_sim = 40
+    
+    A_path = ones(T_sim)
+    a_s = zeros(T_sim)
+    a_s[1] = epsilon_shock
+    for t in 2:T_sim
+        a_s[t] = params.rho * a_s[t-1]
+    end
+    A_path .= exp.(a_s)
+    
+    # Resolver
+    res_lin = solve_blanchard_khan(params, a_s, T_sim)
+    res_nonlin = solve_nonlinear_simulation(params, K0, A_path, T_sim)
+    
+    t_axis = 0:(T_sim - 1)
+    
+    # Error de Capital
+    diff_K = abs.(res_nonlin["K"] .- res_lin["K"])
+    
+    p1 = plot(t_axis, res_nonlin["K"], color=:purple, lw=3, label="No Lineal")
+    plot!(t_axis, res_lin["K"], color=:blue, ls=:dash, lw=2, label="Lineal (BK)")
+    title!("Stock de Capital (K)")
+    xlabel!("Tiempo")
+    
+    p2 = plot(t_axis, diff_K, color=:red, lw=2.5, label="Error Absoluto")
+    title!("Error de Aproximación")
+    xlabel!("Tiempo")
+    
+    plot(p1, p2, layout=(1,2), size=(800, 350), 
+         plot_title="Comparativa de Solucionadores (Shock $(epsilon_shock))", top_margin=10mm)
+end
+"""))
 
-Este modelo dinámico de equilibrio general canónico muestra el efecto hump-shape (respuesta jorobada) en la acumulación de capital físico ante un shock transitorio positivo de productividad, retornando gradualmente al estado de pleno empleo de largo plazo.
-""")
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-# METADATOS DEL CUADERNO (KERNEL DE JULIA)
+nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
+
+nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation para No Lineal y Blanchard-Kahn
+A_bench = ones(50)
+A_bench[1] = exp(0.01)
+a_bench = zeros(50); a_bench[1] = 0.01
+
+println("Benchmark NLsolve (No Lineal):")
+@btime solve_nonlinear_simulation($params_base, $ss["K"], $A_bench, 50)
+
+println("Benchmark Blanchard-Kahn (Lineal):")
+@btime solve_blanchard_khan($params_base, $a_bench, 50)
+"""))
+
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",

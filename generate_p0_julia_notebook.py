@@ -40,6 +40,7 @@ using Plots
 import Plots: mm          # Para usar unidades de margen (p.ej. top_margin=10mm)
 using LinearAlgebra
 using Interact   # Para el widget interactivo equivalente a ipywidgets en Python
+using BenchmarkTools
 """))
 
 # 4. INTRODUCCIÓN TEÓRICA
@@ -314,6 +315,28 @@ en el resto de prácticas (IS-LM dinámico, Dornbusch, DGE) cuando los
 sistemas dejen de ser ejemplos genéricos y representen economías reales.
 Los resultados numéricos coinciden exactamente con el oráculo MATLAB del
 Apéndice B, lo que valida el port a Julia.
+"""))
+
+# 7. BENCHMARK
+nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación de las trayectorias usando `BenchmarkTools.jl`."""))
+
+nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation para un sistema 2D dinámico
+A_bench = [0.5 0.2; 0.1 0.8]
+x0_bench = [1.0, 1.0]
+T_bench = 50
+
+function simular_sistema(A_mat, init, T)
+    n = length(init)
+    x = zeros(n, T)
+    x[:, 1] = init
+    for t in 1:(T-1)
+        x[:, t+1] = A_mat * x[:, t]
+    end
+    return x
+end
+
+@btime simular_sistema($A_bench, $x0_bench, $T_bench)
 """))
 
 # METADATOS DEL CUADERNO (KERNEL DE JULIA)

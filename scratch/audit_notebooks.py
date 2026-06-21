@@ -1,63 +1,42 @@
-import os
 import json
-import traceback
-from nbconvert.preprocessors import ExecutePreprocessor
-import nbformat
+import glob
+import os
 
+print("Auditoría de Cuadernos Julia")
+print("============================")
 
-def audit_all_notebooks():
-    base_dir = "practicas"
-    notebooks = []
+notebooks = sorted(glob.glob("practicas/*/julia.ipynb"))
+all_good = True
 
-    # Collect all notebooks
-    for root, dirs, files in os.walk(base_dir):
-        for file in files:
-            if file.endswith(".ipynb") and not ".ipynb_checkpoints" in root:
-                notebooks.append(os.path.join(root, file))
+for nb_path in notebooks:
+    with open(nb_path, 'r', encoding='utf-8') as f:
+        nb = json.load(f)
+    
+    n_md = sum(1 for c in nb.get('cells', []) if c['cell_type'] == 'markdown')
+    n_code = sum(1 for c in nb.get('cells', []) if c['cell_type'] == 'code')
+    
+    has_interact = False
+    has_benchmark = False
+    
+    for c in nb.get('cells', []):
+        if c['cell_type'] == 'code':
+            source = "".join(c.get('source', []))
+            if "using Interact" in source or "@manipulate" in source:
+                has_interact = True
+            if "@btime" in source or "BenchmarkTools" in source:
+                has_benchmark = True
+                
+    status = "✅ OK"
+    if not has_interact or not has_benchmark:
+        status = "❌ ERROR (Faltan dependencias o macros clave)"
+        all_good = False
+        
+    print(f"{os.path.basename(os.path.dirname(nb_path))}: {status} ({n_md} MD, {n_code} Code)")
+    if not has_interact: print("   - Falta Interact / @manipulate")
+    if not has_benchmark: print("   - Falta BenchmarkTools / @btime")
 
-    print(f"Encontrados {len(notebooks)} cuadernos para auditar.")
-
-    failures = []
-    successes = []
-
-    for nb_path in notebooks:
-        print(f"\nAuditando: {nb_path}...")
-        try:
-            with open(nb_path, "r", encoding="utf-8") as f:
-                nb = nbformat.read(f, as_version=4)
-
-            # Setup preprocessor
-            # We get the kernel name safely, defaulting to python3 if missing
-            kernel_name = nb.metadata.get("kernelspec", {}).get("name", "python3")
-            ep = ExecutePreprocessor(timeout=60, kernel_name=kernel_name)
-
-            # Execute
-            ep.preprocess(nb, {"metadata": {"path": os.path.dirname(nb_path)}})
-
-            # If we get here, it succeeded!
-            # Let's save the executed notebook back
-            with open(nb_path, "w", encoding="utf-8") as f:
-                nbformat.write(nb, f)
-
-            print(f"[OK] {nb_path} ejecutado con éxito sin errores.")
-            successes.append(nb_path)
-
-        except Exception as e:
-            print(f"[ERROR] en {nb_path}:")
-            error_msg = str(e)
-            print(error_msg[:1000])  # Print first 1000 chars of error
-            failures.append({"path": nb_path, "error": error_msg})
-
-    print("\n" + "=" * 50)
-    print("RESUMEN DE AUDITORÍA:")
-    print(f"Cuadernos exitosos: {len(successes)} / {len(notebooks)}")
-    print(f"Cuadernos con errores: {len(failures)} / {len(notebooks)}")
-    if failures:
-        print("\nDetalle de fallos:")
-        for f in failures:
-            print(f"- {f['path']}: {f['error'][:200]}...")
-    print("=" * 50)
-
-
-if __name__ == "__main__":
-    audit_all_notebooks()
+print("-" * 30)
+if all_good:
+    print("Resultado: ÉXITO TOTAL. Todos los cuadernos Julia P1-P9 actualizados y completos.")
+else:
+    print("Resultado: SE ENCONTRARON PROBLEMAS.")

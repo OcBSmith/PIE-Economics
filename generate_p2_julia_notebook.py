@@ -1,153 +1,166 @@
 import nbformat as nbf
 import os
+import json
+import sys
 
+# Load md extractor
+sys.path.append('scratch')
+import md_extractor
+
+md_cells = md_extractor.get_markdown_cells(r"practicas\02-overshooting-dornbusch\python.ipynb")
 nb = nbf.v4.new_notebook()
 
-# 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""# LAB-P2: El Modelo de Overshooting de Dornbusch en Tiempo Discreto (Julia)
-- **ID de práctica:** LAB-P2-v1.0-julia
-- **Capítulo del libro:** Cap. 3 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
-- **Fecha:** 2026-06-20
-- **Versión:** 1.0
-- **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-Objetivo: Analizar el comportamiento dinámico de una pequeña economía abierta con movilidad perfecta de capitales. Estudiar cómo responde el tipo de cambio nominal a shocks monetarios y por qué experimenta una sobrerreacción o *overshooting* inicial debido a la rigidez temporal de los precios nacionales. Versión en Julia.
-"""
-    )
-)
-
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(nbf.v4.new_code_cell("""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""
-    )
-)
+"""))
 
-# 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""using Pkg
 Pkg.activate("../..")
 
 using MacroAIComp
 using Plots
+import Plots: mm
 using LinearAlgebra
+using Interact
+using BenchmarkTools
 """))
 
-# 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 1. El Marco Teórico: Ecuaciones y Estabilidad de Punto de Silla
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-El modelo de Dornbusch describe una economía pequeña y abierta con perfecta movilidad de capitales bajo las siguientes ecuaciones:
-
-1. **Mercado Monetario (LM):** $i_t = \frac{p_t - m_t + \psi y^n_t}{\theta}$
-2. **Demanda Agregada (IS):** $y^d_t = \beta_0 + \beta_1(s_t - p_t + p^*_t) - \beta_2 i_t$
-3. **Ajuste de Precios (Phillips):** $\Delta p_t = \mu(y^d_t - y^n_t)$
-4. **Paridad de Intereses (UIP):** $\Delta s_t = i_t - i^*_t$
-"""
-    )
-)
-
-# 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(nbf.v4.new_code_cell(r"""params = default_calibration(DornbuschParams)
-println(params)
+nb.cells.append(nbf.v4.new_code_cell("""params_sim = default_calibration(DornbuschParams)
+println(params_sim)
 """))
 
-# 6. ESTADO ESTACIONARIO Y EQUILIBRIO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
-""")
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""ss = steady_state(params)
+nb.cells.append(nbf.v4.new_code_cell("""ss_init = steady_state(params_sim)
 
 println("VALORES DE EQUILIBRIO DE LARGO PLAZO:")
-println("  Precios nacionales (p*)    : ", ss["p"])
-println("  Tipo de cambio nominal (s*): ", ss["s"])
-println("  Tipo de interés (i*)       : ", ss["i"], "%")
+println("  Precios nacionales (p*)    : ", ss_init["p"])
+println("  Tipo de cambio nominal (s*): ", ss_init["s"])
+println("  Tipo de interés (i*)       : ", ss_init["i"], "%")
 """))
 
-# 7. VERIFICACIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-Comparamos contra los valores reportados en el libro y en `oraculo.md`: $p^* = 1.5$, $s^* = 76.5150$.
+nb.cells.append(nbf.v4.new_code_cell("""# Autovalores
+lambdas = eigenvalues(params_sim)
+println("Autovalores: ", lambdas)
+stable_idx = argmin(abs.(lambdas .+ 1.0))
+stable_lambda = lambdas[stable_idx]
+println("Autovalor estable: ", stable_lambda)
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""@assert isapprox(ss["p"], 1.5; atol=1e-5)
-@assert isapprox(ss["s"], 76.5150; atol=1e-3)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
+
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama de fases
+@manipulate for m0_val in 98.0:0.5:104.0, beta0_val in 450.0:10.0:550.0
+    
+    z_initial = [500.0, 100.0, 2000.0, 3.0, 0.0]
+    z_final = [beta0_val, m0_val, 2000.0, 3.0, 0.0]
+    periods = 30
+    
+    # Calcular nuevos parámetros con z_final
+    params_final = DornbuschParams(params_sim.theta, params_sim.psi, params_sim.beta1, 
+                                 params_sim.beta2, params_sim.mi, 
+                                 beta0_val, m0_val, 2000.0, 3.0, 0.0)
+    ss_final = steady_state(params_final)
+    
+    res = simulate_shock(params_sim, z_initial, z_final, periods, 1)
+    
+    # Panel 1: Dinámica Temporal p y s
+    t_axis = 0:(periods-1)
+    p1 = plot(t_axis, res["s"], color=:purple, lw=2.5, label="Tipo cambio (s)")
+    plot!(t_axis, res["p"], color=:forestgreen, lw=2.5, label="Precios (p)")
+    hline!([ss_init["s"]], color=:purple, ls=:dot, label="s Inicial")
+    hline!([ss_final["s"]], color=:purple, ls=:dash, label="s Final")
+    hline!([ss_init["p"]], color=:forestgreen, ls=:dot, label="p Inicial")
+    hline!([ss_final["p"]], color=:forestgreen, ls=:dash, label="p Final")
+    vline!([1], color=:red, ls=:dash, label="Shock (t=1)")
+    title!("Trayectorias (s y p)")
+    xlabel!("Tiempo (t)")
+    ylabel!("Escala Log")
+    
+    # Panel 2: Interés y Demanda Agregada
+    p2 = plot(t_axis, res["i"], color=:steelblue, lw=2.0, label="Interés (i)")
+    plot!(t_axis, res["yd"], color=:orange, lw=2.0, label="Demanda (yd)")
+    hline!([z_final[4]], color=:steelblue, ls=:dash, label="i*")
+    hline!([z_final[3]], color=:orange, ls=:dash, label="ypot")
+    vline!([1], color=:red, ls=:dash, label="")
+    title!("Tipos y Demanda")
+    xlabel!("Tiempo (t)")
+    
+    # Panel 3: Diagrama de Fases
+    p3 = plot(res["p"], res["s"], color=:purple, lw=3, label="Trayectoria dinámica")
+    vline!([ss_final["p"]], color=:steelblue, ls=:dash, lw=2, label="ds = 0 (Final)")
+    vline!([ss_init["p"]], color=:steelblue, ls=:dot, label="ds = 0 (Inicial)")
+    
+    p_vals = range(minimum(res["p"]) - 0.5, maximum(res["p"]) + 0.5, length=100)
+    slope_dp = 1.0 + params_sim.beta2 / (params_sim.theta * params_sim.beta1)
+    c_locus_init = ss_init["s"] - slope_dp * ss_init["p"]
+    c_locus_final = ss_final["s"] - slope_dp * ss_final["p"]
+    
+    s_locus_init = c_locus_init .+ slope_dp .* p_vals
+    s_locus_final = c_locus_final .+ slope_dp .* p_vals
+    
+    plot!(p_vals, s_locus_init, color=:forestgreen, ls=:dot, label="dp = 0 (Inicial)")
+    plot!(p_vals, s_locus_final, color=:forestgreen, ls=:dash, lw=2, label="dp = 0 (Final)")
+    
+    a_mat, _ = coefficient_matrices(params_sim)
+    k_slope = (stable_lambda - a_mat[1,1]) / a_mat[1,2]
+    saddle_final = ss_final["s"] .+ k_slope .* (p_vals .- ss_final["p"])
+    plot!(p_vals, saddle_final, color=:black, ls=:dashdot, label="Saddle Path")
+    
+    p_grid = range(minimum(res["p"]) - 0.3, maximum(res["p"]) + 0.3, length=10)
+    s_grid = range(minimum(res["s"]) - 0.5, maximum(res["s"]) + 0.5, length=10)
+    
+    p_pts, s_pts, dp_pts, ds_pts = Float64[], Float64[], Float64[], Float64[]
+    for pp in p_grid, ss in s_grid
+        i_pt = -(z_final[2] - pp - params_sim.psi * z_final[3]) / params_sim.theta
+        yd_pt = z_final[1] + params_sim.beta1 * (ss - pp + z_final[5]) - params_sim.beta2 * i_pt
+        dp = params_sim.mi * (yd_pt - z_final[3])
+        ds = i_pt - z_final[4]
+        
+        norm = sqrt(dp^2 + ds^2)
+        if norm > 0
+            push!(p_pts, pp); push!(s_pts, ss)
+            push!(dp_pts, (dp/norm)*0.03); push!(ds_pts, (ds/norm)*0.05)
+        end
+    end
+    quiver!(p_pts, s_pts, quiver=(dp_pts, ds_pts), color=:gray, alpha=0.5)
+    
+    scatter!([ss_init["p"]], [ss_init["s"]], color=:gray, markersize=6, label="EE Inic")
+    scatter!([ss_final["p"]], [ss_final["s"]], color=:black, marker=:star, markersize=8, label="EE Fin")
+    
+    title!("Plano de Fases (p, s)")
+    xlabel!("Precios (p)")
+    ylabel!("Tipo cambio (s)")
+    
+    plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
+         plot_title="Respuesta del modelo Dornbusch", top_margin=10mm)
+end
+"""))
+
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
+
+nb.cells.append(nbf.v4.new_code_cell("""@assert isapprox(ss_init["p"], 1.5; atol=1e-5)
+@assert isapprox(ss_init["s"], 76.5150; atol=1e-3)
 println("OK: coincide con el oráculo.")
 """))
 
-# 8. SHOCK SIMSIMULATION
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Análisis de Shock Monetario
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
 
-Simulamos un incremento en la oferta monetaria de $100$ a $101$ y observamos el salto cambiario.
+nb.cells.append(nbf.v4.new_markdown_cell("""## 8. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
+
+nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+@btime simulate_shock($params_sim, [500.0, 100.0, 2000.0, 3.0, 0.0], [500.0, 101.0, 2000.0, 3.0, 0.0], 30, 1)
 """))
 
-nb.cells.append(
-    nbf.v4.new_code_cell(r"""# Vectores exógenos z = [beta0, m, ypot, istar, pstar]
-z_initial = [500.0, 100.0, 2000.0, 3.0, 0.0]
-z_final = [500.0, 101.0, 2000.0, 3.0, 0.0]
-periods = 30
-
-res = simulate_shock(params, z_initial, z_final, periods, 1)
-
-# Graficar
-t = 0:(periods-1)
-p1 = plot(t, res["s"], label="Tipo de cambio (s)", color=:purple, lw=2.5)
-title!("Evolución de Tipo de Cambio")
-xlabel!("Periodos")
-ylabel!("s")
-
-p2 = plot(t, res["p"], label="Precios (p)", color=:green, lw=2.5)
-title!("Evolución de Precios")
-xlabel!("Periodos")
-ylabel!("p")
-
-plot(p1, p2, layout=(1,2), size=(800, 350))
-""")
-)
-
-# 9. SIMULACIÓN DE DIAGRAMA DE FASES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Simulación interactiva / modular
-
-Define una función para graficar la respuesta dinámica ante variaciones en la oferta de dinero ($M$) y gasto autónomo ($B_0$).
-"""))
-
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""function graficar_shock_dornbusch(m0_val::Float64, beta0_val::Float64)
-    z_fn = [beta0_val, m0_val, 2000.0, 3.0, 0.0]
-    res_sh = simulate_shock(params, z_initial, z_fn, periods, 1)
-    
-    p1 = plot(0:29, res_sh["s"], label="s", color=:purple, lw=2)
-    title!("s (M0 -> $m0_val, B0 -> $beta0_val)")
-    
-    p2 = plot(0:29, res_sh["p"], label="p", color=:green, lw=2)
-    title!("p (M0 -> $m0_val, B0 -> $beta0_val)")
-    
-    plot(p1, p2, layout=(1,2), size=(800, 300))
-end
-
-# Ejemplo de ejecución
-graficar_shock_dornbusch(101.0, 500.0)
-"""
-    )
-)
-
-# 10. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
-
-El modelo de Dornbusch demuestra el concepto de sobrerreacción cambiaria (overshooting) a corto plazo ante shocks monetarios permanentes. Esto surge debido a la lentitud en el ajuste de los precios de bienes en comparación con la flexibilidad del mercado de activos financieros.
-""")
-)
-
-# METADATOS DEL CUADERNO (KERNEL DE JULIA)
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",

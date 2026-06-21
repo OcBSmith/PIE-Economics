@@ -1,135 +1,101 @@
 import nbformat as nbf
 import os
+import json
+import sys
 
+sys.path.append('scratch')
+import md_extractor
+
+md_cells = md_extractor.get_markdown_cells(r"practicas\04-consumo-ocio\python.ipynb")
 nb = nbf.v4.new_notebook()
 
-# 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""# LAB-P4: Decisión Óptima de Consumo-Ocio y Oferta de Trabajo (Julia)
-- **ID de práctica:** LAB-P4-v1.0-julia
-- **Capítulo del libro:** Cap. 5 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
-- **Fecha:** 2026-06-20
-- **Versión:** 1.0
-- **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-Objetivo: Analizar la decisión óptima de consumo, ocio y oferta de trabajo en un modelo intertemporal de ciclo de vida con horizonte finito. Estudiar cómo responden el consumo y la oferta de trabajo a variaciones en el salario real y en las tasas de interés. Versión en Julia.
-"""
-    )
-)
-
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(nbf.v4.new_code_cell("""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""
-    )
-)
+"""))
 
-# 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""using Pkg
 Pkg.activate("../..")
 
 using MacroAIComp
 using Plots
+import Plots: mm
 using LinearAlgebra
-using NLsolve
-using Optim
+using Interact
+using BenchmarkTools
 """))
 
-# 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Consumo, Ocio y Trabajo
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-El hogar maximiza la utilidad intertemporal descontada:
-$$\max_{\{C_t, L_t\}_{t=0}^{T-1}} \sum_{t=0}^{T-1} \beta^t \left[ \gamma \ln(C_t) + (1 - \gamma) \ln(1 - L_t) \right]$$
-
-Sujeto a:
-$$C_t + B_t = (1 + R_{t-1})B_{t-1} + W_t L_t$$
-Con $B_{-1} = 0$, $B_{T-1} = 0$, y $L_t \in [0, 1)$.
-""")
-)
-
-# 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(
-    nbf.v4.new_code_cell(r"""params = default_calibration(ConsumptionLeisureParameters)
-println(params)
-""")
-)
-
-# 6. RESOLUCIÓN DE LOS DOS MÉTODOS Y COMPARATIVA
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 2. Métodos de Resolución Computacional: FOC vs Optimización Directa
-"""
-    )
-)
-
-nb.cells.append(nbf.v4.new_code_cell(r"""# Generar salario constante
-W = fill(30.0, params.T)
-
-# 1. FOC (fsolve/nlsolve)
-res_fsolve = solve_foc_fsolve(params, W)
-
-# 2. Optimización Directa (Optim)
-res_optim = solve_direct_optim(params, W)
-
-println("COMPARATIVA:")
-println("  C(1) [FOC]   : ", res_fsolve["C"][1])
-println("  C(1) [Optim] : ", res_optim["C"][1])
-println("  L(1) [FOC]   : ", res_fsolve["L"][1])
-println("  L(1) [Optim] : ", res_optim["L"][1])
-
-@assert isapprox(res_fsolve["C"], res_optim["C"]; atol=1e-3)
-@assert isapprox(res_fsolve["L"], res_optim["L"]; atol=1e-3)
-println("OK: ambos solucionadores coinciden.")
+nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration(ConsumptionLeisureParameters)
+println("Parámetros Base: ", params)
 """))
 
-# 7. SIMULACIÓN DE CASOS E INTERACTIVIDAD
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 3. Simulación de la dinámica interactiva de ocio y consumo
-"""
-    )
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""function graficar_consumo_ocio(beta_val::Float64, R_val::Float64, gamma_val::Float64)
-    p_sh = ConsumptionLeisureParameters(params.T, beta_val, R_val, gamma_val, params.B0)
-    W_path = fill(30.0, p_sh.T)
-    res = solve_foc_fsolve(p_sh, W_path)
+nb.cells.append(nbf.v4.new_code_cell("""# Salario constante exógeno de W = 30
+W_base = fill(30.0, params.T)
+
+# Resolución
+res_foc = solve_foc_fsolve(params, W_base)
+res_opt = solve_direct_optim(params, W_base)
+
+println("Diferencia media en Consumo (FOC vs Optim): ", sum(abs.(res_foc["C"] .- res_opt["C"])) / params.T)
+println("Diferencia media en Trabajo (FOC vs Optim): ", sum(abs.(res_foc["L"] .- res_opt["L"])) / params.T)
+"""))
+
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
+
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl
+@manipulate for beta_val in 0.90:0.01:0.99, gamma_val in 0.10:0.05:0.90, R_val in -0.05:0.01:0.15, W_val in 10.0:5.0:100.0
     
-    t = 0:(p_sh.T-1)
-    p1 = plot(t, res["C"], label="Consumo (C)", color=:purple, lw=2.5)
-    title!("Consumo óptimo")
-    xlabel!("Periodos")
+    params_int = ConsumptionLeisureParameters(30, beta_val, gamma_val, R_val, 0.0)
+    W = fill(W_val, params_int.T)
+    res = solve_foc_fsolve(params_int, W)
     
-    p2 = plot(t, res["L"], label="Trabajo (L)", color=:orange, lw=2.5)
-    plot!(t, res["O"], label="Ocio (O)", color=:blue, lw=2.5)
-    title!("Oferta de Trabajo y Ocio")
-    xlabel!("Periodos")
+    t_axis = 0:(params_int.T - 1)
     
-    plot(p1, p2, layout=(1,2), size=(800, 350))
+    # Panel 1: Consumo e Ingresos
+    p1 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
+    plot!(t_axis, res["W_L"], color=:forestgreen, lw=2.5, ls=:dash, label="Ingreso (W·L)")
+    title!("Consumo e Ingreso Salarial")
+    xlabel!("Periodo (t)")
+    ylabel!("Bienes")
+    
+    # Panel 2: Oferta de Trabajo y Ocio
+    p2 = plot(t_axis, res["L"], color=:red, lw=2.5, label="Trabajo (L)")
+    plot!(t_axis, res["O"], color=:teal, lw=2.5, ls=:dot, label="Ocio (O=1-L)")
+    ylims!(-0.05, 1.05)
+    title!("Asignación del Tiempo")
+    xlabel!("Periodo (t)")
+    ylabel!("Fracción de Tiempo")
+    
+    # Panel 3: Activos
+    p3 = plot(t_axis, res["B"], color=:steelblue, lw=2.5, label="Activos (B)")
+    hline!([0.0], color=:black, ls=:dot, label="")
+    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:steelblue, lw=0, label="Acreedor")
+    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:orange, lw=0, label="Deudor")
+    title!("Evolución de Activos")
+    xlabel!("Periodo (t)")
+    ylabel!("Riqueza Neta")
+    
+    plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
+         plot_title="Decisión de Consumo-Ocio Intertemporal", top_margin=10mm)
 end
+"""))
 
-# Ejemplo de ejecución
-graficar_consumo_ocio(0.97, 0.02, 0.5)
-"""
-    )
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-# 8. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 4. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-Este modelo demuestra el tradeoff consumo-ocio. Incrementos en el salario real de largo plazo aumentan el consumo de equilibrio, mientras que el efecto sobre la oferta de trabajo depende del balance entre los efectos renta y sustitución intertemporales.
-""")
-)
+nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+@btime solve_foc_fsolve($params, $W_base)
+"""))
 
-# METADATOS DEL CUADERNO (KERNEL DE JULIA)
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",

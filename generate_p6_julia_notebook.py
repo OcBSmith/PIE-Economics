@@ -1,164 +1,150 @@
 import nbformat as nbf
 import os
+import json
+import sys
 
+sys.path.append('scratch')
+import md_extractor
+
+md_cells = md_extractor.get_markdown_cells(r"practicas\06-tobin-q\python.ipynb")
 nb = nbf.v4.new_notebook()
 
-# 1. CABECERA DIDÁCTICA Y METADATOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""# LAB-P6: La Empresa y la Decisión de Inversión (Modelo Q de Tobin) (Julia)
-- **ID de práctica:** LAB-P6-v1.0-julia
-- **Capítulo del libro:** Cap. 7 — *An introduction to computational macroeconomics* (Bongers, Gómez y Torres, 2019)
-- **Autores:** Dr. Antonio F. Romero Carrasco, Dra. Anelí Bongers
-- **Fecha:** 2026-06-20
-- **Versión:** 1.0
-- **Licencia:** CC BY-SA 4.0 (este notebook) / MIT (el código de `MacroAIComp`)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-Objetivo: Modelar la decisión de inversión de una empresa competitiva que enfrenta costos de ajuste cuadráticos en la instalación del capital físico. Compararemos el solucionador log-linealizado frente al exacto no lineal. Versión en Julia.
-"""
-    )
-)
-
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
-nb.cells.append(
-    nbf.v4.new_code_cell(
-        r"""# En Google Colab se activarían y descargarían los paquetes necesarios.
+nb.cells.append(nbf.v4.new_code_cell("""# En Google Colab se activarían y descargarían los paquetes necesarios.
 # using Pkg; Pkg.activate("."); Pkg.instantiate()
-"""
-    )
-)
+"""))
 
-# 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""using Pkg
 Pkg.activate("../..")
 
 using MacroAIComp
 using Plots
+import Plots: mm
 using LinearAlgebra
 using NLsolve
+using Interact
+using BenchmarkTools
 """))
 
-# 4. TEORÍA Y ECUACIONES DEL MODELO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 1. El Marco Teórico: Tobin's Q y Costos de Ajuste
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-El problema de inversión intertemporal de la empresa con costos de ajuste cuadráticos es:
-$$\max_{\{I_t, K_{t+1}\}} \sum_{t=0}^{\infty} \frac{1}{(1+R)^t} \left[ K_t^\alpha - I_t - \frac{\phi}{2} \left( \frac{I_t - \delta K_t}{K_t} \right)^2 K_t \right]$$
-
-Sujeto a:
-$$K_{t+1} = (1-\delta) K_t + I_t$$
-""")
-)
-
-# 5. CALIBRACIÓN DE PARÁMETROS
-nb.cells.append(nbf.v4.new_code_cell(r"""params = default_calibration(TobinQParams)
-println(params)
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa Interés
+@manipulate for R_init in 0.02:0.005:0.06, R_final in 0.02:0.005:0.06, phi_val in 1.0:1.0:20.0, delta_val in 0.02:0.01:0.10, alpha_val in 0.2:0.05:0.4
+    
+    params_base = TobinQParams(alpha_val, delta_val, phi_val, R_init)
+    ss_init = compute_steady_state(params_base)
+    K0 = ss_init["K"]
+    T_sim = 50
+    
+    R_path = fill(R_final, T_sim)
+    R_path[1] = R_init
+    
+    res = solve_nonlinear_simulation(params_base, K0, R_path, T_sim)
+    
+    params_final = TobinQParams(alpha_val, delta_val, phi_val, R_final)
+    ss_final = compute_steady_state(params_final)
+    
+    t_axis = 0:(T_sim - 1)
+    
+    # Panel 1: Q de Tobin
+    p1 = plot(t_axis, res["q"], color=:purple, lw=2.5, label="Q (Valor de Mercado)")
+    hline!([ss_init["q"]], color=:gray, ls=:dot, label="q Inicial")
+    hline!([ss_final["q"]], color=:black, ls=:dash, label="q Final")
+    title!("Q de Tobin (q_t)")
+    xlabel!("Periodos")
+    
+    # Panel 2: Capital
+    p2 = plot(t_axis, res["K"], color=:blue, lw=2.5, label="Capital (K)")
+    hline!([ss_init["K"]], color=:gray, ls=:dot, label="K Inicial")
+    hline!([ss_final["K"]], color=:black, ls=:dash, label="K Final")
+    title!("Stock de Capital (K_t)")
+    xlabel!("Periodos")
+    
+    # Panel 3: Inversión
+    p3 = plot(t_axis, res["I"], color=:orange, lw=2.5, label="Inversión Bruta (I)")
+    hline!([ss_init["I"]], color=:gray, ls=:dot, label="I Inicial")
+    hline!([ss_final["I"]], color=:black, ls=:dash, label="I Final")
+    title!("Inversión (I_t)")
+    xlabel!("Periodos")
+    
+    plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
+         plot_title="Ajuste de Inversión y Capital ante Shock", top_margin=10mm)
+end
 """))
 
-# 6. ESTADO ESTACIONARIO Y EQUILIBRIO
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 2. Equilibrio de Largo Plazo (Estado Estacionario)
-""")
-)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""ss = compute_steady_state(params)
-
-println("VALORES DE EQUILIBRIO DE LARGO PLAZO:")
-println("  Ratio q de Tobin marginal (q*) : ", ss["q"])
-println("  Stock de capital (K*)          : ", ss["K"])
-println("  Producción (Y*)                : ", ss["Y"])
-println("  Inversión bruta (I*)           : ", ss["I"])
-"""))
-
-# 7. VERIFICACIÓN
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Verificación frente al oráculo
-
-Comparamos contra los valores reportados en el libro y en `oraculo.md`: $q^* = 1.0$, $K^* = 6.8711$.
-"""))
-
-nb.cells.append(nbf.v4.new_code_cell(r"""@assert isapprox(ss["q"], 1.0; atol=1e-5)
-@assert isapprox(ss["K"], 6.8711236; atol=1e-5)
-println("OK: coincide con el oráculo.")
-"""))
-
-# 8. SHOCK E COMPARACIÓN DE SOLUCIONADORES
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 4. Análisis de Shock y Comparación de Solucionadores (Lineal vs No Lineal)
-
-Simulamos una caída permanente de la tasa de interés real del $4\%$ al $3\%$ en el período $t=2$ (segundo elemento del vector).
-"""
-    )
-)
-
-nb.cells.append(nbf.v4.new_code_cell(r"""# Initial steady state capital at R = 4%
+nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal vs No Lineal
+params = TobinQParams(0.33, 0.06, 10.0, 0.04)
 ss_init = compute_steady_state(params, 0.04)
 K0 = ss_init["K"]
-T = 100
+T_sim = 50
 
-# Shock permanente a partir del periodo t=2 (index 2)
-R_path = zeros(T)
+R_path = fill(0.03, T_sim)
 R_path[1] = 0.04
-R_path[2:end] .= 0.03
 
-# Resolver lineal y no lineal
-res_lin = solve_linearized_simulation(params, K0, R_path, T)
-res_nonlin = solve_nonlinear_simulation(params, K0, R_path, T)
+res_lin = solve_linearized_simulation(params, K0, R_path, T_sim)
+res_nonlin = solve_nonlinear_simulation(params, K0, R_path, T_sim)
 
-println("Q inicial (shock) [Lineal]    : ", res_lin["q"][1])
-println("Q inicial (shock) [No Lineal] : ", res_nonlin["q"][1])
+t_axis = 0:(T_sim - 1)
 
-# Graficar
-t = 0:(T-1)
-p1 = plot(t, res_lin["q"], label="Lineal", color=:purple, linestyle=:dash, lw=2)
-plot!(t, res_nonlin["q"], label="No Lineal", color=:purple, lw=2)
-title!("Q de Tobin (q_t)")
-xlabel!("Periodos")
+p1 = plot(t_axis, res_nonlin["q"], label="No Lineal", color=:purple, lw=3)
+plot!(t_axis, res_lin["q"], label="Linealizado", color=:purple, ls=:dash, lw=2)
+title!("q de Tobin (Lineal vs No Lineal)")
+xlabel!("Tiempo")
 
-p2 = plot(t, res_lin["K"], label="Lineal", color=:blue, linestyle=:dash, lw=2)
-plot!(t, res_nonlin["K"], label="No Lineal", color=:blue, lw=2)
-title!("Stock de Capital (K_t)")
-xlabel!("Periodos")
+p2 = plot(t_axis, res_nonlin["K"], label="No Lineal", color=:blue, lw=3)
+plot!(t_axis, res_lin["K"], label="Linealizado", color=:blue, ls=:dash, lw=2)
+title!("Capital (Lineal vs No Lineal)")
+xlabel!("Tiempo")
 
 plot(p1, p2, layout=(1,2), size=(800, 350))
 """))
 
-# 9. SIMULACIÓN MODULAR INTERACTIVA
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Simulación interactiva / modular
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-Define una función para graficar la respuesta de la inversión ante cualquier tasa de interés de shock final.
+nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases
+@manipulate for R_init in 0.02:0.005:0.06, R_final in 0.02:0.005:0.06, phi_val in 1.0:1.0:20.0, delta_val in 0.02:0.01:0.10, alpha_val in 0.2:0.05:0.4
+    params_base = TobinQParams(alpha_val, delta_val, phi_val, R_init)
+    ss_init = compute_steady_state(params_base)
+    K0 = ss_init["K"]
+    T_sim = 40
+    
+    R_path = fill(R_final, T_sim)
+    R_path[1] = R_init
+    res = solve_nonlinear_simulation(params_base, K0, R_path, T_sim)
+    
+    params_final = TobinQParams(alpha_val, delta_val, phi_val, R_final)
+    ss_final = compute_steady_state(params_final)
+    
+    p1 = plot(res["K"], res["q"], color=:purple, lw=3, label="Trayectoria de silla")
+    scatter!([ss_init["K"]], [ss_init["q"]], color=:gray, markersize=6, label="EE Inicial")
+    scatter!([ss_final["K"]], [ss_final["q"]], color=:black, marker=:star, markersize=8, label="EE Final")
+    
+    hline!([1.0], color=:blue, ls=:dash, label="dq = 0")
+    vline!([ss_final["K"]], color=:red, ls=:dash, label="dK = 0")
+    
+    title!("Diagrama de Fases (K, q)")
+    xlabel!("Capital (K)")
+    ylabel!("Q de Tobin (q)")
+    
+    plot(p1, size=(600, 400), plot_title="Ajuste Dinámico", top_margin=10mm)
+end
 """))
 
-nb.cells.append(
-    nbf.v4.new_code_cell(r"""function graficar_shock_interes(R_final_val::Float64)
-    R_sh = zeros(T)
-    R_sh[1] = 0.04
-    R_sh[2:end] .= R_final_val
-    res_sh = solve_nonlinear_simulation(params, K0, R_sh, T)
-    
-    p1 = plot(0:99, res_sh["q"], label="q", color=:purple, lw=2)
-    title!("q (R_final -> $R_final_val)")
-    
-    p2 = plot(0:99, res_sh["K"], label="K", color=:blue, lw=2)
-    title!("K (R_final -> $R_final_val)")
-    
-    plot(p1, p2, layout=(1,2), size=(800, 300))
-end
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 
-# Ejemplo de ejecución
-graficar_shock_interes(0.02)
-""")
-)
+nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-# 10. BUENAS PRÁCTICAS Y CONCLUSIÓN
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas y Conclusión
+nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+@btime solve_nonlinear_simulation($params, $K0, $R_path, $T_sim)
+"""))
 
-Este modelo ejemplifica cómo los costes de instalación retrasan la acumulación de capital. La variable flexible (Q de Tobin) salta instantáneamente para situarse sobre el camino de silla estable, guiando la acumulación lenta y gradual del capital hacia el nuevo estado estacionario.
-""")
-)
-
-# METADATOS DEL CUADERNO (KERNEL DE JULIA)
 nb.metadata = {
     "kernelspec": {
         "display_name": "Julia 1.12.6",
