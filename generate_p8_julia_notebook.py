@@ -49,42 +49,52 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición D
     k0 = ss_init["k"]
     T_sim = 100
     
-    # Send shocks at t=10
+    # Send shocks at t=5
     s_path = fill(params_init.s, T_sim)
-    s_path[11:end] .= s_final
+    s_path[6:end] .= s_final
     
     n_path = fill(params_init.n, T_sim)
-    n_path[11:end] .= n_final
+    n_path[6:end] .= n_final
     
     A_path = fill(params_init.A, T_sim)
-    A_path[11:end] .= A_final
+    A_path[6:end] .= A_final
     
     res = simulate_solow_swan(params_init, k0, s_path, n_path, A_path, T_sim)
     
     params_fin = SolowSwanParameters(params_init.alpha, params_init.delta, s_final, n_final, A_final)
     ss_fin = compute_solow_steady_state(params_fin)
     
+    t_shock = 5
     t_axis = 0:(T_sim - 1)
     
     p1 = plot(t_axis, res["k"], color=:blue, lw=2.5, label="Capital (k)")
     hline!([ss_init["k"]], color=:gray, ls=:dot, label="")
     hline!([ss_fin["k"]], color=:black, ls=:dash, label="k* Final")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Capital por trabajador")
     xlabel!("Tiempo")
     
     p2 = plot(t_axis, res["y"], color=:purple, lw=2.5, label="Renta (y)")
     hline!([ss_init["y"]], color=:gray, ls=:dot, label="")
     hline!([ss_fin["y"]], color=:black, ls=:dash, label="y* Final")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Renta per cápita")
     xlabel!("Tiempo")
     
     p3 = plot(t_axis, res["c"], color=:forestgreen, lw=2.5, label="Consumo (c)")
     hline!([ss_init["c"]], color=:gray, ls=:dot, label="")
     hline!([ss_fin["c"]], color=:black, ls=:dash, label="c* Final")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Consumo per cápita")
     xlabel!("Tiempo")
     
-    plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
+    p4 = plot(t_axis, res["gy"], color=:orange, lw=2.5, label="Crecimiento (gy)")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
+    title!("Tasa de Crecimiento del PIB p.c. (%)")
+    xlabel!("Tiempo")
+    ylabel!("% de crecimiento")
+    
+    plot(p1, p2, p3, p4, layout=(2,2), size=(900, 600), 
          plot_title="Ajuste hacia el Nuevo Estado Estacionario", top_margin=10mm)
 end
 """))

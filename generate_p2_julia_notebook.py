@@ -117,17 +117,24 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     p_grid = range(minimum(res["p"]) - 0.3, maximum(res["p"]) + 0.3, length=10)
     s_grid = range(minimum(res["s"]) - 0.5, maximum(res["s"]) + 0.5, length=10)
     
+    # Normalización uniforme: la longitud de cada flecha es la misma fracción
+    # (5%) del rango de su propio eje, evitando una escala arbitraria distinta
+    # entre p y s.
+    arrow_frac = 0.05
+    p_range = maximum(p_grid) - minimum(p_grid)
+    s_range = maximum(s_grid) - minimum(s_grid)
+
     p_pts, s_pts, dp_pts, ds_pts = Float64[], Float64[], Float64[], Float64[]
     for pp in p_grid, ss in s_grid
         i_pt = -(z_final[2] - pp - params_sim.psi * z_final[3]) / params_sim.theta
         yd_pt = z_final[1] + params_sim.beta1 * (ss - pp + z_final[5]) - params_sim.beta2 * i_pt
         dp = params_sim.mi * (yd_pt - z_final[3])
         ds = i_pt - z_final[4]
-        
+
         norm = sqrt(dp^2 + ds^2)
         if norm > 0
             push!(p_pts, pp); push!(s_pts, ss)
-            push!(dp_pts, (dp/norm)*0.03); push!(ds_pts, (ds/norm)*0.05)
+            push!(dp_pts, (dp/norm)*arrow_frac*p_range); push!(ds_pts, (ds/norm)*arrow_frac*s_range)
         end
     end
     quiver!(p_pts, s_pts, quiver=(dp_pts, ds_pts), color=:gray, alpha=0.5)

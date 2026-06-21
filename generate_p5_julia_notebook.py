@@ -35,8 +35,6 @@ nb.cells.append(nbf.v4.new_code_cell("""params_lumpsum = default_calibration(Fis
 println("Parámetros Base: ", params_lumpsum)
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
-
 nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante
 W = fill(30.0, params_lumpsum.T)
 
@@ -50,7 +48,7 @@ res_tax = solve_non_distortionary(params_lumpsum, W, true)
 println("Diferencia media en Consumo (Equivalencia Ricardiana): ", sum(abs.(res_base["C"] .- res_tax["C"])) / params_lumpsum.T)
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Impuestos Distorsionadores)
 @manipulate for tauc_val in 0.0:0.05:0.50, tauw_val in 0.0:0.05:0.50, taur_val in 0.0:0.05:0.50, ret_opt in ["lump_sum", "government_spending"]
@@ -91,7 +89,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
 end
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Seguridad Social)
 @manipulate for tau_ss_val in 0.0:0.04:0.50, t_star_val in 15:1:29
@@ -124,6 +122,8 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
          plot_title="Impacto del Sistema de Seguridad Social", top_margin=10mm)
 end
 """))
+
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
