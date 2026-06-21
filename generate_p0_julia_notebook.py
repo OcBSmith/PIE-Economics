@@ -23,17 +23,21 @@ macroeconómicos concretos (IS-LM, Dornbusch, DGE...). Versión en Julia.
     )
 )
 
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
+# 2. CONFIGURACIÓN DEL ENTORNO
 nb.cells.append(
-    nbf.v4.new_code_cell(r"""# En Google Colab, se instalarían los paquetes necesarios.
-# En el entorno local, se asume que las dependencias ya están resueltas.
-# using Pkg; Pkg.activate("."); Pkg.instantiate()
+    nbf.v4.new_code_cell(r"""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+# en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
+# tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
+# que la celda siguiente activa e instancia el proyecto automáticamente.
+# Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
+# para la versión Julia de esta práctica usa MyBinder.
 """)
 )
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
 nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
 Pkg.activate("../..")
+Pkg.instantiate()
 
 using MacroAIComp
 using Plots

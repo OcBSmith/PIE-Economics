@@ -17,16 +17,16 @@
 
 ## TIPO B — Celda de instalación no funcional
 
-- [ ] B1. Hacer funcional la celda de setup en P0 (detección Colab + Pkg.activate)
-- [ ] B2. Hacer funcional la celda de setup en P1
-- [ ] B3. Hacer funcional la celda de setup en P2
-- [ ] B4. Hacer funcional la celda de setup en P3
-- [ ] B5. Hacer funcional la celda de setup en P4
-- [ ] B6. Hacer funcional la celda de setup en P5
-- [ ] B7. Hacer funcional la celda de setup en P6
-- [ ] B8. Hacer funcional la celda de setup en P7
-- [ ] B9. Hacer funcional la celda de setup en P8
-- [ ] B10. Hacer funcional la celda de setup en P9
+- [x] B1. Hacer funcional la celda de setup en P0 (detección Colab + Pkg.activate) — la celda placeholder (100% comentada) se reemplazó por una explicación honesta de Binder vs Colab, y la celda real ahora llama `Pkg.instantiate()` (antes nunca se ejecutaba, solo aparecía dentro de un comentario muerto)
+- [x] B2. Hacer funcional la celda de setup en P1
+- [x] B3. Hacer funcional la celda de setup en P2
+- [x] B4. Hacer funcional la celda de setup en P3
+- [x] B5. Hacer funcional la celda de setup en P4
+- [x] B6. Hacer funcional la celda de setup en P5
+- [x] B7. Hacer funcional la celda de setup en P6
+- [x] B8. Hacer funcional la celda de setup en P7
+- [x] B9. Hacer funcional la celda de setup en P8
+- [x] B10. Hacer funcional la celda de setup en P9
 
 ## TIPO C — Celda de bienvenida ausente
 

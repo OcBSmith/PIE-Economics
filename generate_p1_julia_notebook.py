@@ -9,12 +9,17 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# En Google Colab se activarían y descargarían los paquetes necesarios.
-# using Pkg; Pkg.activate("."); Pkg.instantiate()
+nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+# en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
+# tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
+# que la celda siguiente activa e instancia el proyecto automáticamente.
+# Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
+# para la versión Julia de esta práctica usa MyBinder.
 """))
 
 nb.cells.append(nbf.v4.new_code_cell("""using Pkg
 Pkg.activate("../..")
+Pkg.instantiate()
 
 using MacroAIComp
 using Plots
