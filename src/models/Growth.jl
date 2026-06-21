@@ -55,7 +55,7 @@ function compute_solow_steady_state(
     i_ss = s_val * y_ss
     c_ss = (1.0 - s_val) * y_ss
 
-    return Dict("k" => k_ss, "y" => y_ss, "c" => c_ss, "i" => i_ss)
+    return Dict("k" => k_ss, "K" => k_ss, "y" => y_ss, "Y" => y_ss, "c" => c_ss, "C" => c_ss, "i" => i_ss, "I" => i_ss)
 end
 
 """
@@ -109,7 +109,7 @@ function simulate_solow_swan(
         gy[t] = y[t - 1] > 0.0 ? (y[t] - y[t - 1]) / y[t - 1] : 0.0
     end
 
-    return Dict("k" => k, "y" => y, "c" => c, "i" => inv, "gy" => gy)
+    return Dict("k" => k, "K" => k, "y" => y, "Y" => y, "c" => c, "C" => c, "i" => inv, "I" => inv, "gy" => gy)
 end
 
 end # module Growth

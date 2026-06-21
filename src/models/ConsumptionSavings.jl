@@ -80,8 +80,9 @@ function solve_foc_fsolve(params::ConsumptionSavingParameters, W::AbstractVector
     for t in 2:T
         B[t] = (1.0 + R) * B[t - 1] + W[t] - C[t]
     end
+    U = [beta^t * log(max(C[t+1], 1e-10)) for t in 0:(T - 1)]
 
-    return Dict("C" => C, "B" => B)
+    return Dict("C" => C, "B" => B, "W" => W, "U" => U)
 end
 
 """
@@ -130,8 +131,9 @@ function solve_direct_optim(params::ConsumptionSavingParameters, W::AbstractVect
     for t in 2:T
         C[t] = (1.0 + R) * B[t - 1] + W[t] - B[t]
     end
+    U = [beta^t * log(max(C[t+1], 1e-10)) for t in 0:(T - 1)]
 
-    return Dict("C" => C, "B" => B)
+    return Dict("C" => C, "B" => B, "W" => W, "U" => U)
 end
 
 end # module ConsumptionSavings

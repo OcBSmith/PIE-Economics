@@ -30,7 +30,7 @@ using BenchmarkTools
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration()
+nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration(ConsumptionSavingParameters)
 println("Parámetros: ", params)
 """))
 

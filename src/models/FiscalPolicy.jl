@@ -134,7 +134,10 @@ function solve_distortionary_foc(
     C0_guess = [sum(W) / T * gamma * 0.5]
     sol = nlsolve(residuals!, C0_guess, xtol=1e-12, ftol=1e-12)
     C, L, B = build_path(sol.zero[1])
-    return Dict("C" => C, "L" => L, "B" => B)
+    O = 1.0 .- L
+    W_L = W .* L .* (1.0 - tauw)
+
+    return Dict("C" => C, "L" => L, "O" => O, "B" => B, "W_L" => W_L)
 end
 
 """
@@ -232,8 +235,10 @@ function solve_distortionary_optim(
         end
     end
     L = clamp.(L, 0.0, 1.0 - 1e-9)
+    O = 1.0 .- L
+    W_L = W .* L .* (1.0 - tauw)
 
-    return Dict("C" => C, "L" => L, "B" => B)
+    return Dict("C" => C, "L" => L, "O" => O, "B" => B, "W_L" => W_L)
 end
 
 """
@@ -286,7 +291,16 @@ function solve_social_security(params::FiscalPolicyParameters, W::AbstractVector
     sol = nlsolve(residuals!, C0_guess, xtol=1e-12, ftol=1e-12)
     C, B = build_path(sol.zero[1])
 
-    return Dict("C" => C, "B" => B, "Pension" => pension)
+    # Compute additional trajectories for plotting
+    W_net = W .* (1.0 - tau_ss)
+    B_ss = zeros(T)
+    B_ss[1] = tau_ss * W[1]
+    for t in 2:t_star
+        B_ss[t] = (1.0 + R) * B_ss[t-1] + tau_ss * W[t]
+    end
+    B_total = B .+ B_ss
+
+    return Dict("C" => C, "B" => B, "Pension" => pension, "W_net" => W_net, "B_ss" => B_ss, "B_total" => B_total)
 end
 
 end # module FiscalPolicy

@@ -107,7 +107,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) v
     A_path .= exp.(a_s)
     
     # Resolver
-    res_lin = solve_blanchard_khan(params, a_s, T_sim)
+    res_lin = solve_blanchard_khan(params, K0, A_path, T_sim)
     res_nonlin = solve_nonlinear_simulation(params, K0, A_path, T_sim)
     
     t_axis = 0:(T_sim - 1)
@@ -144,7 +144,7 @@ println("Benchmark NLsolve (No Lineal):")
 @btime solve_nonlinear_simulation($params_base, $ss["K"], $A_bench, 50)
 
 println("Benchmark Blanchard-Kahn (Lineal):")
-@btime solve_blanchard_khan($params_base, $a_bench, 50)
+@btime solve_blanchard_khan($params_base, $ss["K"], $A_bench, 50)
 """))
 
 nb.metadata = {

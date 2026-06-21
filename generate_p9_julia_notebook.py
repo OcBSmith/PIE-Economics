@@ -43,8 +43,8 @@ println("  Inversión (I*)                       : ", round(ss["I"], digits=4))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""println("Autovalores de la matriz de transición (Blanchard-Kahn):")
-mat = compute_ramsey_transition_matrix(params_base)
-println(eigvals(mat))
+J, lambda_1, lambda_2, theta = compute_ramsey_transition_matrix(params_base)
+println(eigvals(J))
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
@@ -57,15 +57,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock permane
     K0 = ss_init["K"]
     T_sim = 50
     
-    A_path = fill(A_final, T_sim)
-    A_path[1] = params_init.A
+    res = solve_ramsey_linearized(params_init, K0, A_final, params_init.n, beta_final, T_sim, 1)
     
-    beta_path = fill(beta_final, T_sim)
-    beta_path[1] = params_init.beta
-    
-    res = solve_ramsey_nonlinear(params_init, K0, A_path, beta_path, T_sim)
-    
-    params_fin = RamseyParams(params_init.alpha, beta_final, params_init.delta, params_init.n, params_init.g, A_final)
+    params_fin = RamseyParams(params_init.alpha, beta_final, params_init.delta, params_init.n, A_final)
     ss_fin = compute_ramsey_steady_state(params_fin)
     
     t_axis = 0:(T_sim - 1)
@@ -108,11 +102,11 @@ nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) v
     A_path = fill(A_shock, T_sim)
     A_path[1] = params.A
     
-    beta_path = fill(params.beta, T_sim)
+    n_path = fill(params.n, T_sim)
     
     # Resolver
-    res_lin = solve_ramsey_linearized(params, K0, A_path, beta_path, T_sim)
-    res_nonlin = solve_ramsey_nonlinear(params, K0, A_path, beta_path, T_sim)
+    res_lin = solve_ramsey_linearized(params, K0, A_shock, params.n, params.beta, T_sim, 1)
+    res_nonlin = solve_ramsey_nonlinear(params, K0, A_path, n_path, T_sim, 1)
     
     t_axis = 0:(T_sim - 1)
     
@@ -140,13 +134,13 @@ Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation para No Lineal y Blanchard-Kahn
 A_bench = fill(1.05, 50)
 A_bench[1] = 1.00
-beta_bench = fill(0.96, 50)
+n_bench = fill(params_base.n, 50)
 
 println("Benchmark NLsolve (Shooting No Lineal):")
-@btime solve_ramsey_nonlinear($params_base, $ss["K"], $A_bench, $beta_bench, 50)
+@btime solve_ramsey_nonlinear($params_base, $ss["K"], $A_bench, $n_bench, 50, 1)
 
 println("Benchmark Blanchard-Kahn (Lineal):")
-@btime solve_ramsey_linearized($params_base, $ss["K"], $A_bench, $beta_bench, 50)
+@btime solve_ramsey_linearized($params_base, $ss["K"], 1.05, $params_base.n, $params_base.beta, 50, 1)
 """))
 
 nb.metadata = {

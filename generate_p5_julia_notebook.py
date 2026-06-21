@@ -40,13 +40,14 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante
 W = fill(30.0, params_lumpsum.T)
 
-# 1. Resolver con FOC
-res_foc = solve_lump_sum_foc(params_lumpsum, W)
+# 1. Resolver caso base sin impuestos
+params_no_tax = FiscalPolicyParameters(30, 0.97, 0.02, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 26)
+res_base = solve_non_distortionary(params_no_tax, W)
 
-# 2. Optimización Directa
-res_opt = solve_lump_sum_optim(params_lumpsum, W)
+# 2. Resolver con impuestos de suma fija y devolución (Equivalencia Ricardiana)
+res_tax = solve_non_distortionary(params_lumpsum, W, true)
 
-println("Diferencia media en Consumo: ", sum(abs.(res_foc["C"] .- res_opt["C"])) / params_lumpsum.T)
+println("Diferencia media en Consumo (Equivalencia Ricardiana): ", sum(abs.(res_base["C"] .- res_tax["C"])) / params_lumpsum.T)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))

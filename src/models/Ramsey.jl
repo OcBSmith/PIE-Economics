@@ -57,7 +57,7 @@ function compute_ramsey_steady_state(params::RamseyParams)
     # 5. Consumo per cápita de equilibrio estacionario (c_ss) a partir de la restricción agregada:
     c_ss = y_ss - i_ss
 
-    return Dict("k" => k_ss, "y" => y_ss, "c" => c_ss, "i" => i_ss, "R" => R_ss)
+    return Dict("k" => k_ss, "K" => k_ss, "y" => y_ss, "Y" => y_ss, "c" => c_ss, "C" => c_ss, "i" => i_ss, "I" => i_ss, "R" => R_ss)
 end
 
 """
@@ -165,7 +165,7 @@ function solve_ramsey_linearized(
         i[t] = y[t] - c[t]
     end
 
-    return Dict("k" => k, "c" => c, "y" => y, "i" => i, "k_hat" => k_hat, "c_hat" => c_hat)
+    return Dict("k" => k, "K" => k, "c" => c, "C" => c, "y" => y, "Y" => y, "i" => i, "I" => i, "k_hat" => k_hat, "c_hat" => c_hat)
 end
 
 """
@@ -237,12 +237,16 @@ function solve_ramsey_nonlinear(
     a = c_shock_guess * 0.5
     b = c_shock_guess * 1.5
 
-    # 2. Acotamos el intervalo inferior (a) y superior (b) para la bisección
-    while residual(a) < 0.0
+    # 2. Acotamos el intervalo inferior (a) y superior (b) para la bisección con límite de iteraciones
+    iter_a = 0
+    while residual(a) < 0.0 && iter_a < 50
         a *= 0.5
+        iter_a += 1
     end
-    while residual(b) > 0.0
+    iter_b = 0
+    while residual(b) > 0.0 && iter_b < 50
         b *= 1.5
+        iter_b += 1
     end
 
     # 3. Bucle de bisección para hallar la condición inicial c_shock exacta que elimina la divergencia
@@ -274,7 +278,16 @@ function solve_ramsey_nonlinear(
     k_full[shock_idx:T] = k_sim
     c_full[shock_idx:T] = c_sim
 
-    return Dict("k" => k_full, "c" => c_full)
+    # Compute production Y and investment I for the full path
+    y_full = zeros(T)
+    i_full = zeros(T)
+    for t in 1:T
+        A_t = t < shock_idx ? params.A : A_path[min(t - shock_idx + 1, length(A_path))]
+        y_full[t] = A_t * k_full[t]^alpha
+        i_full[t] = y_full[t] - c_full[t]
+    end
+
+    return Dict("k" => k_full, "K" => k_full, "c" => c_full, "C" => c_full, "y" => y_full, "Y" => y_full, "i" => i_full, "I" => i_full)
 end
 
 end # module Ramsey

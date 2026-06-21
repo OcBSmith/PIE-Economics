@@ -72,8 +72,9 @@ function solve_foc_fsolve(params::ConsumptionLeisureParameters, W::AbstractVecto
 
     C, L, B = build_path(C0)
     O = 1.0 .- L
+    W_L = W .* L
 
-    return Dict("C" => C, "L" => L, "O" => O, "B" => B)
+    return Dict("C" => C, "L" => L, "O" => O, "B" => B, "W_L" => W_L)
 end
 
 """
@@ -131,8 +132,9 @@ function solve_direct_optim(params::ConsumptionLeisureParameters, W::AbstractVec
     end
     L = clamp.(L, 0.0, 1.0 - 1e-9)
     O = 1.0 .- L
+    W_L = W .* L
 
-    return Dict("C" => C, "L" => L, "O" => O, "B" => B)
+    return Dict("C" => C, "L" => L, "O" => O, "B" => B, "W_L" => W_L)
 end
 
 end # module ConsumptionLeisure
