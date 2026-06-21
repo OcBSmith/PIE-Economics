@@ -30,16 +30,16 @@
 
 ## TIPO C — Celda de bienvenida ausente
 
-- [ ] C1. Copiar "GUÍA RÁPIDA PARA DUMMIES" de Python a Julia en P0
+- [x] C1. Copiar "GUÍA RÁPIDA PARA DUMMIES" de Python a Julia en P0
 - [x] C2. Copiar celda de bienvenida de Python a Julia en P1 — ya estaba en el generador (`md_cells[1]`); se había perdido en el notebook por drift/autosave y se restauró al regenerar
 
 ## TIPO D — Contenido teórico recortado
 
-- [ ] D1. P1: Añadir sección 1.2 (Reducción a sistema de ODEs) con derivación paso a paso
-- [ ] D2. P1: Añadir glosario de parámetros con tabla formateada
-- [ ] D3. P1: Añadir derivación analítica de estado estacionario con aritmética explícita
-- [ ] D4. P1: Añadir sección "Detrás de la Escena" (RK45, solve_ivp, función comentada)
-- [ ] D5. P2: Implementar `simulate_dornbusch_manual()` en Julia (equivalente a las 59 líneas de Python)
+- [x] D1. P1: Añadir sección 1.2 (Reducción a sistema de ODEs) con derivación paso a paso — ya estaba copiada vía `md_cells[2]` (toda la Sección 1 viene en una sola celda markdown en el Python original); solo necesitaba que el notebook se regenerase desde el script
+- [x] D2. P1: Añadir glosario de parámetros con tabla formateada
+- [x] D3. P1: Añadir derivación analítica de estado estacionario con aritmética explícita — igual que D1, ya estaba en `md_cells[3]`, solo necesitaba regenerarse
+- [x] D4. P1: Añadir sección "Detrás de la Escena" (RK45, solve_ivp, función comentada) — ya estaba en `md_cells[4]` + la celda `custom_system_dynamics!`, solo necesitaba regenerarse
+- [x] D5. P2: Implementar `simulate_dornbusch_manual()` en Julia (equivalente a las 59 líneas de Python) — incluye verificación cruzada contra `simulate_shock()` (diferencia máxima < 1e-8)
 
 ## TIPO E — Visualización inferior o distinta
 

@@ -23,6 +23,25 @@ macroeconómicos concretos (IS-LM, Dornbusch, DGE...). Versión en Julia.
     )
 )
 
+# 1.5. BIENVENIDA Y GUÍA RÁPIDA PARA DUMMIES
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""> **👋 BIENVENIDA A LA PRÁCTICA - LEER ANTES DE EMPEZAR**
+>
+> *   **¿Nunca has usado Jupyter?** No te preocupes. Este cuaderno es interactivo. Haz clic en cualquier celda de código y pulsa **`Shift + Enter`** para ejecutarla. Ve de arriba a abajo en orden.
+> *   **¿Se ha congelado o sale un asterisco `[*]` eterno?** Ve al menú superior y dale a `Kernel` ➔ `Restart`.
+> *   **El objetivo** de esta práctica es que juegues con la economía. Cambia los números del código que representan impuestos, dinero o tecnología, vuelve a ejecutar y mira los gráficos. ¡No puedes romper nada!
+>
+
+### 🕹️ GUÍA RÁPIDA PARA DUMMIES - Sistemas Dinámicos
+*   **¿Qué estamos haciendo aquí?** Estamos estudiando cómo una variable cambia a lo largo del tiempo usando reglas matemáticas sencillas. Imagina que es el crecimiento de una población o el saldo de tu cuenta bancaria.
+*   **Puntos de Equilibrio (Estado Estacionario):** Es el valor donde la variable se queda quieta (no sube ni baja).
+*   **Estabilidad:** Si perturbas el sistema (le das un empujón), ¿vuelve al equilibrio (estable) o se dispara al infinito (inestable)?
+*   **¡Prueba esto!** Busca donde se definen las matrices o ecuaciones, ejecuta las celdas con `Shift + Enter` y observa cómo las flechas del diagrama de fases te indican hacia dónde viaja el sistema.
+"""
+    )
+)
+
 # 2. CONFIGURACIÓN DEL ENTORNO
 nb.cells.append(
     nbf.v4.new_code_cell(r"""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml

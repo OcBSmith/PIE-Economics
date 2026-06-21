@@ -47,6 +47,74 @@ println("  Tipo de interés (i*)       : ", ss_init["i"], "%")
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
+nb.cells.append(nbf.v4.new_code_cell("""# Función explicativa que simula paso a paso la dinámica de Dornbusch en
+# diferencias, equivalente didáctico de `simulate_dornbusch_manual` en Python.
+# z = [beta0, m, ypot, istar, pstar] (vector de variables exógenas)
+function simulate_dornbusch_manual(params, z_init, z_final, periods=30, shock_period=1)
+    # 1. Obtener autovalores de la matriz del sistema para identificar el autovalor estable
+    lambdas_m = eigenvalues(params)
+    stable_idx_m = argmin(abs.(lambdas_m .+ 1.0))
+    stable_lambda_m = lambdas_m[stable_idx_m]  # lambda1 (aprox -0.74)
+
+    # 2. Inicializar arrays de trayectorias
+    p = zeros(periods)
+    s = zeros(periods)
+
+    # Calcular estados estacionarios
+    p_ss_init = z_init[2] - params.psi * z_init[3] + params.theta * z_init[4]
+    s_ss_final = (
+        z_final[2]
+        - z_final[1] / params.beta1
+        + ((1.0 - params.psi * params.beta1) / params.beta1) * z_final[3]
+        + ((params.theta * params.beta1 + params.beta2) / params.beta1) * z_final[4]
+        - z_final[5]
+    )
+
+    # Periodo inicial: Estado estacionario inicial
+    p[1] = p_ss_init
+    s[1] = z_init[2] - z_init[1]/params.beta1 + ((1.0 - params.psi*params.beta1)/params.beta1)*z_init[3] + ((params.theta*params.beta1 + params.beta2)/params.beta1)*z_init[4] - z_init[5]
+
+    # Evolución temporal paso a paso
+    for t in 2:periods
+        if t == shock_period + 1
+            # Precios rígidos a corto plazo
+            p[t] = p[t - 1]
+            # Salto del tipo de cambio al stable path (Overshooting)
+            m_1 = z_final[2]
+            ypot_1 = z_final[3]
+            istar_1 = z_final[4]
+            s[t] = (
+                -(m_1 - p[t] - params.psi * ypot_1) / (params.theta * stable_lambda_m)
+                - istar_1 / stable_lambda_m
+                + s_ss_final
+            )
+        else
+            # Propagación estándar para periodos posteriores usando las ecuaciones del sistema
+            z_curr = t >= shock_period + 1 ? z_final : z_init
+            i_prev = -(z_curr[2] - p[t-1] - params.psi * z_curr[3]) / params.theta
+            yd_prev = z_curr[1] + params.beta1 * (s[t-1] - p[t-1] + z_curr[5]) - params.beta2 * i_prev
+            dp_prev = params.mi * (yd_prev - z_curr[3])
+            ds_prev = i_prev - z_curr[4]
+
+            p[t] = p[t-1] + dp_prev
+            s[t] = s[t-1] + ds_prev
+        end
+    end
+
+    return p, s
+end
+
+# Verificación: comparamos la simulación manual contra el resolvedor de la
+# biblioteca para el mismo shock monetario que usa el diagrama de fases.
+p_manual, s_manual = simulate_dornbusch_manual(params_sim, [500.0, 100.0, 2000.0, 3.0, 0.0], [500.0, 101.0, 2000.0, 3.0, 0.0], 30, 1)
+res_lib = simulate_shock(params_sim, [500.0, 100.0, 2000.0, 3.0, 0.0], [500.0, 101.0, 2000.0, 3.0, 0.0], 30, 1)
+max_err_p = maximum(abs.(p_manual .- res_lib["p"]))
+max_err_s = maximum(abs.(s_manual .- res_lib["s"]))
+println("Función de simulación manual registrada con éxito.")
+println("Diferencia máxima vs simulate_shock(): p -> ", max_err_p, ", s -> ", max_err_s)
+@assert max_err_p < 1e-8 && max_err_s < 1e-8
+"""))
+
 nb.cells.append(nbf.v4.new_code_cell("""# Autovalores
 lambdas = eigenvalues(params_sim)
 println("Autovalores: ", lambdas)

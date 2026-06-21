@@ -33,7 +33,30 @@ using BenchmarkTools
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
 nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration(ISLMParams)
-println(params)
+
+# Glosario didáctico: descripción económica y símbolo de cada parámetro técnico
+descriptions = Dict(
+    "theta" => "Sensibilidad de la demanda de dinero al tipo de interés nominal [θ]",
+    "psi" => "Sensibilidad de la demanda de dinero a la renta real (PIB) [ψ]",
+    "beta1" => "Sensibilidad de la inversión y consumo al tipo de interés real [β1]",
+    "mi" => "Ajuste de precios ante brecha de producción (Curva de Phillips) [μ]",
+    "ni" => "Velocidad de ajuste de la producción física en mercado de bienes [ν]",
+    "beta0" => "Demanda agregada autónoma base (Gasto público + Consumo base) [β0]",
+    "m0" => "Oferta monetaria nominal fijada por el Banco Central [M0]",
+    "ypot0" => "Producción potencial de pleno empleo a largo plazo [Y_barra]",
+)
+
+println("CALIBRACIÓN ECONÓMICA DE REFERENCIA (Valores base del Libro):")
+println("="^75)
+println(rpad("Variable", 12), " | ", rpad("Valor", 6), " | ", rpad("Descripción Económica", 50))
+println("-"^75)
+for field in fieldnames(typeof(params))
+    name = string(field)
+    value = getfield(params, field)
+    desc = get(descriptions, name, "Parámetro del modelo")
+    println("  ", rpad(name, 10), " | ", rpad(value, 6), " | ", rpad(desc, 50))
+end
+println("="^75)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
