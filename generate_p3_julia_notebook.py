@@ -1,10 +1,6 @@
 import nbformat as nbf
 import os
 import json
-import sys
-
-# Load md extractor
-sys.path.append('scratch')
 import md_extractor
 
 md_cells = md_extractor.get_markdown_cells(r"practicas\03-consumo-ahorro\python.ipynb")

@@ -1,9 +1,6 @@
 import nbformat as nbf
 import os
 import json
-import sys
-
-sys.path.append('scratch')
 import md_extractor
 
 md_cells = md_extractor.get_markdown_cells(r"practicas\06-tobin-q\python.ipynb")
@@ -126,7 +123,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en espacio de desvia
     K_ss_final = ss_final["K"]
     
     # Obtener coeficientes del sistema linealizado
-    lin_sys = compute_linearized_system(params, R_final)
+    lin_sys = compute_linearized_system(params)
     A = lin_sys["A"]
     theta = lin_sys["theta"]
     

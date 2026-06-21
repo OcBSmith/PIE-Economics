@@ -1,9 +1,6 @@
 import nbformat as nbf
 import os
 import json
-import sys
-
-sys.path.append('scratch')
 import md_extractor
 
 md_cells = md_extractor.get_markdown_cells(r"practicas\05-gobierno-fiscal\python.ipynb")

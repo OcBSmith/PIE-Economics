@@ -6,14 +6,14 @@
 
 ## TIPO A — Errores de copy-paste (texto no adaptado a Julia)
 
-- [ ] A1. Buscar/reemplazar `.py` → `.jl` en secciones "Buenas Prácticas" (P0-P9)
-- [ ] A2. Buscar/reemplazar `cvxpy` → `solve_direct_optim` en texto Julia (P3, P4, P5)
-- [ ] A3. Buscar/reemplazar `pytest` → `Test.jl` en texto Julia (P3, P4)
-- [ ] A4. Buscar/reemplazar `SciPy fsolve` → `NLsolve.jl` en texto Julia (P7, P9)
-- [ ] A5. Limpiar tags `(Julia)` mal pegadas al final de objetivos (P3, P4, P5, P8, P9)
-- [ ] A6. Corregir "Simulación Python" → "Simulación Julia" en tabla verificación P2
-- [ ] A7. Corregir `DornbuschParameters` → `DornbuschParams` en P2 Buenas Prácticas
-- [ ] A8. Corregir `RamseyParameters` → `RamseyParams` en P9 referencias
+- [x] A1. Buscar/reemplazar `.py` → `.jl` en secciones "Buenas Prácticas" (P0-P9) — vía `scratch/md_extractor.py` (P0 no usa md_extractor y ya no contenía el término)
+- [x] A2. Buscar/reemplazar `cvxpy` → `solve_direct_optim` en texto Julia (P3, P4, P5) — case-insensitive, cubre también "CVXPY" en mayúsculas
+- [x] A3. Buscar/reemplazar `pytest` → `Test.jl` en texto Julia (P3, P4)
+- [x] A4. Buscar/reemplazar `SciPy fsolve` → `NLsolve.jl` en texto Julia (P7, P9)
+- [x] A5. Limpiar tags `(Julia)` mal pegadas al final de objetivos (P3, P4, P5, P8, P9) — el tag ahora se añade solo a la primera línea (título), no al final de toda la celda
+- [x] A6. Corregir "Simulación Python" → "Simulación Julia" en tabla verificación P2
+- [x] A7. Corregir `DornbuschParameters` → `DornbuschParams` en P2 Buenas Prácticas
+- [x] A8. Corregir `RamseyParameters` → `RamseyParams` en P9 referencias
 
 ## TIPO B — Celda de instalación no funcional
 
@@ -31,7 +31,7 @@
 ## TIPO C — Celda de bienvenida ausente
 
 - [ ] C1. Copiar "GUÍA RÁPIDA PARA DUMMIES" de Python a Julia en P0
-- [ ] C2. Copiar celda de bienvenida de Python a Julia en P1
+- [x] C2. Copiar celda de bienvenida de Python a Julia en P1 — ya estaba en el generador (`md_cells[1]`); se había perdido en el notebook por drift/autosave y se restauró al regenerar
 
 ## TIPO D — Contenido teórico recortado
 
