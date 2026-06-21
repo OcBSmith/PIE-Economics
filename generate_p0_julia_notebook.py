@@ -38,6 +38,7 @@ Pkg.activate("../..")
 using MacroAIComp
 using Plots
 using LinearAlgebra
+using Interact   # Para el widget interactivo equivalente a ipywidgets en Python
 """))
 
 # 4. INTRODUCCIÓN TEÓRICA
@@ -252,31 +253,33 @@ plot(p_s1, p_s2, layout=(1,2), size=(800, 350))
     )
 )
 
-# 12. SIMULACIÓN ALTERNATIVA SHOCK Z1
+# 12. WIDGET INTERACTIVO SHOCK Z1 (equivalente al FloatSlider de Python)
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 9. Simulación alternativa ante variaciones de shock
+    nbf.v4.new_markdown_cell(r"""## 9. Widget interactivo — sensibilidad al shock de z1
 
-En lugar de un widget interactivo (que puede requerir configuraciones de Jupyter complejas en Julia), definimos una función modularizada para graficar la transición del sistema para cualquier magnitud de shock sobre $z_1$. Puedes llamar a esta función cambiando el parámetro `z1_final` para ver el efecto.
+Equivalente al `FloatSlider` de `ipywidgets` en Python: usa `@manipulate` de `Interact.jl`
+para mover el slider de $z_1^{\text{final}}$ en tiempo real y ver la respuesta dinámica
+del sistema ante distintas magnitudes de shock.
 """)
 )
 
-nb.cells.append(nbf.v4.new_code_cell(r"""function graficar_shock_z1(z1_final::Float64)
+nb.cells.append(nbf.v4.new_code_cell(r"""# Widget interactivo equivalente al FloatSlider de Python
+# Mueve el slider para cambiar la magnitud del shock sobre z1
+@manipulate for z1_final in -2.0:0.25:4.0
     x1_p, x2_p = simulate(params_global, z_initial, [z1_final, 1.0], 30, 2)
-    
-    t_ax = 0:29
-    p_a = plot(t_ax, x1_p, label="x1", color=:blue, linewidth=2)
-    title!("x1 (z1 -> $z1_final)")
-    xlabel!("Periodos")
-    
-    p_b = plot(t_ax, x2_p, label="x2", color=:green, linewidth=2)
-    title!("x2 (z1 -> $z1_final)")
-    xlabel!("Periodos")
-    
-    plot(p_a, p_b, layout=(1,2), size=(800, 300))
-end
 
-# Ejemplo de ejecución
-graficar_shock_z1(3.0)
+    t_ax = 0:29
+    p_a = plot(t_ax, x1_p,
+               label="x1", color=:steelblue, linewidth=2.5,
+               title="Variable x1", xlabel="Periodos", ylabel="Stock de armamento")
+
+    p_b = plot(t_ax, x2_p,
+               label="x2", color=:forestgreen, linewidth=2.5,
+               title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento")
+
+    plot(p_a, p_b, layout=(1, 2), size=(820, 370),
+         plot_title="Shock z1: 1 -> $z1_final")
+end
 """))
 
 # 13. BUENAS PRÁCTICAS
