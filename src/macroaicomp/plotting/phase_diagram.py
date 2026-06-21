@@ -14,6 +14,7 @@ def plot_irf(
     x2: np.ndarray,
     labels: tuple[str, str] = ("x1", "x2"),
     ylabel: str = "Value",
+    suptitle: str | None = None,
 ) -> Figure:
     """Plot the impulse-response (transition dynamics) of two variables.
 
@@ -27,6 +28,9 @@ def plot_irf(
         Titles for each subplot.
     ylabel : str
         Shared y-axis label (with units).
+    suptitle : str or None
+        Optional figure-level title placed above the subplots. When provided,
+        the layout is adjusted so the suptitle does not overlap subplot titles.
 
     Returns
     -------
@@ -41,7 +45,11 @@ def plot_irf(
         ax.set_xlabel("Periods")
         ax.set_ylabel(ylabel)
         ax.grid(True, alpha=0.3)
-    fig.tight_layout()
+    if suptitle:
+        fig.suptitle(suptitle, fontsize=12, fontweight="bold", y=1.02)
+        fig.tight_layout()
+    else:
+        fig.tight_layout()
     return fig
 
 
