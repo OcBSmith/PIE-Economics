@@ -99,7 +99,7 @@ Bloque C+D, Bloque G+H completos.
 - [ ] E44. Unificar etiquetas/títulos/leyendas descriptivos en P7
 - [ ] E45. Unificar etiquetas/títulos/leyendas descriptivos en P8
 - [ ] E46. Unificar etiquetas/títulos/leyendas descriptivos en P9
-- [ ] E47. Añadir etiquetas 'SS Inicial' / 'SS Final' en P1-P9
+- [~] E47. Añadir etiquetas 'SS Inicial' / 'SS Final' en P1-P9 — P6 y P9 ya lo tenían; añadido en P1 (Panel de Precios, antes "P inicial"/"P final") y P8 (las hlines iniciales tenían `label=""` vacío). **No aplica igual en el resto**: P2 muestra 2 variables (s, p) en el mismo panel y la distinción por variable (`s Inicial`, `p Inicial`) es más clara que un genérico "SS"; P3/P4/P5/P7 son modelos de horizonte finito (ciclo de vida, DGE) que no tienen una comparación de estado estacionario inicial/final del mismo tipo que P1/P6/P8/P9
 
 ## TIPO F — Falta de interactividad (widgets)
 

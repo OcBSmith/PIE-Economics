@@ -122,8 +122,8 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     
     # Panel 2: Precios
     p2 = plot(t_eval, P_path, color=:forestgreen, lw=2.5, label="Precios (P)")
-    hline!([ss_init["P"]], color=:gray, ls=:dot, label="P inicial")
-    hline!([ss_final["P"]], color=:black, ls=:dash, label="P final")
+    hline!([ss_init["P"]], color=:gray, ls=:dot, label="SS Inicial")
+    hline!([ss_final["P"]], color=:black, ls=:dash, label="SS Final")
     title!("Evolución de Precios")
     xlabel!("Tiempo (t)")
     ylabel!("P")

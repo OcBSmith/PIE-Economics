@@ -71,22 +71,22 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición D
     t_axis = 0:(T_sim - 1)
     
     p1 = plot(t_axis, res["k"], color=:blue, lw=2.5, label="Capital (k)")
-    hline!([ss_init["k"]], color=:gray, ls=:dot, label="")
-    hline!([ss_fin["k"]], color=:black, ls=:dash, label="k* Final")
+    hline!([ss_init["k"]], color=:gray, ls=:dot, label="SS Inicial")
+    hline!([ss_fin["k"]], color=:black, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Capital por trabajador")
     xlabel!("Tiempo")
-    
+
     p2 = plot(t_axis, res["y"], color=:purple, lw=2.5, label="Renta (y)")
-    hline!([ss_init["y"]], color=:gray, ls=:dot, label="")
-    hline!([ss_fin["y"]], color=:black, ls=:dash, label="y* Final")
+    hline!([ss_init["y"]], color=:gray, ls=:dot, label="SS Inicial")
+    hline!([ss_fin["y"]], color=:black, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Renta per cápita")
     xlabel!("Tiempo")
-    
+
     p3 = plot(t_axis, res["c"], color=:forestgreen, lw=2.5, label="Consumo (c)")
-    hline!([ss_init["c"]], color=:gray, ls=:dot, label="")
-    hline!([ss_fin["c"]], color=:black, ls=:dash, label="c* Final")
+    hline!([ss_init["c"]], color=:gray, ls=:dot, label="SS Inicial")
+    hline!([ss_fin["c"]], color=:black, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Consumo per cápita")
     xlabel!("Tiempo")
