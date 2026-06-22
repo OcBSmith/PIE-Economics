@@ -104,54 +104,47 @@ end
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Oro
+nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Oro: Consumo de Estado Estacionario vs Tasa de Ahorro
 @manipulate for s_current in 0.05:0.01:0.60
-    
+
     params = default_calibration(SolowSwanParameters)
     alpha_val = params.alpha
-    delta_val = params.delta
-    n_val = params.n
-    A_val = params.A
-    
-    # Calcular la tasa de ahorro de la regla de oro (s_gold = alpha en Solow simple)
-    s_gold = alpha_val
-    k_gold = (s_gold * A_val / (delta_val + n_val))^(1 / (1 - alpha_val))
-    c_gold = A_val * k_gold^alpha_val - (delta_val + n_val) * k_gold
-    
-    # Estado estacionario actual
-    k_curr = (s_current * A_val / (delta_val + n_val))^(1 / (1 - alpha_val))
-    y_curr = A_val * k_curr^alpha_val
-    i_curr = s_current * y_curr
-    c_curr = y_curr - i_curr
-    
-    # Crear malla de capitales para graficar
-    k_vals = range(0.1, 50.0, length=200)
-    y_vals = A_val .* k_vals .^ alpha_val
-    inv_vals = s_current .* y_vals
-    req_inv = (delta_val + n_val) .* k_vals
-    
-    # Gráfica
-    p1 = plot(k_vals, y_vals, color=:purple, lw=3, label="Producción f(k)")
-    plot!(k_vals, inv_vals, color=:blue, lw=2.5, label="Ahorro/Inv. s_current")
-    plot!(k_vals, req_inv, color=:red, lw=2.5, label="Inv. Requerida (n+δ)k")
-    
-    # Marcar el punto actual
-    vline!([k_curr], color=:gray, ls=:dot, lw=2, label="k* Actual")
-    scatter!([k_curr], [y_curr], color=:purple, markersize=6, label="")
-    scatter!([k_curr], [req_inv[argmin(abs.(k_vals .- k_curr))]], color=:red, markersize=6, label="")
-    
-    # Llenar área de consumo actual
-    plot!( [k_curr, k_curr], [i_curr, y_curr], color=:forestgreen, lw=5, label="Consumo actual: $(round(c_curr, digits=2))" )
-    
-    # Marcar Golden Rule
-    vline!([k_gold], color=:orange, ls=:dash, lw=2, label="k* Golden Rule")
-    scatter!([k_gold], [A_val * k_gold^alpha_val], color=:orange, markersize=8, marker=:star, label="Max Consumo")
-    
-    title!("Regla de Oro en Solow-Swan")
-    xlabel!("Capital por trabajador (k)")
-    ylabel!("Renta, Inversión")
-    
-    plot(p1, size=(700, 450), plot_title="Comparativa Consumo vs Golden Rule", top_margin=10mm)
+
+    # 1. Generar una malla de tasas de ahorro entre 0.01 y 0.95
+    s_grid = range(0.01, 0.95, length=100)
+    c_ss_grid = [compute_solow_steady_state(params, s_val)["c"] for s_val in s_grid]
+
+    # Consumo actual y de la Regla de Oro (s_gold = alpha)
+    c_current = compute_solow_steady_state(params, s_current)["c"]
+    c_gold = compute_solow_steady_state(params, alpha_val)["c"]
+
+    # 2. Gráfica
+    p1 = plot(s_grid, c_ss_grid, color=:purple, lw=3, label="Consumo de Estado Estacionario (c̄)")
+
+    # Regiones de (in)eficiencia dinámica
+    plot!([0.01, alpha_val], [0.0, 0.0], fillrange=maximum(c_ss_grid) * 1.1, fillalpha=0.15,
+          color=:steelblue, lw=0, label="Bajo-acumulación (Eficiente)")
+    plot!([alpha_val, 0.95], [0.0, 0.0], fillrange=maximum(c_ss_grid) * 1.1, fillalpha=0.15,
+          color=:red, lw=0, label="Sobre-acumulación (Ineficiente)")
+
+    # Punto actual
+    scatter!([s_current], [c_current], color=:red, markersize=6,
+             label="Ahorro actual (s=$(round(s_current, digits=2)), c=$(round(c_current, digits=3)))")
+    vline!([s_current], color=:red, ls=:dot, alpha=0.5, label="")
+    hline!([c_current], color=:red, ls=:dot, alpha=0.5, label="")
+
+    # Regla de Oro
+    scatter!([alpha_val], [c_gold], color=:forestgreen, markersize=10, marker=:star,
+             label="Regla de Oro (s_gold=α=$(round(alpha_val, digits=2)), c_gold=$(round(c_gold, digits=3)))")
+    vline!([alpha_val], color=:forestgreen, ls=:dash, alpha=0.7, label="")
+    hline!([c_gold], color=:forestgreen, ls=:dash, alpha=0.7, label="")
+
+    title!("La Regla de Oro: Consumo Estacionario vs. Tasa de Ahorro")
+    xlabel!("Tasa de Ahorro (s)")
+    ylabel!("Consumo Estacionario (c̄)")
+    xlims!(0.01, 0.95)
+
+    plot(p1, size=(750, 500), legend=:bottom, legendfontsize=7)
 end
 """))
 

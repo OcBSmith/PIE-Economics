@@ -236,7 +236,11 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     
     scatter!([ss_init["p"]], [ss_init["s"]], color=:gray, markersize=6, label="EE Inic")
     scatter!([ss_final["p"]], [ss_final["s"]], color=:black, marker=:star, markersize=8, label="EE Fin")
-    
+
+    # Salto instantáneo del tipo de cambio en el periodo del shock (t=0 -> t=1)
+    plot!([res["p"][1], res["p"][2]], [res["s"][1], res["s"][2]], color=:purple, lw=2, arrow=:closed, label="")
+    annotate!(res["p"][1] - 0.15, (res["s"][1] + res["s"][2]) / 2, text("Jump", :purple, :bold, 9))
+
     title!("Plano de Fases (p, s)")
     xlabel!("Precios (p)")
     ylabel!("Tipo cambio (s)")

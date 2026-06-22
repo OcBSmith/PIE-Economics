@@ -69,7 +69,7 @@ Bloque C+D, Bloque G+H completos.
 - [x] E14. Añadir línea vertical de shock en P8 (unificar t_shock=5)
 - [x] E15. Añadir línea vertical de shock en P9 (unificar t_shock=5)
 - [x] E16. P1: Añadir Panel 3 (diagrama de fases con quiver, loci Ydot=0, Pdot=0) — ya estaba en el generador
-- [ ] E17. P2: Añadir anotación de flecha "Jump" en diagrama de fases
+- [x] E17. P2: Añadir anotación de flecha "Jump" en diagrama de fases
 - [x] E18. P6: Añadir streamplot/campo vectorial en diagrama de fases
 - [x] E19. P6: Añadir Saddle Path como línea dibujada explícitamente
 - [x] E20. P6: Añadir punto de salto naranja + flecha de salto
@@ -77,8 +77,8 @@ Bloque C+D, Bloque G+H completos.
 - [x] E22. P6: Añadir sombreado de inversión neta (fill_between equivalente)
 - [x] E23. P6: Añadir línea de depreciación (δK_t) en panel de inversión
 - [x] E24. P8: Añadir Panel 4 (tasa de crecimiento g_y)
-- [ ] E25. P8: Cambiar diagrama de Regla de Oro al estilo curva consumo-ahorro
-- [ ] E26. P3, P4, P5: Migrar sombreado acreedor/deudor a fillrange condicional
+- [x] E25. P8: Cambiar diagrama de Regla de Oro al estilo curva consumo-ahorro — reescrito como `c̄(s)` con regiones sombreadas de (in)eficiencia dinámica, igual que Python
+- [x] E26. P3, P4, P5: Migrar sombreado acreedor/deudor a fillrange condicional — ya estaba hecho (usan `max./min.` + `fillrange=0`, el equivalente idiomático de Plots.jl al `fill_between(..., where=)` de matplotlib)
 - [ ] E27. Unificar colores con paleta UMA en P0
 - [ ] E28. Unificar colores con paleta UMA en P1
 - [ ] E29. Unificar colores con paleta UMA en P2
