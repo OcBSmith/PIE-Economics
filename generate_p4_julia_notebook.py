@@ -75,6 +75,63 @@ end
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
+# --- ASERCIÓN JULIA: CONDICIÓN TERMINAL, EQUIVALENCIA Y COTAS ---
+nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+# VERIFICACIÓN NUMÉRICA FRENTE AL ORÁCULO (Apéndice I del libro)
+# ==============================================================================
+
+using MacroAIComp.ConsumptionLeisure: ConsumptionLeisureParameters, solve_foc_fsolve, solve_direct_optim
+
+# 1. Condición terminal: B[T-1] debe ser 0 para ambos solvers
+@assert isapprox(res_foc["B"][end], 0.0; atol=1e-6) "B[T-1] fsolve debe ser 0"
+@assert isapprox(res_opt["B"][end], 0.0; atol=1e-6) "B[T-1] optim debe ser 0"
+println("OK (1/4): Condición terminal B[T-1]=0 para ambos solvers.")
+
+# 2. Equivalencia fsolve vs optim: C, L, B idénticos elemento a elemento
+@assert isapprox(res_foc["C"], res_opt["C"]; rtol=1e-4)
+@assert isapprox(res_foc["L"], res_opt["L"]; rtol=1e-4)
+@assert isapprox(res_foc["B"], res_opt["B"]; rtol=1e-4, atol=1e-6)
+println("OK (2/4): fsolve y optim producen trayectorias C, L, B equivalentes (rtol=1e-4).")
+
+# 3. Cotas de la oferta de trabajo: 0 <= L_t < 1 para todo t
+@assert all(res_foc["L"] .>= 0.0) "L_t debe ser >= 0"
+@assert all(res_foc["L"] .< 1.0) "L_t debe ser < 1"
+println("OK (3/4): 0 <= L_t < 1.0 para todo t (ambos solvers).")
+
+# 4. Ocio positivo: O_t = 1 - L_t > 0 para todo t
+@assert all(res_foc["O"] .> 0.0) "O_t debe ser > 0"
+println("OK (4/4): Ocio O_t > 0 para todo t.")
+"""))
+
+# --- ASERCIÓN JULIA: SENSIBILIDAD A γ Y R ---
+nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+# VERIFICACIÓN DE SENSIBILIDAD: PREFERENCIAS (γ) Y TIPO DE INTERÉS (R)
+# ==============================================================================
+
+W30 = fill(30.0, 30)
+
+# --- Sensibilidad a gamma: mayor gamma => mayor peso del consumo => más L ---
+res_g40 = solve_foc_fsolve(ConsumptionLeisureParameters(30, 0.97, 0.40, 0.02, 0.0), W30)
+res_g60 = solve_foc_fsolve(ConsumptionLeisureParameters(30, 0.97, 0.60, 0.02, 0.0), W30)
+mean_L_g40 = mean(res_g40["L"])
+mean_L_g60 = mean(res_g60["L"])
+println("L media con gamma=0.40: ", round(mean_L_g40, digits=6))
+println("L media con gamma=0.60: ", round(mean_L_g60, digits=6))
+@assert mean_L_g60 > mean_L_g40 "Con mayor gamma (mas peso del consumo), L medio debe aumentar"
+println("OK (γ): L media mayor con γ=0.60 que con γ=0.40, coincide con el oráculo.")
+
+# --- Sensibilidad a R: con R=0.05, beta*(1+R)=1.0185>1 => C creciente ---
+res_R5 = solve_foc_fsolve(ConsumptionLeisureParameters(30, 0.97, 0.50, 0.05, 0.0), W30)
+slope_C = res_R5["C"][end] - res_R5["C"][1]
+println("Consumo inicial C[0] (R=0.05): ", round(res_R5["C"][1], digits=6))
+println("Consumo final   C[T-1] (R=0.05): ", round(res_R5["C"][end], digits=6))
+println("Pendiente C[T-1]-C[0]: ", round(slope_C, digits=6))
+@assert slope_C > 0 "Con beta*(1+R)>1, el consumo debe ser creciente en el tiempo"
+println("OK (R): Pendiente de consumo positiva con R=0.05, coincide con el oráculo.")
+"""))
+
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
+
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl
 @manipulate for beta_val in slider([0.90:0.01:0.99; 0.999]; value=0.97, label="Paciencia (β)"), gamma_val in slider(0.10:0.05:0.90; value=0.40, label="Consumo (γ)"), R_val in slider(-0.05:0.01:0.15; value=0.02, label="Interés (R)"), W_val in slider(10.0:5.0:100.0; value=30.0, label="Salario (W)")
     
@@ -113,10 +170,10 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
 end
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
+nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation

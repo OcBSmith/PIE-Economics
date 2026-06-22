@@ -32,7 +32,27 @@ Al finalizar esta práctica, serás capaz de:
     )
 )
 
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
+# 2. BIENVENIDA Y GUÍA RÁPIDA
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""> **👋 BIENVENIDA A LA PRÁCTICA - LEER ANTES DE EMPEZAR**
+>
+> *   **¿Nunca has usado Jupyter?** No te preocupes. Este cuaderno es interactivo. Haz clic en cualquier celda de código y pulsa **`Shift + Enter`** para ejecutarla. Ve de arriba a abajo en orden.
+> *   **¿Se ha congelado o sale un asterisco `[*]` eterno?** Ve al menú superior y dale a `Kernel` ➔ `Restart`.
+> *   **El objetivo** de esta práctica es que juegues con la economía. Cambia los números del código que representan impuestos, dinero o tecnología, vuelve a ejecutar y mira los gráficos. ¡No puedes romper nada!
+>
+
+> *   **📋 Antes de empezar**, consulta ' (en esta misma carpeta): objetivos, tiempo estimado y conocimientos previos de esta práctica." + "
+" + "
+" + "### 🕹️ GUÍA RÁPIDA DE INICIO - Q de Tobin (Inversión)
+*   **¿Qué estamos haciendo aquí?** Explicando cuándo decide una empresa comprar más maquinaria e invertir.
+*   **La Regla de la Q:** Si la Q de Tobin es mayor que 1.0, significa que la empresa vale más en bolsa de lo que cuesta comprar sus máquinas. ¡Es hora de invertir y expandirse! Si es menor que 1.0, no conviene invertir.
+*   **¡Prueba esto!** Cambia la tasa de interés y observa cómo el ratio Q cae o sube, arrastrando consigo la inversión de la empresa.
+"""
+    )
+)
+
+# 3. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
 # Esta celda se ejecuta silenciosamente. Si estás en Google Colab, instalará las librerías necesarias.
 # En tu entorno local de desarrollo (venv), estas dependencias ya deberían estar instaladas.
@@ -102,9 +122,120 @@ $$\bar{q} = 1.0, \quad \bar{K} = \left( \frac{R + \delta}{\alpha} \right)^{\frac
 """)
 )
 
-# 5. SECCIÓN 2: SIMULACIÓN INTERACTIVA
+# 5. CÁLCULO DEL ESTADO ESTACIONARIO Y ESTABILIDAD
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 2. Simulación Interactiva: Shock de Tasa de Interés
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
+# CÁLCULO DEL ESTADO ESTACIONARIO, AUTOVALORES Y FÓRMULA DE SALTO
+# ==============================================================================
+
+params_ss = TobinQParameters()  # α=0.35, β=0.97, δ=0.06, φ=10.0, R=0.04
+ss = compute_steady_state(params_ss, R=0.04)
+lin_sys = compute_linearized_system(params_ss, R=0.04)
+
+K_star = ss["K"]
+q_star = ss["q"]
+I_star = ss["I"]
+lambdas = lin_sys["eigenvalues"]
+theta_simple = lin_sys["theta"]
+theta_book = lin_sys.get("theta_book", theta_simple)
+
+print("ESTADO ESTACIONARIO (R=0.04):")
+print("-" * 55)
+print(f"  Q de Tobin (q*)               : {q_star:.6f}")
+print(f"  Stock de capital (K*)          : {K_star:.6f}")
+print(f"  Inversión (I* = delta*K*)      : {I_star:.6f}")
+print(f"  Producción (Y* = K*^alpha)     : {K_star**0.35:.6f}")
+print()
+print("ESTABILIDAD (log-desviaciones):")
+print("-" * 55)
+print(f"  Autovalor estable lambda1      : {lambdas[0]:.6f}")
+print(f"  Autovalor inestable lambda2    : {lambdas[1]:.6f}")
+print(f"  Modulo |1+lambda1|             : {abs(1+lambdas[0]):.6f}  (< 1, estable en niveles)")
+print(f"  Modulo |1+lambda2|             : {abs(1+lambdas[1]):.6f}  (> 1, inestable en niveles)")
+print(f"  Clasificacion                  : Punto de silla")
+print()
+print("FORMULA DE SALTO:")
+print("-" * 55)
+print(f"  theta (simplificada = phi*lambda1): {theta_simple:.10f}")
+print(f"  theta_book (formula del libro)    : {theta_book:.10f}")
+print(f"  Diferencia                        : {abs(theta_simple - theta_book):.2e}")
+"""
+    )
+)
+
+# 6. ORÁCULO: VERIFICACIÓN DE RESULTADOS
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2. Verificación frente al oráculo
+
+Comparamos contra los valores reportados en el libro (Capítulo 7) y
+reproducidos por el código DYNARE del Apéndice K, recogidos en
+`oraculo.md`:
+
+**Calibración base (alpha=0.35, beta=0.97, delta=0.06, R=0.04, phi=10.0):**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Q de Tobin en SS (q*) | 1.0 |
+| Stock de capital en SS (K*) | 6.8711236 |
+| Inversión en SS (I* = delta*K*) | 0.06 x 6.8711236 |
+| Autovalor estable lambda1 | -0.060658 |
+| Autovalor inestable lambda2 | 0.107158 |
+| theta (simplificada) vs theta_book | Idénticos (atol 1e-12) |
+| Clasificación | Punto de silla |
+
+**Shock permanente R: 4% -> 3%:**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| K0 (predeterminado, sin salto) | K* en R=4% |
+| q0 (salto inicial) | ~1.1033 (>1.0) |
+| K largo plazo | K* en R=3% (mayor que K inicial) |
+| q largo plazo | 1.0 |
+| Consistencia lineal vs no lineal | K y q coinciden con rtol 1e-2 |
+
+Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
+debería salir en cada celda siguiente con el que realmente sale.
+"""
+    )
+)
+
+# 7. ASERCIÓN: ESTADO ESTACIONARIO, AUTOVALORES Y FÓRMULA DE SALTO
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
+# VERIFICACION: SS, AUTOVALORES Y FORMULA DE SALTO (Apéndice K del libro)
+# ==============================================================================
+
+# 1. Estado estacionario
+np.testing.assert_allclose(q_star, 1.0, atol=1e-6)
+np.testing.assert_allclose(K_star, 6.8711236, rtol=1e-6)
+np.testing.assert_allclose(I_star, 0.06 * K_star, rtol=1e-6)
+print("OK (SS 1/3): q*=1.0, K*~6.871, I*=delta*K*, coincide con el oraculo DYNARE.")
+
+# 2. Autovalores (log-desviaciones)
+np.testing.assert_allclose(lambdas[0], -0.060658, rtol=1e-4)
+np.testing.assert_allclose(lambdas[1], 0.107158, rtol=1e-4)
+assert abs(1 + lambdas[0]) < 1.0, "lambda1 debe ser estable en niveles (|1+lambda1| < 1)"
+assert abs(1 + lambdas[1]) > 1.0, "lambda2 debe ser inestable en niveles (|1+lambda2| > 1)"
+print("OK (SS 2/3): lambda1~-0.060658, lambda2~0.107158, punto de silla confirmado.")
+
+# 3. Identidad de la formula de salto: theta = theta_book para varias calibraciones
+for R_val in [0.02, 0.03, 0.04, 0.05]:
+    for phi_val in [5.0, 10.0, 15.0]:
+        p = TobinQParameters(alpha=0.35, delta=0.06, phi=phi_val, R=R_val)
+        ls = compute_linearized_system(p, R=R_val)
+        assert abs(ls["theta"] - ls.get("theta_book", ls["theta"])) < 1e-12, \
+            f"theta != theta_book para R={R_val}, phi={phi_val}"
+print("OK (SS 3/3): theta = theta_book para todo R en {0.02,0.03,0.04,0.05}, phi en {5,10,15} (atol=1e-12).")
+"""
+    )
+)
+
+# 8. SECCIÓN 3: SIMULACIÓN INTERACTIVA
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 3. Simulación Interactiva: Shock de Tasa de Interés
 
 Supongamos que la economía se encuentra inicialmente en su estado estacionario correspondiente a una tasa de interés del $4\%$ ($R_0 = 0.04$). En el período $t=1$, se produce una caída permanente e inesperada de la tasa de interés real al $3\%$ ($R_f = 0.03$).
 
@@ -192,7 +323,7 @@ interact(
 # 6. SECCIÓN 3: LOG-LINEALIZACIÓN VS NO LINEAL
 nb.cells.append(
     nbf.v4.new_markdown_cell(
-        r"""## 3. Log-Linealización frente a Solución No Lineal Exacta
+        r"""## 4. Log-Linealización frente a Solución No Lineal Exacta
 
 En la teoría macroeconómica, el método estándar consiste en linealizar (o log-linealizar) el sistema no lineal alrededor de su estado estacionario. Utilizando la aproximación de Uhlig (1999), definimos las desviaciones logarítmicas:
 $$\hat{k}_t = \ln(K_t) - \ln(\bar{K}), \quad \hat{q}_t = \ln(q_t) - \ln(\bar{q}) = \ln(q_t)$$
@@ -280,8 +411,48 @@ print(f"Discrepancia máxima en Ratio q      : {diff_q:.6f}")
     )
 )
 
-# 7. SECCIÓN 4: DIAGRAMA DE FASES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Diagrama de Fases Interactivo
+# 8. ASERCIÓN: SHOCK DE TIPO DE INTERÉS (R 4% -> 3%)
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
+# VERIFICACIÓN DEL SHOCK: SALTO DE q, CONVERGENCIA Y CONSISTENCIA (Apéndice K)
+# ==============================================================================
+
+ss_R04 = compute_steady_state(params_ss, R=0.04)
+ss_R03 = compute_steady_state(params_ss, R=0.03)
+K_star_R04 = ss_R04["K"]
+K_star_R03 = ss_R03["K"]
+
+# 1. K0 es predeterminado: debe ser K* en R=4%
+np.testing.assert_allclose(K0, K_star_R04, rtol=1e-6)
+print(f"OK (Shock 1/4): K0 = K*(R=4%) = {K0:.6f}, predeterminado (sin salto).")
+
+# 2. q0 salta por encima de 1.0 (forward-looking)
+q0_jump = res_nonlin["q"][1]  # periodo del shock (t=1)
+print(f"q0 (post-shock) = {q0_jump:.6f}")
+assert q0_jump > 1.0, "q0 debe saltar por encima de 1.0 tras la caida de R"
+np.testing.assert_allclose(q0_jump, 1.1033, rtol=1e-3)
+print("OK (Shock 2/4): q0 ~ 1.1033 > 1.0, la inversion se estimula.")
+
+# 3. Largo plazo: q -> 1.0, K -> K*(R=3%)
+q_long_run = res_nonlin["q"][-1]
+K_long_run = res_nonlin["K"][-1]
+np.testing.assert_allclose(q_long_run, 1.0, atol=1e-4)
+np.testing.assert_allclose(K_long_run, K_star_R03, rtol=1e-3)
+print(f"q[T-1] = {q_long_run:.6f} (esperado: 1.0)")
+print(f"K[T-1] = {K_long_run:.6f} (esperado: {K_star_R03:.6f})")
+print("OK (Shock 3/4): Convergencia a nuevo SS en el largo plazo.")
+
+# 4. Consistencia lineal vs no lineal: K y q coinciden
+np.testing.assert_allclose(res_lin["K"], res_nonlin["K"], rtol=1e-2)
+np.testing.assert_allclose(res_lin["q"], res_nonlin["q"], rtol=1e-2)
+print("OK (Shock 4/4): Trayectorias lineal y no lineal consistentes (rtol=1e-2).")
+"""
+    )
+)
+
+# 9. SECCIÓN 4: DIAGRAMA DE FASES
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Diagrama de Fases Interactivo
 
 El diagrama de fases permite visualizar geométricamente el comportamiento dinámico del sistema en el espacio de estados $(\hat{k}, \hat{q})$. En este plano:
 *   El **locus de capital** ($\Delta \hat{k} = 0$) es la recta horizontal $\hat{q} = 0$.
@@ -395,7 +566,7 @@ interact(
 
 # 8. CUADERNO DE BITÁCORA
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 5. Cuaderno de Bitácora (Actividades para el Alumno)
+    nbf.v4.new_markdown_cell(r"""## 6. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde a las siguientes cuestiones tras interactuar con las simulaciones de la inversión empresarial:
 
@@ -413,7 +584,7 @@ Responde a las siguientes cuestiones tras interactuar con las simulaciones de la
 
 # 9. BUENAS PRÁCTICAS APRENDER AQUÍ
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
+    nbf.v4.new_markdown_cell(r"""## 7. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Aislamiento de Lógica Computacional**: La resolución numérica no lineal y el análisis matricial están desacoplados de las celdas didácticas de visualización, residiendo enteramente en el módulo [tobin_q.py](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/tobin_q.py).
 2.  **Identidad Algebraica en Códigos**: Hemos verificado en los unit tests que la fórmula simplificada de salto estable ($\theta = \phi \lambda_1$) y la ecuación extendida del libro son exactamente idénticas, simplificando el código didáctico notablemente.
 3.  **Higiene del Repositorio**: Antes de cada confirmación de commit, los outputs de este cuaderno se eliminan automáticamente mediante `nbstripout` para evitar el almacenamiento ineficiente de imágenes y datos pesados.

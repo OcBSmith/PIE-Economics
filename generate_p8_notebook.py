@@ -196,6 +196,67 @@ interact(
     )
 )
 
+# 5a. ORACLE VERIFICATION TABLE AND STEADY-STATE ASSERT
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2.1 Verificación frente al oráculo
+
+Comparamos contra los valores reportados en el libro (Tabla 9.3) y reproducidos por el
+código MATLAB del Apéndice O, recogidos en `oraculo.md`:
+
+**Estado estacionario (calibración base: α=0.35, s=0.20, δ=0.06, n=0.02, A=1.0):**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Capital per cápita en SS (k*) | 4.0946 |
+| Producción per cápita en SS (y*) | 1.6378 |
+| Consumo per cápita en SS (c*) | 1.3103 |
+| Inversión per cápita en SS (i*) | 0.3276 |
+
+**Shock de ahorro s 0.20 → 0.25:**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| k₀ | Parte de k* inicial ≈ 4.0946 |
+| Trayectoria de k | Creciente monótona hacia nuevo SS |
+| c en impacto (cae por mayor ahorro) | c₀ = 0.75 × y₀ < c* inicial |
+| Largo plazo: c_final | > c* inicial (el sacrificio compensa) |
+
+**Regla de Oro:**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Tasa de ahorro que maximiza c* | s_gold = α = 0.35 |
+| c* en s_gold | Máximo global de la curva c̄(s) |
+| c* en s=0.20 (infra-acumulación) | < c*_gold |
+| c* en s=0.50 (sobre-acumulación) | < c*_gold |
+
+Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
+debería salir en cada celda siguiente con el que realmente sale.
+"""
+    )
+)
+
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificación de los valores del estado estacionario contra el oráculo
+# (Tabla 9.3 del libro, reproducido en oraculo.md).
+# Usamos la calibración exacta del oráculo: delta=0.06, n=0.02.
+# Nota: delta+n = 0.08 coincide con los defaults del código (delta=0.08, n=0.0),
+# por lo que los valores numéricos son idénticos en ambos casos.
+
+params_orac = SolowSwanParameters(alpha=0.35, delta=0.06, s=0.20, n=0.02, A=1.0)
+ss_orac = compute_solow_steady_state(params_orac)
+
+np.testing.assert_allclose(ss_orac["k"], 4.0946, atol=1e-4)
+np.testing.assert_allclose(ss_orac["y"], 1.6378, atol=1e-4)
+np.testing.assert_allclose(ss_orac["c"], 1.3103, atol=1e-4)
+np.testing.assert_allclose(ss_orac["i"], 0.3276, atol=1e-4)
+print("OK: estado estacionario coincide con el oráculo (Apéndice O).")
+"""
+    )
+)
+
 # 6. LA REGLA DE ORO DE ACUMULACIÓN DE CAPITAL
 nb.cells.append(
     nbf.v4.new_markdown_cell(
@@ -281,6 +342,35 @@ interact(
     plot_golden_rule,
     s_current=FloatSlider(value=0.20, min=0.02, max=0.90, step=0.02, description='Tasa Ahorro')
 );
+"""
+    )
+)
+
+# 6a. GOLDEN RULE ASSERT
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificación de la Regla de Oro contra el oráculo (oraculo.md, Apéndice O).
+# s_gold = alpha = 0.35, y c* en la Regla de Oro es mayor que en s=0.20
+# (infra-acumulación) y que en s=0.50 (sobre-acumulación, ineficiencia dinámica).
+
+alpha_gold = params_orac.alpha
+ss_gold = compute_solow_steady_state(params_orac, s=alpha_gold)
+ss_low = compute_solow_steady_state(params_orac, s=0.20)
+ss_high = compute_solow_steady_state(params_orac, s=0.50)
+
+# s_gold debe ser exactamente alpha
+np.testing.assert_allclose(alpha_gold, 0.35, atol=1e-6)
+print(f"OK: s_gold = alpha = {alpha_gold:.2f}")
+
+# El consumo en la Regla de Oro debe ser mayor que en s=0.20 y s=0.50
+assert ss_gold["c"] > ss_low["c"], (
+    f"c_gold={ss_gold['c']:.4f} debería ser > c_s020={ss_low['c']:.4f}"
+)
+assert ss_gold["c"] > ss_high["c"], (
+    f"c_gold={ss_gold['c']:.4f} debería ser > c_s050={ss_high['c']:.4f}"
+)
+print(f"OK: c_gold={ss_gold['c']:.4f} > c_s020={ss_low['c']:.4f} y "
+      f"c_gold > c_s050={ss_high['c']:.4f} (oráculo, Apéndice O).")
 """
     )
 )

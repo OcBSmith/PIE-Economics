@@ -1,0 +1,76 @@
+# GUION-P7: El modelo de Equilibrio General Dinámico (DGE) básico
+
+> Acompaña a `python.ipynb` y `julia.ipynb` de esta misma carpeta. No repite
+> su código: lo enmarca (objetivos, prerrequisitos, errores típicos,
+> preguntas de bitácora).
+
+- **ID de práctica:** LAB-P7-v1.0
+- **Capítulo del libro:** Cap. 8 — *Basic Dynamic General Equilibrium* (Bongers, Gómez y Torres, 2019). Modelo de equilibrio general dinámico con hogar, empresa y gobierno.
+
+## Objetivos didácticos
+
+1. **Resolver** un modelo de equilibrio general dinámico completo mediante dos enfoques: aproximación lineal de Blanchard-Khan (funciones de política recursivas) y simulación no lineal exacta (fsolve simultáneo de trayectoria completa).
+2. **Identificar** la estructura de punto de silla en el sistema de ecuaciones en diferencias y calcular las funciones de política $\eta_{ck}, \eta_{ca}, \eta_{kk}, \eta_{ka}$ que gobiernan la dinámica de transición.
+3. **Evaluar** el error de aproximación de la solución linealizada frente a la no lineal para shocks tecnológicos de distinta magnitud, y comprender cuándo la linealización es suficiente.
+
+## Conocimientos previos requeridos
+
+- **Matemáticas**: log-linealización, descomposición de autovalores (Blanchard-Khan), sistemas de ecuaciones no lineales, funciones de política recursivas.
+- **Economía**: equilibrio general competitivo, condiciones de optimalidad del hogar y de la empresa, Ley de Walras, neutralidad de la productividad en el largo plazo con oferta de trabajo inelástica.
+- **Programación**: ninguno previo.
+- **Práctica previa recomendada**: P6 (Tobin Q — comparte la técnica de Blanchard-Khan y punto de silla). P3-P5 (consumo, ocio, fiscalidad — microfundamentos del hogar presentes en el DGE).
+
+## Tiempo estimado y nivel
+
+~120-150 minutos. Grado en Economía (último curso) o Posgrado, asignatura de Macroeconomía Avanzada o Macroeconomía Computacional.
+
+## "Reactivos" digitales
+
+- **Python**: `numpy`, `scipy`, `matplotlib`, `ipywidgets` + paquete `macroaicomp` (`src/macroaicomp/models/dge.py`).
+- **Julia**: `Plots.jl`, `LinearAlgebra`, `NLsolve.jl`, `Interact.jl` + paquete `MacroAIComp` (`src/models/DGE.jl`).
+- **Oráculo numérico**: `oraculo.md` de esta misma carpeta (valores del libro + Apéndice L MATLAB, Apéndice M DYNARE, Apéndice N DSGE).
+
+## Procedimiento paso a paso
+
+1. **Teoría**: ecuaciones del modelo — hogar (Euler + oferta de trabajo), empresa (maximización de beneficios, demanda de capital), gobierno (gasto financiado con impuestos lump-sum), cierre de mercados (Ley de Walras).
+2. **Calibración base**: $\alpha=0.35, \beta=0.97, \delta=0.06, \rho=0.80, A=1.0$ — interpretar cada parámetro económicamente.
+3. **Estado estacionario**: $K^*=6.70, Y^*=1.95, C^*=1.54, I^*=0.40, R^*=0.102$ — verificación contra Tabla 8.2 del libro.
+4. **Verificación frente al oráculo**: comparar SS y autovalores BK con los Apéndices L/M/N.
+5. **Blanchard-Khan**: construir matrices $A, B, D, F, G, H$, calcular las matrices de transición, descomponer autovalores, extraer los $\eta$ (funciones de política recursivas).
+6. **Shock de productividad**: $A_t$ aumenta un 1% con persistencia $\rho=0.8$, simular usando los $\eta$ recursivos — consumo, inversión y producción saltan al alza, capital muestra hump-shape.
+7. **Comparación BK vs no lineal**: para shocks pequeños (1%), la diferencia es mínima. Para shocks grandes (10%), el error de curvatura se vuelve visible — visualizar error relativo en $C$ y $K$.
+8. **Widgets interactivos**: modificar magnitud ($\varepsilon$) y persistencia ($\rho$) del shock tecnológico.
+9. **Conclusión**: el DGE es la pieza central de la macroeconomía moderna — integra comportamiento optimizador, vaciado de mercados y dinámica de transición. La linealización es suficiente para fluctuaciones pequeñas; la no linealidad importa para eventos grandes.
+
+## Reacciones esperadas
+
+Ver `oraculo.md`. SS coincide con Tabla 8.2. Autovalores BK: $0.904$ (estable, $<1$) y $1.152$ (inestable, $>1$). Shock +1% PTF: $C_1 > C^*$, $I_1 > I^*$, $Y_1 > Y^*$, $K$ parte de $K^*$ y alcanza pico entre periodos 2-12. Convergencia de vuelta al SS inicial (shock transitorio con $\rho<1$, no permanente). Error relativo BK vs no lineal $<1\%$ para shock del 1%.
+
+## Posibles accidentes de laboratorio
+
+- **Divergencia en el resolvedor no lineal**: si el fsolve simultáneo diverge, comprueba que $K$ tenga cota inferior estricta ($10^{-8}$) para evitar potencias negativas en la productividad marginal del capital. También verifica que el punto de partida (`c0_guess`) se inicializa cerca del valor de salto linealizado.
+- **Indexado temporal de la PTF**: el libro original (MATLAB) usa un timing ligeramente distinto al DYNARE para la productividad en la ecuación de acumulación de capital. El código del proyecto usa el timing de DYNARE por defecto con un toggle opcional `use_matlab_timing` (inactivo por defecto). Si comparas con el MATLAB del libro y ves discrepancias en $K$, comprueba el timing.
+- **Error de multiplicación de matrices en BK**: las funciones de política $\eta$ multiplican el vector de estado. Si los vectores no están correctamente dimensionados (ej. `M.flatten()` necesario en Python), la simulación linealizada lanzará `ValueError`.
+- **Interpretar erróneamente el hump de $K$**: el capital alcanza su pico CON RETARDO respecto al shock de PTF. Esto NO es inercia ni rigidez — es la consecuencia natural de la acumulación: la inversión alta de hoy se traduce en más capital mañana.
+
+## Cuestionario de bitácora
+
+1. ¿Por qué el sistema tiene exactamente un autovalor estable y uno inestable? ¿Qué pasaría si ambos fueran estables o ambos inestables?
+2. ¿Por qué la inversión salta MÁS que el consumo ante un shock tecnológico positivo? Relaciona tu respuesta con los $\eta_{ik}$ vs $\eta_{ck}$.
+3. Si $\rho=1$ (shock permanente en lugar de transitorio), ¿cómo cambiaría la dinámica de transición? ¿A qué nuevo SS convergería la economía?
+4. Compara las funciones de política $\eta$ de este modelo con la pendiente de salto $\theta$ de P6 y P9 — ¿son conceptualmente el mismo objeto?
+5. ¿Por qué el error entre la solución lineal y la no lineal es asimétrico (mayor para shocks negativos que positivos de la misma magnitud, o viceversa)?
+6. ¿Qué ocurre con el bienestar del hogar tras un shock tecnológico positivo transitorio? ¿Mejora? ¿Cuánto? (Pista: calcula la utilidad descontada en la simulación.)
+
+## Variantes / extensiones para ABP
+
+1. **Shock fiscal permanente**: introducir un aumento del gasto público financiado con impuestos lump-sum y analizar el crowding-out de la inversión.
+2. **DGE estocástico**: simular 1000 trayectorias con shocks aleatorios de PTF y calcular momentos (desviaciones estándar, correlaciones) para comparar con los hechos estilizados del ciclo económico.
+3. **Extensión con ocio endógeno**: añadir oferta de trabajo elástica al DGE (fusionar P4 y P7) y analizar cómo cambia la respuesta a un shock tecnológico.
+
+## Referencias
+
+- Bongers, A., Gómez, T. y Torres, J.L. (2019), *An Introduction to Computational Macroeconomics*, Cap. 8. Vernon Press.
+- Blanchard, O.J. y Kahn, C.M. (1980), "The Solution of Linear Difference Models under Rational Expectations", *Econometrica* 48(5), 1305-1311.
+- Apéndice L (MATLAB, `referencia/`), Apéndice M (DYNARE, `referencia/`) y Apéndice N (DSGE, `referencia/`).
+- `oraculo.md` (esta misma carpeta).

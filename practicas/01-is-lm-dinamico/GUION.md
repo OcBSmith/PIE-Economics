@@ -1,0 +1,76 @@
+# GUION-P1: Respuesta dinámica del modelo IS-LM ante shocks monetarios y fiscales
+
+> Acompaña a `python.ipynb` y `julia.ipynb` de esta misma carpeta. No repite
+> su código: lo enmarca (objetivos, prerrequisitos, errores típicos,
+> preguntas de bitácora).
+
+- **ID de práctica:** LAB-P1-v1.0
+- **Capítulo del libro:** Cap. 2 — *The dynamic IS-LM model* (Bongers, Gómez y Torres, 2019). Modelo IS-LM dinámico con curva de Phillips.
+
+## Objetivos didácticos
+
+1. **Calcular** el estado estacionario de un sistema macroeconómico de 4 ecuaciones (IS, LM, Phillips, ajuste de producción) reducido a 2 ODEs.
+2. **Simular** la respuesta dinámica ante un shock monetario y uno fiscal, interpretando la trayectoria de convergencia en el plano de fases $(Y, P)$.
+3. **Comparar** la velocidad de ajuste de precios y producción según los parámetros de sensibilidad $\mu$ (inflación a brecha) y $\nu$ (velocidad de ajuste de Y).
+
+## Conocimientos previos requeridos
+
+- **Matemáticas**: sistemas de ecuaciones diferenciales ordinarias (ODE) de primer orden, derivadas parciales básicas.
+- **Economía**: modelo IS-LM estático (curvas IS y LM), neutralidad monetaria a largo plazo, curva de Phillips.
+- **Programación**: ninguno previo. El notebook explica `scipy.integrate.solve_ivp` y el algoritmo RK45.
+- **Práctica previa recomendada**: P0 (sistemas dinámicos) — conceptos de estado estacionario, autovalores y estabilidad.
+
+## Tiempo estimado y nivel
+
+~90-120 minutos. Grado en Economía, asignatura de Macroeconomía Intermedia (tema de fluctuaciones cíclicas y política monetaria).
+
+## "Reactivos" digitales
+
+- **Python**: `numpy`, `scipy`, `matplotlib`, `ipywidgets` + paquete `macroaicomp` (`src/macroaicomp/models/islm.py`).
+- **Julia**: `Plots.jl`, `LinearAlgebra`, `DifferentialEquations.jl`, `Interact.jl` + paquete `MacroAIComp` (`src/models/ISLM.jl`).
+- **Oráculo numérico**: `oraculo.md` de esta misma carpeta (valores del libro + `referencia/m2.m`, Apéndice D MATLAB, y `referencia/m2d.mod`, Apéndice E DYNARE).
+
+## Procedimiento paso a paso
+
+1. **Teoría**: sistema IS-LM dinámico (ecs. 2.1-2.8), reducción algebraica del sistema de 4 ecuaciones a 2 ODEs acopladas en $(Y, P)$.
+2. **Calibración base**: fijar los 8 parámetros estructurales ($\theta, \psi, \beta_0, \beta_1, \mu, \nu, M_0, \bar{Y}$) según el Apéndice D.
+3. **Estado estacionario**: calcular analíticamente $Y^*=2000, P^*=81, i^*=2$ e interpretar económicamente cada valor.
+4. **Verificación frente al oráculo**: comparar contra `oraculo.md`/MATLAB con tolerancia numérica.
+5. **Detrás de la escena**: entender `scipy.integrate.solve_ivp` y el algoritmo RK45 mediante una función de derivadas comentada línea a línea.
+6. **Shock monetario**: aumentar $M_0$ de 100 a 110 y observar la espiral de ajuste (precios rígidos a corto, neutralidad a largo).
+7. **Diagrama de fases**: visualizar los loci $\dot{Y}=0$ y $\dot{P}=0$, el campo vectorial y la trayectoria en el plano de estados $(Y, P)$.
+8. **Shock fiscal**: aumentar $\beta_0$ (gasto autónomo) y comparar cualitativamente la dinámica con el shock monetario.
+9. **Widget interactivo**: modificar en vivo las magnitudes de los shocks monetario y fiscal para explorar el espacio de respuestas.
+10. **Conclusión**: neutralidad monetaria a largo plazo, papel de las rigideces nominales a corto, y por qué la política fiscal sí tiene efectos reales permanentes en este modelo.
+
+## Reacciones esperadas
+
+Ver la tabla completa en `oraculo.md`: SS inicial $(Y=2000, P=81, i=2\%)$, nuevo SS tras shock monetario $M_0=110$: $(Y=2000, P=91, i=2\%)$ — neutralidad monetaria a largo plazo. Con shock fiscal $\beta_0=2150$: $(Y \neq 2000, P \neq 81)$ — la producción sí cambia permanentemente.
+
+## Posibles accidentes de laboratorio
+
+- **`ValueError` en `solve_ivp`**: puede ocurrir si los parámetros generan un sistema stiff (muy rígido). Si el integrador lanza este error, probar con `method='Radau'` o `'BDF'` en lugar del RK45 por defecto.
+- **Confundir shock monetario con fiscal en el widget**: el shock monetario ($M_0$) solo desplaza la LM y es neutro a largo plazo; el fiscal ($\beta_0$) desplaza la IS y SÍ cambia la producción de largo plazo. Si al mover un slider la producción a largo plazo no cambia, es que estás moviendo el monetario.
+- **Interpretar mal el diagrama de fases**: la trayectoria en espiral NO significa ciclo económico perpetuo — es la convergencia amortiguada hacia el nuevo SS. Si las flechas del campo vectorial apuntan hacia el SS, el sistema es estable.
+- **Indexado Julia vs Python**: en Julia los arrays empiezan en índice 1, en Python en 0. Al inspeccionar valores de la simulación, ajustar el índice (ej. `sol[1]` en Julia equivale a `sol[0]` en Python).
+
+## Cuestionario de bitácora
+
+1. ¿Por qué el shock monetario es neutro a largo plazo en este modelo? Identifica qué ecuación impone esa neutralidad y qué pasaría si se eliminara del modelo.
+2. En el diagrama de fases, ¿qué significa que el locus $\dot{P}=0$ sea vertical? ¿Qué condición económica lo hace vertical?
+3. Si $\mu$ (sensibilidad de la inflación a la brecha) fuera mucho mayor, ¿cómo cambiaría cualitativamente la trayectoria de ajuste tras un shock monetario? Compruébalo con el widget.
+4. Compara la velocidad de ajuste de $Y$ y $P$ tras un shock fiscal: ¿cuál de las dos variables converge más rápido al nuevo SS? ¿Por qué?
+5. ¿Qué signo tiene $\dot{Y}$ justo después de un shock monetario expansivo? ¿Es coherente con la intuición económica?
+6. Si el banco central ajustara $M_0$ para mantener $i$ constante (política de tipo de interés fijo), ¿cómo cambiaría la dinámica del sistema? (Pista: ¿seguiría siendo un sistema de 2 ODEs autónomo?)
+
+## Variantes / extensiones para ABP
+
+1. **Política monetaria con regla de Taylor**: sustituir la oferta monetaria fija por una regla $i = i^* + \phi_\pi (P - P^*) + \phi_Y (Y - Y^*)$ y analizar cómo cambia la estabilidad del sistema según $\phi_\pi, \phi_Y$.
+2. **Comparación de métodos numéricos**: simular el mismo shock con RK45, Radau y BDF y comparar tiempos de ejecución y precisión (error respecto al SS analítico).
+3. **Shock combinado**: aplicar un shock monetario expansivo y uno fiscal contractivo simultáneamente para mantener $Y$ constante. ¿Es posible? ¿Qué implicaciones tiene para el policy mix?
+
+## Referencias
+
+- Bongers, A., Gómez, T. y Torres, J.L. (2019), *An Introduction to Computational Macroeconomics*, Cap. 2. Vernon Press.
+- Apéndice D (MATLAB, `referencia/m2.m`) y Apéndice E (DYNARE, `referencia/m2d.mod`).
+- `oraculo.md` (esta misma carpeta).

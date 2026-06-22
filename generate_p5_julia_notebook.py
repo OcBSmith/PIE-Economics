@@ -94,6 +94,111 @@ end
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
+# --- ASERCIÓN JULIA: EQUIVALENCIA RICARDIANA (Sección 1) ---
+nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+# VERIFICACIÓN SECCIÓN 1: EQUIVALENCIA RICARDIANA (Apéndice J del libro)
+# ==============================================================================
+
+W10 = fill(10.0, 30)
+
+# 1. Caso base sin impuestos
+params_no_tax = FiscalPolicyParameters(30, 0.97, 0.05, 0.40, 0.0, 0.0, 0.0, 0.0, 0.0, 26)
+res_no_tax = solve_non_distortionary(params_no_tax, W10)
+
+# 2. Equivalencia Ricardiana: tauw=0.40 CON devolución => C y B idénticos al caso sin impuestos
+params_tax_ret = FiscalPolicyParameters(30, 0.97, 0.05, 0.40, 0.0, 0.40, 0.0, 0.0, 0.0, 26)
+res_tax_ret = solve_non_distortionary(params_tax_ret, W10, true)
+@assert isapprox(res_no_tax["C"], res_tax_ret["C"]; rtol=1e-6)
+@assert isapprox(res_no_tax["B"], res_tax_ret["B"]; rtol=1e-6)
+println("OK (Ricardiano 1/2): Con devolución, C y B son idénticos al caso sin impuestos (rtol=1e-6).")
+
+# 3. Sin devolución: C debe ser menor que en el caso sin impuestos
+res_tax_noret = solve_non_distortionary(params_tax_ret, W10, false)
+@assert all(res_tax_noret["C"] .< res_no_tax["C"]) "Sin devolución, C debe ser menor"
+println("OK (Ricardiano 2/2): Sin devolución, C es menor que en el caso sin impuestos.")
+"""))
+
+# --- ASERCIÓN JULIA: DISTORSIONES Y CAPITAL (Secciones 2 y 3) ---
+nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+# VERIFICACIÓN SECCIONES 2-3: DISTORSIONES E IMPUESTO AL CAPITAL (Apéndice J)
+# ==============================================================================
+
+params_dist = default_calibration(FiscalPolicyParameters)
+W_dist = fill(100.0, params_dist.T)
+
+# --- Equivalencia FOC vs optim con return_transfers=True ---
+res_foc_ret = solve_distortionary_foc(params_dist, W_dist, true)
+res_optim_ret = solve_distortionary_optim(params_dist, W_dist, true)
+@assert isapprox(res_foc_ret["C"], res_optim_ret["C"]; rtol=1e-4)
+@assert isapprox(res_foc_ret["L"], res_optim_ret["L"]; rtol=1e-4)
+@assert isapprox(res_foc_ret["B"], res_optim_ret["B"]; rtol=1e-4, atol=1e-6)
+println("OK (Dist 1/3): FOC y optim equivalentes con return_transfers=true (rtol=1e-4).")
+
+# --- Distorsión laboral: mayor tauw => menor L media ---
+res_tauw_low = solve_distortionary_foc(
+    FiscalPolicyParameters(30, 0.97, 0.05, 0.40, 0.0, 0.10, 0.0, 0.0, 0.0, 0),
+    W_dist, true
+)
+res_tauw_high = solve_distortionary_foc(
+    FiscalPolicyParameters(30, 0.97, 0.05, 0.40, 0.0, 0.40, 0.0, 0.0, 0.0, 0),
+    W_dist, true
+)
+mean_L_low = mean(res_tauw_low["L"])
+mean_L_high = mean(res_tauw_high["L"])
+println("L media con tauw=0.10: ", round(mean_L_low, digits=6))
+println("L media con tauw=0.40: ", round(mean_L_high, digits=6))
+@assert mean_L_high < mean_L_low "Mayor tauw debe reducir la oferta de trabajo media"
+println("OK (Dist 2/3): L media disminuye al subir tauw de 0.10 a 0.40, coincide con el oráculo.")
+
+# --- Impuesto al capital: tau_r=0.0 vs tau_r=0.50 SIN devolución ---
+res_taur0 = solve_distortionary_foc(
+    FiscalPolicyParameters(30, 0.97, 0.05, 0.40, 0.0, 0.0, 0.0, 0.0, 0.0, 0),
+    W_dist, false
+)
+res_taur50 = solve_distortionary_foc(
+    FiscalPolicyParameters(30, 0.97, 0.05, 0.40, 0.0, 0.0, 0.0, 0.50, 0.0, 0),
+    W_dist, false
+)
+mean_B_taur0 = mean(res_taur0["B"])
+mean_B_taur50 = mean(res_taur50["B"])
+println("Activos medios con taur=0.00: ", round(mean_B_taur0, digits=6))
+println("Activos medios con taur=0.50: ", round(mean_B_taur50, digits=6))
+@assert mean_B_taur50 < mean_B_taur0 "Mayor taur debe reducir los activos medios"
+slope_taur0 = res_taur0["C"][end] - res_taur0["C"][1]
+slope_taur50 = res_taur50["C"][end] - res_taur50["C"][1]
+@assert slope_taur50 < slope_taur0 "Mayor taur debe aplanar la trayectoria de consumo"
+println("OK (Dist 3/3): Activos medios menores y pendiente C mas plana con taur=0.50.")
+"""))
+
+# --- ASERCIÓN JULIA: SEGURIDAD SOCIAL (Sección 4) ---
+nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+# VERIFICACIÓN SECCIÓN 4: SEGURIDAD SOCIAL (Apéndice J)
+# ==============================================================================
+
+t_star = 26
+W_ss = zeros(30)
+W_ss[1:t_star] .= 10.0 .+ (0:(t_star - 1))
+
+# 1. Sin Seguridad Social
+params_no_ss = FiscalPolicyParameters(30, 0.97, 0.05, 0.50, 0.0, 0.0, 0.0, 0.0, 0.0, t_star)
+res_no_ss = solve_social_security(params_no_ss, W_ss)
+
+# 2. Con Seguridad Social
+params_ss = FiscalPolicyParameters(30, 0.97, 0.05, 0.50, 0.0, 0.0, 0.0, 0.0, 0.36, t_star)
+res_ss = solve_social_security(params_ss, W_ss)
+
+# Sustitución perfecta: consumo idéntico con y sin SS
+@assert isapprox(res_no_ss["C"], res_ss["C"]; rtol=1e-6)
+println("OK (SS 1/2): Consumo idéntico con y sin Seguridad Social (rtol=1e-6).")
+
+# Ahorro privado negativo al inicio de la vida laboral con SS
+@assert any(res_ss["B"][1:5] .< 0.0) "Con SS, el ahorro privado debe ser negativo al inicio"
+println("B[0] con SS: ", round(res_ss["B"][1], digits=6))
+println("OK (SS 2/2): Ahorro privado negativo al inicio de la vida laboral con SS.")
+"""))
+
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
+
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Impuestos Distorsionadores)
 @manipulate for tauc_val in slider(0.0:0.05:0.50; value=0.15, label="Consumo (τc)"), tauw_val in slider(0.0:0.05:0.50; value=0.35, label="Trabajo (τw)"), taur_val in slider(0.0:0.05:0.80; value=0.25, label="Capital (τr)"), ret_opt in Widgets.dropdown(["lump_sum", "government_spending"]; value="lump_sum", label="Devolución de Recaudación")
 
@@ -164,7 +269,7 @@ else
 end
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Seguridad Social)
 @manipulate for tau_ss_val in slider(0.0:0.05:0.60; value=0.36, label="Cotización (τss)"), t_star_val in slider(15:1:29; value=26, label="Jubilación (t*)")
@@ -199,11 +304,11 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
 end
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
-
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
+
+nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation

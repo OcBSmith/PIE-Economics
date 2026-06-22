@@ -200,6 +200,70 @@ interact(
     )
 )
 
+# 5a. ORACLE VERIFICATION TABLE AND STEADY-STATE ASSERT
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2.1 Verificación frente al oráculo
+
+Comparamos contra los valores reportados en el libro (Tabla 8.2) y reproducidos por el
+código MATLAB/DYNARE del Apéndice N, recogidos en `oraculo.md`:
+
+**Estado estacionario (calibración base: α=0.35, β=0.96, δ=0.06, A=1.0):**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Capital en SS (K*) | 6.698596 |
+| Producción en SS (Y*) | 1.945783 |
+| Consumo en SS (C*) | 1.543867 |
+| Inversión en SS (I*) | 0.401916 |
+| Tipo de interés en SS (R*) | 0.10166666666666667 |
+
+**Blanchard-Khan — Estabilidad:**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Autovalor estable μ₁ (|μ| < 1) | ≈0.90399 |
+| Autovalor inestable μ₂ (|μ| > 1) | ≈1.15229 |
+| Clasificación | Punto de silla (exactamente 1 raíz estable) |
+
+**Shock temporal de PTF (+1% con ρ=0.8):**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| K₁ (predeterminado, no salta) | = K* ≈ 6.6986 |
+| C₁ (salta al alza en impacto) | > C* |
+| Y₁ (salta al alza en impacto) | > Y* |
+| I₁ (salta al alza en impacto) | > I* |
+| Pico de K (hump, ocurre con retardo) | Entre periodos 2 y 12 |
+| Convergencia de largo plazo (C, K) | Vuelven al SS inicial (tol 1e-3) |
+| Consistencia Blanchard-Khan vs simulación no lineal | K y C coinciden con rtol 1e-2 |
+
+Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
+debería salir en cada celda siguiente con el que realmente sale.
+"""
+    )
+)
+
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificación de los valores del estado estacionario contra el oráculo
+# (Tabla 8.2 del libro, reproducido en oraculo.md). La calibración por defecto
+# de DGEParameters es alpha=0.35, beta=0.96, delta=0.06, A=1.0, que coincide
+# con la calibración base del oráculo.
+
+params_orac = DGEParameters()
+ss_orac = compute_steady_state(params_orac)
+
+np.testing.assert_allclose(ss_orac["K"], 6.698596, atol=1e-6)
+np.testing.assert_allclose(ss_orac["Y"], 1.945783, atol=1e-6)
+np.testing.assert_allclose(ss_orac["C"], 1.543867, atol=1e-6)
+np.testing.assert_allclose(ss_orac["I"], 0.401916, atol=1e-6)
+np.testing.assert_allclose(ss_orac["R"], 0.10166666666666667, atol=1e-6)
+print("OK: estado estacionario coincide con el oráculo (Apéndice N).")
+"""
+    )
+)
+
 # 6. SECCIÓN 3: BK VS SOLUCIÓN EXACTA NO LINEAL
 nb.cells.append(
     nbf.v4.new_markdown_cell(
@@ -278,6 +342,70 @@ interact(
     epsilon_shock=FloatSlider(value=0.01, min=-0.30, max=0.30, step=0.02, description='Shock TFP'),
     use_matlab_timing=Checkbox(value=False, description='Timing del libro')
 );
+"""
+    )
+)
+
+# 6a. BK EIGENVALUES AND LINEAR VS NONLINEAR CONSISTENCY ASSERT
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificación de los autovalores de Blanchard-Khan y la consistencia
+# entre la solución linealizada y la no lineal (oraculo.md, Apéndice N).
+
+# --- Autovalores BK ---
+# Replicamos el cálculo de la matriz J del sistema linealizado para obtener
+# los autovalores que el resolvedor usa internamente.
+alpha_v = params_orac.alpha
+beta_v = params_orac.beta
+delta_v = params_orac.delta
+
+Omega = 1.0 - beta_v + beta_v * delta_v
+Phi = 1.0 - beta_v + (1.0 - alpha_v) * beta_v * delta_v
+
+A_mat = np.array([[1.0, 0.0], [Omega, -alpha_v * beta_v * delta_v]])
+B_mat = np.array([[0.0, alpha_v], [Phi, 0.0]])
+D_mat = np.array([[1.0, Omega], [0.0, 1.0]])
+F_mat = np.array([[-Omega, 0.0], [0.0, 0.0]])
+G_mat = np.array([[1.0, 0.0], [0.0, 1.0 - delta_v]])
+H_mat = np.array([[0.0, 0.0], [0.0, delta_v]])
+
+invA = np.linalg.inv(A_mat)
+inv_term = np.linalg.inv(D_mat + F_mat @ invA @ B_mat)
+J = inv_term @ (G_mat + H_mat @ invA @ B_mat)
+
+mu = np.real(np.linalg.eigvals(J))
+mu_sorted = np.sort(np.abs(mu))
+mu_s = mu_sorted[0]  # estable
+mu_u = mu_sorted[1]  # inestable
+
+np.testing.assert_allclose(mu_s, 0.90399, atol=1e-5)
+np.testing.assert_allclose(mu_u, 1.15229, atol=1e-5)
+print("OK: autovalores BK coinciden con el oráculo (Apéndice N).")
+
+# --- Consistencia lineal vs. no lineal (shock +1% con rho=0.8) ---
+# Simulamos ambas soluciones y verificamos que difieren poco,
+# validando que la aproximación de primer orden es precisa para
+# perturbaciones pequeñas (rtol 1e-2 según oraculo.md).
+T_check = 60
+a_hat_check = np.zeros(T_check)
+a_hat_check[1] = 0.01
+for t in range(2, T_check):
+    a_hat_check[t] = params_orac.rho * a_hat_check[t - 1]
+A_path_check = np.exp(a_hat_check)
+
+res_bk = solve_blanchard_khan(params_orac, ss_orac["K"], A_path_check, T=T_check)
+res_nl = solve_nonlinear_simulation(params_orac, ss_orac["K"], A_path_check, T=T_check)
+
+np.testing.assert_allclose(res_bk["K"], res_nl["K"], rtol=1e-2)
+np.testing.assert_allclose(res_bk["C"], res_nl["C"], rtol=1e-2)
+print("OK: soluciones BK y no lineal coinciden con rtol=1e-2 (oráculo).")
+
+# --- Convergencia de largo plazo al SS inicial ---
+# Tras un shock transitorio, K y C deben volver al estado estacionario
+# (tol 1e-3 según oraculo.md).
+np.testing.assert_allclose(res_nl["K"][-1], ss_orac["K"], atol=1e-3)
+np.testing.assert_allclose(res_nl["C"][-1], ss_orac["C"], atol=1e-3)
+print("OK: convergencia de largo plazo al SS inicial (tol 1e-3, oráculo).")
 """
     )
 )

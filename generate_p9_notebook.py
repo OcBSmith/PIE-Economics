@@ -214,6 +214,75 @@ interact(
     )
 )
 
+# 6a. ORACLE VERIFICATION TABLE AND SS/EIGENVALUE ASSERT
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 3.1 Verificación frente al oráculo
+
+Comparamos contra los valores reportados en el libro (Tabla 10.2) y reproducidos por el
+código DYNARE del Apéndice P, recogidos en `oraculo.md`:
+
+**Estado estacionario (calibración base: α=0.35, β=0.97, δ=0.06, n=0.02, A=1.0):**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Capital per cápita en SS (k*) | 7.9537 |
+| Producción per cápita en SS (y*) | 2.0663 |
+| Consumo per cápita en SS (c*) | 1.4300 |
+| Inversión per cápita en SS (i*) | 0.6363 |
+| Tipo de interés en SS (R*) | 0.0909 |
+
+**Estabilidad — Blanchard-Khan log-linealizado:**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Raíz estable λ₁ (log-desviación) | −0.0907 |
+| Raíz inestable λ₂ (log-desviación) | 0.1115 |
+| Pendiente de salto θ (Δĉ/Δk̂ sobre senda estable) | 0.5751 |
+
+**Shock permanente de PTF (A 1.00 → 1.05 en t=5):**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| k en t_shock (predeterminado) | = k* inicial ≈ 7.9537 |
+| ĉ en t_shock (salto sobre senda estable) | = k̂ × θ ≈ k̂ × 0.5751 (tol 1e-3) |
+| Consistencia lineal vs no lineal | k y c coinciden con atol 5e-2, rtol 1e-2 |
+
+Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
+debería salir en cada celda siguiente con el que realmente sale.
+"""
+    )
+)
+
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificación del estado estacionario y los autovalores contra el oráculo
+# (Tabla 10.2 del libro, reproducido en oraculo.md). La calibración por defecto
+# de RamseyParameters (alpha=0.35, beta=0.97, delta=0.06, n=0.02, A=1.0)
+# coincide con la calibración base del oráculo.
+
+params_orac = RamseyParameters()
+ss_orac = compute_ramsey_steady_state(params_orac)
+
+# --- Estado estacionario (atol=1e-4 según oraculo.md) ---
+np.testing.assert_allclose(ss_orac["k"], 7.9537, atol=1e-4)
+np.testing.assert_allclose(ss_orac["y"], 2.0663, atol=1e-4)
+np.testing.assert_allclose(ss_orac["c"], 1.4300, atol=1e-4)
+np.testing.assert_allclose(ss_orac["i"], 0.6363, atol=1e-4)
+np.testing.assert_allclose(ss_orac["R"], 0.0909, atol=1e-4)
+print("OK: estado estacionario coincide con el oráculo (Apéndice P).")
+
+# --- Autovalores y theta (atol=1e-4 según oraculo.md) ---
+_, lambda_1, lambda_2, theta = compute_ramsey_transition_matrix(params_orac)
+
+np.testing.assert_allclose(lambda_1, -0.0907, atol=1e-4)
+np.testing.assert_allclose(lambda_2, 0.1115, atol=1e-4)
+np.testing.assert_allclose(theta, 0.5751, atol=1e-4)
+print("OK: autovalores y theta coinciden con el oráculo (Apéndice P).")
+"""
+    )
+)
+
 # 7. COMPARACIÓN DE SOLVER BK VS FSOLVE NO LINEAL
 nb.cells.append(
     nbf.v4.new_markdown_cell(
@@ -302,6 +371,50 @@ interact(
     plot_ramsey_comparison,
     A_shock=FloatSlider(value=1.05, min=0.70, max=1.30, step=0.02, description='TFP final')
 );
+"""
+    )
+)
+
+# 7a. LINEAR VS NONLINEAR CONSISTENCY AND SADDLE PATH ASSERT
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificación de la consistencia lineal vs no lineal y de la senda estable
+# (oraculo.md, Apéndice P).
+
+# --- Consistencia lineal vs. no lineal (atol=5e-2, rtol=1e-2) ---
+# Simulamos un shock permanente de TFP A: 1.00 -> 1.05 en t=5 y comparamos
+# la solución linealizada de BK con la solución no lineal exacta.
+T_check = 80
+t_shock = 5
+A_path_check = np.full(T_check, 1.00)
+A_path_check[t_shock:] = 1.05
+n_path_check = np.full(T_check, params_orac.n)
+
+res_lin = solve_ramsey_linearized(
+    params_orac, ss_orac["k"],
+    A_final=1.05, n_final=params_orac.n, beta_final=params_orac.beta,
+    T=T_check, t_shock=t_shock
+)
+res_nl = solve_ramsey_nonlinear(
+    params_orac, ss_orac["k"],
+    A_path_check, n_path_check, T=T_check, t_shock=t_shock
+)
+
+np.testing.assert_allclose(res_lin["k"], res_nl["k"], atol=5e-2, rtol=1e-2)
+np.testing.assert_allclose(res_lin["c"], res_nl["c"], atol=5e-2, rtol=1e-2)
+print("OK: soluciones BK y no lineal coinciden (atol=5e-2, rtol=1e-2; oráculo).")
+
+# --- k en t_shock es predeterminado (= k* inicial) ---
+np.testing.assert_allclose(res_nl["k"][t_shock], ss_orac["k"], atol=1e-6)
+print(f"OK: k en t_shock = {res_nl['k'][t_shock]:.4f} = k* inicial (predeterminado).")
+
+# --- ĉ en t_shock sigue la senda estable (c_hat ≈ k_hat * theta, tol 1e-3) ---
+_, _, _, theta_orac = compute_ramsey_transition_matrix(params_orac)
+k_hat_shock = np.log(res_nl["k"][t_shock] / ss_orac["k"])
+c_hat_shock = np.log(res_nl["c"][t_shock] / ss_orac["c"])
+c_hat_expected = theta_orac * k_hat_shock
+np.testing.assert_allclose(c_hat_shock, c_hat_expected, atol=1e-3)
+print(f"OK: ĉ en t_shock = {c_hat_shock:.4f} ≈ theta * k̂ = {c_hat_expected:.4f} (tol 1e-3).")
 """
     )
 )

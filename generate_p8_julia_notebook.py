@@ -42,6 +42,20 @@ println("  Consumo por trabajador (c*)   : ", round(ss["c"], digits=4))
 println("  Inversión por trabajador (i*) : ", round(ss["i"], digits=4))
 """))
 
+# SS assert against oracle
+nb.cells.append(nbf.v4.new_code_cell("""# Verificacion de los valores del estado estacionario contra el oraculo
+# (Tabla 9.3 del libro, reproducido en oraculo.md).
+# Nota: La calibracion por defecto de SolowSwanParameters usa delta=0.08, n=0.0,
+# lo que da delta+n=0.08, igual que el oraculo (delta=0.06, n=0.02).
+# Los valores numericos son identicos en ambos casos.
+
+@assert isapprox(ss["k"], 4.0946; atol=1e-4)
+@assert isapprox(ss["y"], 1.6378; atol=1e-4)
+@assert isapprox(ss["c"], 1.3103; atol=1e-4)
+@assert isapprox(ss["i"], 0.3276; atol=1e-4)
+println("OK: estado estacionario coincide con el oraculo (Apendice O).")
+"""))
+
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición Dinámica de Solow
@@ -105,6 +119,40 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición D
 end
 """))
 
+# Oracle table
+nb.cells.append(nbf.v4.new_markdown_cell("""## 2.1 Verificacion frente al oraculo
+
+Comparamos contra los valores reportados en el libro (Tabla 9.3) y reproducidos por el
+codigo MATLAB del Apendice O, recogidos en `oraculo.md`:
+
+**Estado estacionario (calibracion base: alpha=0.35, s=0.20, delta=0.06, n=0.02, A=1.0):**
+
+| Magnitud | Valor esperado (oraculo) |
+|---|---|
+| Capital per capita en SS (k*) | 4.0946 |
+| Produccion per capita en SS (y*) | 1.6378 |
+| Consumo per capita en SS (c*) | 1.3103 |
+| Inversion per capita en SS (i*) | 0.3276 |
+
+**Shock de ahorro s 0.20 -> 0.25:**
+
+| Magnitud | Valor esperado (oraculo) |
+|---|---|
+| k0 | Parte de k* inicial approx 4.0946 |
+| Trayectoria de k | Creciente monotona hacia nuevo SS |
+| c en impacto (cae por mayor ahorro) | c0 = 0.75 * y0 < c* inicial |
+| Largo plazo: c_final | > c* inicial (el sacrificio compensa) |
+
+**Regla de Oro:**
+
+| Magnitud | Valor esperado (oraculo) |
+|---|---|
+| Tasa de ahorro que maximiza c* | s_gold = alpha = 0.35 |
+| c* en s_gold | Maximo global de la curva c_bar(s) |
+| c* en s=0.20 (infra-acumulacion) | < c*_gold |
+| c* en s=0.50 (sobre-acumulacion) | < c*_gold |
+"""))
+
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Oro: Consumo de Estado Estacionario vs Tasa de Ahorro
@@ -149,6 +197,25 @@ nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Or
 
     plot(p1, size=(750, 500), legend=:bottom, legendfontsize=7)
 end
+"""))
+
+# Golden Rule assert
+nb.cells.append(nbf.v4.new_code_cell("""# Verificacion de la Regla de Oro contra el oraculo (oraculo.md, Apendice O).
+# s_gold = alpha = 0.35, y c* en la Regla de Oro es mayor que en s=0.20
+# (infra-acumulacion) y que en s=0.50 (sobre-acumulacion, ineficiencia dinamica).
+
+alpha_gold = params_base.alpha
+ss_gold = compute_solow_steady_state(params_base, alpha_gold)
+ss_low = compute_solow_steady_state(params_base, 0.20)
+ss_high = compute_solow_steady_state(params_base, 0.50)
+
+@assert isapprox(alpha_gold, 0.35; atol=1e-6)
+println("OK: s_gold = alpha = ", round(alpha_gold, digits=2))
+
+@assert ss_gold["c"] > ss_low["c"] "c_gold=$(ss_gold["c"]) deberia ser > c_s020=$(ss_low["c"])"
+@assert ss_gold["c"] > ss_high["c"] "c_gold=$(ss_gold["c"]) deberia ser > c_s050=$(ss_high["c"])"
+println("OK: c_gold=", round(ss_gold["c"], digits=4), " > c_s020=", round(ss_low["c"], digits=4),
+        " y c_gold > c_s050=", round(ss_high["c"], digits=4), " (oraculo, Apendice O).")
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))

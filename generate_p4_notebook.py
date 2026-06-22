@@ -26,7 +26,27 @@ Al finalizar esta práctica, serás capaz de:
     )
 )
 
-# 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
+# 2. BIENVENIDA Y GUÍA RÁPIDA
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""> **👋 BIENVENIDA A LA PRÁCTICA - LEER ANTES DE EMPEZAR**
+>
+> *   **¿Nunca has usado Jupyter?** No te preocupes. Este cuaderno es interactivo. Haz clic en cualquier celda de código y pulsa **`Shift + Enter`** para ejecutarla. Ve de arriba a abajo en orden.
+> *   **¿Se ha congelado o sale un asterisco `[*]` eterno?** Ve al menú superior y dale a `Kernel` ➔ `Restart`.
+> *   **El objetivo** de esta práctica es que juegues con la economía. Cambia los números del código que representan impuestos, dinero o tecnología, vuelve a ejecutar y mira los gráficos. ¡No puedes romper nada!
+>
+
+> *   **📋 Antes de empezar**, consulta ' (en esta misma carpeta): objetivos, tiempo estimado y conocimientos previos de esta práctica." + "
+" + "
+" + "### 🕹️ GUÍA RÁPIDA DE INICIO - Consumo y Ocio
+*   **¿Qué estamos haciendo aquí?** Decidiendo cuántas horas trabajar (para tener dinero y consumir) frente a cuántas horas descansar (ocio).
+*   **Efecto Sustitución vs Efecto Renta:** Si te suben el sueldo, ¿trabajas más porque cada hora vale más (sustitución) o trabajas menos porque ya eres rico y quieres descansar (renta)?
+*   **¡Prueba esto!** Modifica el salario base en el código y observa si el gráfico de horas trabajadas sube o baja.
+"""
+    )
+)
+
+# 3. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
 # Esta celda se ejecuta silenciosamente. Si estás en Google Colab, instalará las librerías necesarias.
 # En tu entorno local de desarrollo (venv), estas dependencias ya deberían estar instaladas.
@@ -156,8 +176,100 @@ else:
     print("❌ Discrepancia detectada entre solucionadores.")
 """))
 
-# 8. SIMULACIÓN INTERACTIVA EN 3 PANELES
-nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Simulación Interactiva en 3 Paneles
+# 8. ORÁCULO: VERIFICACIÓN DE RESULTADOS BASE
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 3. Verificación frente al oráculo
+
+Comparamos contra los valores reportados en el libro (Capítulo 5) y
+reproducidos por el código MATLAB del Apéndice I, recogidos en
+`oraculo.md`:
+
+**Calibración base (β=0.97, R=0.02, γ=0.50, T=30, W=30):**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Activos terminales B[T−1] (ambos solvers) | 0.0 (tol 1e−6) |
+| Equivalencia fsolve vs cvxpy: C, L, B | Idénticos (rtol 1e−4) |
+| Oferta de trabajo L_t | 0 ≤ L_t < 1.0 para todo t |
+| Ocio O_t | 0 < O_t ≤ 1.0 para todo t |
+
+**Sensibilidad a preferencias (γ) y tipo de interés (R):**
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| γ=0.60 vs γ=0.40 (mayor peso del consumo) | L media mayor con γ=0.60 |
+| R=0.05 (β=0.97 ⇒ β(1+R)=1.0185>1) | Pendiente del consumo positiva (C crece en t) |
+
+Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
+debería salir en cada celda siguiente con el que realmente sale.
+"""
+    )
+)
+
+# 9. CELDA DE ASERCIÓN: CONDICIÓN TERMINAL, EQUIVALENCIA Y COTAS
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
+# VERIFICACIÓN NUMÉRICA FRENTE AL ORÁCULO (Apéndice I del libro)
+# ==============================================================================
+
+# 1. Condición terminal: B[T-1] debe ser 0 para ambos solvers
+np.testing.assert_allclose(res_fsolve["B"][-1], 0.0, atol=1e-6)
+np.testing.assert_allclose(res_cvxpy["B"][-1], 0.0, atol=1e-6)
+print("OK (1/4): Condición terminal B[T-1]=0 para ambos solvers.")
+
+# 2. Equivalencia fsolve vs cvxpy: C, L, B idénticos elemento a elemento
+np.testing.assert_allclose(res_fsolve["C"], res_cvxpy["C"], rtol=1e-4)
+np.testing.assert_allclose(res_fsolve["L"], res_cvxpy["L"], rtol=1e-4)
+np.testing.assert_allclose(res_fsolve["B"], res_cvxpy["B"], rtol=1e-4, atol=1e-6)
+print("OK (2/4): fsolve y cvxpy producen trayectorias C, L, B equivalentes (rtol=1e-4).")
+
+# 3. Cotas de la oferta de trabajo: 0 <= L_t < 1 para todo t
+assert np.all(res_fsolve["L"] >= 0.0), "L_t debe ser >= 0"
+assert np.all(res_fsolve["L"] < 1.0), "L_t debe ser < 1"
+print("OK (3/4): 0 <= L_t < 1.0 para todo t (ambos solvers).")
+
+# 4. Ocio positivo: O_t = 1 - L_t > 0 para todo t
+assert np.all(res_fsolve["O"] > 0.0), "O_t debe ser > 0"
+print("OK (4/4): Ocio O_t > 0 para todo t.")
+"""
+    )
+)
+
+# 10. CELDA DE ASERCIÓN: SENSIBILIDAD A γ Y R
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# ==============================================================================
+# VERIFICACIÓN DE SENSIBILIDAD: PREFERENCIAS (γ) Y TIPO DE INTERÉS (R)
+# ==============================================================================
+
+W30 = np.full(30, 30.0)
+
+# --- Sensibilidad a gamma: mayor gamma => mayor peso del consumo => más L ---
+res_g40 = solve_foc_fsolve(ConsumptionLeisureParameters(T=30, beta=0.97, gamma=0.40, R=0.02), W30)
+res_g60 = solve_foc_fsolve(ConsumptionLeisureParameters(T=30, beta=0.97, gamma=0.60, R=0.02), W30)
+mean_L_g40 = np.mean(res_g40["L"])
+mean_L_g60 = np.mean(res_g60["L"])
+print(f"L media con gamma=0.40: {mean_L_g40:.6f}")
+print(f"L media con gamma=0.60: {mean_L_g60:.6f}")
+assert mean_L_g60 > mean_L_g40, "Con mayor gamma (mas peso del consumo), L medio debe aumentar"
+print("OK (γ): L media mayor con γ=0.60 que con γ=0.40, coincide con el oráculo.")
+
+# --- Sensibilidad a R: con R=0.05, beta*(1+R)=1.0185>1 => C creciente ---
+res_R5 = solve_foc_fsolve(ConsumptionLeisureParameters(T=30, beta=0.97, gamma=0.50, R=0.05), W30)
+slope_C = res_R5["C"][-1] - res_R5["C"][0]
+print(f"Consumo inicial C[0] (R=0.05): {res_R5['C'][0]:.6f}")
+print(f"Consumo final   C[T-1] (R=0.05): {res_R5['C'][-1]:.6f}")
+print(f"Pendiente C[T-1]-C[0]: {slope_C:.6f}")
+assert slope_C > 0, "Con beta*(1+R)>1, el consumo debe ser creciente en el tiempo"
+print("OK (R): Pendiente de consumo positiva con R=0.05, coincide con el oráculo.")
+"""
+    )
+)
+
+# 11. SIMULACIÓN INTERACTIVA EN 3 PANELES
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Simulación Interactiva en 3 Paneles
 
 Visualizaremos las trayectorias dinámicas resultantes de la simulación en **3 columnas**:
 *   **Panel 1 (Consumo e Ingreso Salarial)**: Muestra el consumo óptimo $C_t$ contra el ingreso salarial endógeno $W_t L_t$.
@@ -237,7 +349,7 @@ interact(
 
 # 10. CUADERNO DE BITÁCORA
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 4. Cuaderno de Bitácora (Actividades para el Alumno)
+    nbf.v4.new_markdown_cell(r"""## 5. Cuaderno de Bitácora (Actividades para el Alumno)
 
 Responde a las siguientes cuestiones analíticas en tu Cuaderno de Bitácora tras interactuar con la simulación:
 
@@ -255,7 +367,7 @@ Responde a las siguientes cuestiones analíticas en tu Cuaderno de Bitácora tra
 
 # 11. BUENAS PRÁCTICAS
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
+    nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Aislamiento Paramétrico**: Las rutinas matemáticas y de simulación están completamente desacopladas de la interfaz visual, residiendo en `src/macroaicomp/models/consumption_leisure.py`.
 2.  **Control de Calidad Automático**: Se ha verificado que la simulación es robusta mediante tests unitarios automatizados (`pytest`).
 3.  **Control de Versiones Limpio**: Este cuaderno ha sido limpiado de metadatos volátiles mediante `nbstripout` antes de guardarse en el repositorio.

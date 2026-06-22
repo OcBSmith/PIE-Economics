@@ -431,3 +431,51 @@ Pendiente del monorepo objetivo (plan §1.2): `prompts/`, `bitacora/`,
   GUION: sin errores.
 - P1 y P8 (los otros dos pilotos previstos en el plan maestro) y el resto
   de prácticas quedan sin GUION.md — pendientes de iterar más adelante.
+
+### 2026-06-22 (Sesión 23 — Plan de Homogeneización Pedagógica P1-P9)
+
+- **Contexto**: ejecución completa de `docs/PLAN_HOMOGENEIZACION_PEDAGOGICA.md`
+  (7 bloques A-G) para replicar en P1-P9 la calidad pedagógica de P0:
+  oráculo visible, asserts de verificación, `GUION.md` por práctica, enlaces
+  y comentarios de programación.
+- **Bloque C (wording "dummies")**: reemplazo masivo de "GUÍA RÁPIDA PARA
+  DUMMIES" → "GUÍA RÁPIDA DE INICIO" en 17 notebooks (P1-P9 Python y Julia).
+  P7 Python no contenía el término originalmente.
+- **Bloque A (oráculo + asserts)**: creados `oraculo.md` para P2-P9 a partir
+  de los valores de `tests/python/test_*.py` (44 tests en verde). Añadidas
+  celdas de `assert`/`@assert` en los 18 notebooks (P1-P9 × Python/Julia),
+  verificando estado estacionario, autovalores, shocks y equivalencia de
+  solvers contra los valores del libro y apéndices MATLAB/DYNARE. 3 agentes
+  en paralelo editaron generadores; post-procesamiento manual para regenerar
+  notebooks desde generadores editados.
+- **Bloque B (tablas de oráculo visibles)**: añadidas tablas markdown con
+  valores esperados en cada notebook, siguiendo el formato de P0.
+- **Bloque E (`GUION.md`)**: creados `GUION.md` para P1-P9 a partir de la
+  plantilla `practicas/_plantilla/GUION.md`, con objetivos Bloom,
+  prerrequisitos, accidentes de laboratorio específicos de cada modelo,
+  5-6 preguntas de bitácora y 2-3 extensiones ABP.
+- **Bloque F (enlaces GUION)**: añadidos enlaces a `GUION.md` en celdas de
+  bienvenida y/o conclusión de P1-P2 y P4-P6. P3, P7-P9 quedan con enlace
+  parcial (los `GUION.md` existen en sus carpetas pero los notebooks
+  generados no los referencian explícitamente — requiere editar generadores).
+- **Bloque D (comentarios de programación)**: **diferido conscientemente**.
+  Es el bloque más grande (~4-5 días estimados en el plan, 18 notebooks ×
+  ~10-20 celdas de código cada uno). Los notebooks ya tienen texto explicativo
+  sustancial en markdown; los comentarios QUÉ/POR QUÉ/QUÉ VERÁS al estilo P0
+  quedan como siguiente prioridad tras esta sesión.
+- **Verificación**: `pytest tests/python/` = 44/44 ✅. Ejecución completa
+  con `nbconvert --execute` de los 18 notebooks (P1-P9 × Python/Julia):
+  todos los Python OK; Julia P1-P6 OK, P7-P9 pendientes de confirmación
+  (en ejecución al cierre de esta entrada).
+- **PLAN_MAESTRO actualizado**: tabla §2 con columna "Bitácora plantilla"
+  [x] para P1-P9, columna "Versión Julia" [x] para P1-P9, y columna "Estado"
+  actualizada a [~] reflejando el estado real (oráculo+GUION+asserts
+  completos, comentarios pendientes). §3.2.1 marcado P1 y P8 como pilotos
+  de GUION completados.
+- **Lección de proceso**: 3 agentes lanzados en paralelo editaron generadores
+  correctamente pero no siempre regeneraron los notebooks. Post-procesamiento
+  necesario: ejecutar `generate_pX_notebook.py` y
+  `generate_pX_julia_notebook.py` tras recibir los resultados de los agentes,
+  y verificar con `nbconvert --execute` real (no solo exit code).
+  Coste total de la sesión: ~3h de trabajo con agentes + ~1h de
+  post-procesamiento y verificación.

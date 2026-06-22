@@ -140,6 +140,30 @@ A continuación, ejecutaremos ambos métodos con la calibración base y un salar
     )
 )
 
+# 6.1 ORACLE TABLE (VERIFICACIÓN FRENTE AL ORÁCULO)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        r"""## 2.1 Verificación frente al oráculo
+
+Comparamos contra los valores reportados en el libro y reproducidos por el
+código MATLAB del Apéndice G (`referencia/consumption.m`), recogidos en
+`oraculo.md`:
+
+| Magnitud | Valor esperado (oráculo) |
+|---|---|
+| Activos terminales $B_{T-1}$ (cualquier perfil) | 0.0 (tol. 1e-6) |
+| Equivalencia fsolve vs optimización directa | $C$ y $B$ idénticos (rtol 1e-4) |
+| Perfil creciente — $B_0$ | Negativo (endeudamiento juvenil) |
+| Perfil creciente — pendiente de $C$ | Negativa ($\beta(1+R)<1$) |
+| Perfil jubilación — pico de activos | $t=19$ (fin de vida laboral) |
+| Perfil jubilación — activos en vida laboral | Positivos (acumulación) |
+| $\beta=0.99$ — pendiente de $C$ | Positiva ($\beta(1+R)>1$) |
+
+Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
+debería salir en cada celda siguiente con el que realmente sale."""
+    )
+)
+
 # 7. CÓDIGO DE EJECUCIÓN DE AMBOS SOLVERS
 nb.cells.append(nbf.v4.new_code_cell(r"""# Generar salario constante
 W_const = generate_income_profile("constant", params.T)
@@ -168,6 +192,26 @@ if diferencia_max < 1e-5:
     print("✅ ¡Los solucionadores son equivalentes numéricamente!")
 else:
     print("❌ Hay diferencias entre solucionadores.")
+"""))
+
+# ASSERT CELL: VERIFICACIÓN TERMINAL Y EQUIVALENCIA
+nb.cells.append(nbf.v4.new_code_cell(r"""# Verificamos la condición terminal (B_{T-1}=0) y la equivalencia entre
+# solvers contra el oráculo del Apéndice G (MATLAB) recogido en oraculo.md.
+# np.testing.assert_allclose compara dos valores y SOLO lanza un error si la
+# diferencia supera la tolerancia. No usamos "==" porque la aritmética con
+# decimales casi nunca da resultados exactamente iguales (errores de redondeo
+# internos). Si el port a Python tuviera un error, esta celda lanzaría
+# AssertionError y detendría la ejecución antes de seguir construyendo
+# gráficos sobre un resultado incorrecto.
+
+# Condición terminal: el consumidor no deja deudas ni herencias
+np.testing.assert_allclose(res_fsolve['B'][-1], 0.0, atol=1e-6)
+np.testing.assert_allclose(res_cvxpy['B'][-1], 0.0, atol=1e-6)
+
+# Equivalencia fsolve vs optimización directa: C y B deben ser idénticos
+np.testing.assert_allclose(res_fsolve['C'], res_cvxpy['C'], rtol=1e-4, atol=1e-4)
+np.testing.assert_allclose(res_fsolve['B'], res_cvxpy['B'], rtol=1e-4, atol=1e-4)
+print("OK: coincide con el oráculo MATLAB (Apéndice G).")
 """))
 
 # 8. DETRÁS DE LA ESCENA (CÓDIGO FOC DETALLADO)
@@ -269,6 +313,62 @@ interact(
 """
     )
 )
+
+# 4.1 VERIFICACIÓN DE PERFILES DE INGRESO Y SENSIBILIDAD
+nb.cells.append(
+    nbf.v4.new_markdown_cell(r"""## 4.1 Verificación de perfiles de ingreso y sensibilidad
+
+Comprobamos contra el oráculo los resultados cualitativos y cuantitativos
+para cada perfil de ingreso y el caso de sensibilidad $\beta=0.99$ (Apéndice G,
+`oraculo.md`).""")
+)
+
+nb.cells.append(nbf.v4.new_code_cell(r"""# Verificamos los casos adicionales del oráculo (Apéndice G):
+
+# --- Perfil creciente: endeudamiento juvenil y pendiente negativa del consumo ---
+W_inc = generate_income_profile("increasing", params.T)
+res_inc = solve_foc_fsolve(params, W_inc)
+assert res_inc['B'][0] < 0, (
+    "B[0] debería ser negativo (endeudamiento juvenil) con perfil creciente"
+)
+# Pendiente de C negativa: C[0] > C[-1] porque beta*(1+R) = 0.9894 < 1
+assert res_inc['C'][0] > res_inc['C'][-1], (
+    "La pendiente del consumo debería ser negativa con beta=0.97, R=0.02"
+)
+np.testing.assert_allclose(res_inc['B'][-1], 0.0, atol=1e-6)
+print("  Perfil creciente: B[0]=", round(res_inc['B'][0], 4),
+      "(negativo), C[0]=", round(res_inc['C'][0], 4),
+      "> C[-1]=", round(res_inc['C'][-1], 4), "OK")
+
+# --- Perfil jubilación: pico de activos en t=19 (índice 19 en Python) ---
+W_ret = generate_income_profile("retirement", params.T)
+res_ret = solve_foc_fsolve(params, W_ret)
+peak_idx = np.argmax(res_ret['B'])
+assert peak_idx == 19, (
+    f"El pico de activos debería estar en t=19, no en t={peak_idx}"
+)
+# Activos positivos durante la vida laboral (t < 20)
+assert np.all(res_ret['B'][:20] > 0), (
+    "Los activos deberían ser positivos durante la vida laboral"
+)
+np.testing.assert_allclose(res_ret['B'][-1], 0.0, atol=1e-6)
+print("  Perfil jubilación: pico de activos en t=", peak_idx,
+      ", activos positivos en vida laboral OK")
+
+# --- Sensibilidad beta=0.99: pendiente del consumo positiva ---
+params_beta99 = ConsumptionSavingParameters(T=30, beta=0.99, R=0.02)
+W_const2 = generate_income_profile("constant", params_beta99.T)
+res_beta99 = solve_foc_fsolve(params_beta99, W_const2)
+assert res_beta99['C'][0] < res_beta99['C'][-1], (
+    "La pendiente del consumo debería ser positiva con beta=0.99 (beta*(1+R)=1.0098>1)"
+)
+np.testing.assert_allclose(res_beta99['B'][-1], 0.0, atol=1e-6)
+print("  beta=0.99: C[0]=", round(res_beta99['C'][0], 4),
+      "< C[-1]=", round(res_beta99['C'][-1], 4),
+      "(pendiente positiva) OK")
+
+print("OK: todos los perfiles coinciden con el oráculo MATLAB (Apéndice G).")
+"""))
 
 # 11. BUENAS PRÁCTICAS
 nb.cells.append(

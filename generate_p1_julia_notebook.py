@@ -178,10 +178,21 @@ end
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-nb.cells.append(nbf.v4.new_code_cell("""@assert isapprox(ss["Y"], 2000.0; atol=1e-5)
-@assert isapprox(ss["P"], 81.0; atol=1e-5)
-@assert isapprox(ss["i"], 2.0; atol=1e-5)
-println("OK: coincide con el oráculo.")
+nb.cells.append(nbf.v4.new_code_cell("""# Verificamos que el estado estacionario calculado numéricamente coincide con
+# el oráculo del Apéndice D (MATLAB) recogido en oraculo.md.
+# @assert isapprox compara dos valores y SOLO lanza un error si la
+# diferencia supera la tolerancia atol. No usamos "==" porque la aritmética
+# con decimales casi nunca da resultados exactamente iguales (errores de
+# redondeo internos). Si el port a Julia tuviera un error, esta celda
+# lanzaría AssertionError y detendría la ejecución antes de seguir
+# construyendo gráficos sobre un resultado incorrecto.
+@assert isapprox(ss["Y"], 2000.0; atol=1e-6)
+@assert isapprox(ss["P"], 81.0; atol=1e-6)
+@assert isapprox(ss["i"], 2.0; atol=1e-6)
+@assert isapprox(ss["Yd"], 2000.0; atol=1e-6)
+@assert isapprox(ss["dP"], 0.0; atol=1e-6)
+@assert isapprox(ss["dY"], 0.0; atol=1e-6)
+println("OK: coincide con el oráculo MATLAB (Apéndice D).")
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))

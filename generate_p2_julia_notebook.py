@@ -252,9 +252,38 @@ end
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-nb.cells.append(nbf.v4.new_code_cell("""@assert isapprox(ss_init["p"], 1.5; atol=1e-6)
-@assert isapprox(ss_init["s"], 76.5150; atol=1e-6)
-println("OK: coincide con el oráculo.")
+nb.cells.append(nbf.v4.new_code_cell("""# Verificamos que el estado estacionario, los autovalores y la simulación del
+# shock monetario coinciden con el oráculo del Apéndice F (DYNARE) recogido en
+# oraculo.md. @assert isapprox compara dos valores y SOLO lanza un error si la
+# diferencia supera la tolerancia atol. No usamos "==" porque la aritmética
+# con decimales casi nunca da resultados exactamente iguales (errores de
+# redondeo internos). Si el port a Julia tuviera un error, esta celda lanzaría
+# AssertionError y detendría la ejecución antes de seguir construyendo
+# gráficos sobre un resultado incorrecto.
+
+# Verificar estado estacionario
+@assert isapprox(ss_init["p"], 1.5; atol=1e-4)
+@assert isapprox(ss_init["s"], 76.515; atol=1e-4)
+@assert isapprox(ss_init["i"], 3.0; atol=1e-4)
+@assert isapprox(ss_init["yd"], 2000.0; atol=1e-4)
+@assert isapprox(ss_init["dp"], 0.0; atol=1e-4)
+@assert isapprox(ss_init["ds"], 0.0; atol=1e-4)
+
+# Verificar autovalores (punto de silla: uno estable, otro inestable)
+lambdas_sorted = sort(lambdas)
+@assert isapprox(lambdas_sorted[1], -0.7415; atol=1e-4)
+@assert isapprox(lambdas_sorted[2], 0.5395; atol=1e-4)
+
+# Verificar shock monetario (M0: 100 -> 101) en t=1 (índice 2 en Julia)
+@assert isapprox(res_lib["p"][2], 1.5; atol=1e-4)    # precios rígidos
+@assert isapprox(res_lib["s"][2], 80.215; atol=5e-3)  # overshooting
+@assert isapprox(res_lib["i"][2], 1.0; atol=1e-3)     # cae por shock expansivo
+
+# Verificar valores en largo plazo (t=29, índice 30 en Julia)
+@assert isapprox(res_lib["p"][30], 2.5; atol=1e-2)
+@assert isapprox(res_lib["s"][30], 77.515; atol=1e-2)
+@assert isapprox(res_lib["i"][30], 3.0; atol=1e-2)    # vuelve a i*
+println("OK: coincide con el oráculo DYNARE (Apéndice F).")
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))

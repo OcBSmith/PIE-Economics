@@ -43,6 +43,20 @@ println("  Producción (Y*): ", round(ss["Y"], digits=4))
 println("  Inversión (I*) : ", round(ss["I"], digits=4))
 """))
 
+# SS assert against oracle
+nb.cells.append(nbf.v4.new_code_cell("""# Verificación de los valores del estado estacionario contra el oráculo
+# (Tabla 8.2 del libro, reproducido en oraculo.md).
+# La calibración por defecto de DGEParams es alpha=0.35, beta=0.96, delta=0.06, A=1.0,
+# que coincide con la calibración base del oráculo.
+
+@assert isapprox(ss["K"], 6.698596; atol=1e-6)
+@assert isapprox(ss["Y"], 1.945783; atol=1e-6)
+@assert isapprox(ss["C"], 1.543867; atol=1e-6)
+@assert isapprox(ss["I"], 0.401916; atol=1e-6)
+@assert isapprox(ss["R"], 0.10166666666666667; atol=1e-6)
+println("OK: estado estacionario coincide con el oráculo (Apéndice N).")
+"""))
+
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tecnológico Transitorio
@@ -100,6 +114,43 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tecnol�
 end
 """))
 
+# Oracle table
+nb.cells.append(nbf.v4.new_markdown_cell("""## 2.1 Verificación frente al oraculo
+
+Comparamos contra los valores reportados en el libro (Tabla 8.2) y reproducidos por el
+codigo MATLAB/DYNARE del Apendice N, recogidos en `oraculo.md`:
+
+**Estado estacionario (calibracion base: alpha=0.35, beta=0.96, delta=0.06, A=1.0):**
+
+| Magnitud | Valor esperado (oraculo) |
+|---|---|
+| Capital en SS (K*) | 6.698596 |
+| Produccion en SS (Y*) | 1.945783 |
+| Consumo en SS (C*) | 1.543867 |
+| Inversion en SS (I*) | 0.401916 |
+| Tipo de interes en SS (R*) | 0.10166666666666667 |
+
+**Blanchard-Khan — Estabilidad:**
+
+| Magnitud | Valor esperado (oraculo) |
+|---|---|
+| Autovalor estable mu1 (|mu| < 1) | approx 0.90399 |
+| Autovalor inestable mu2 (|mu| > 1) | approx 1.15229 |
+| Clasificacion | Punto de silla (exactamente 1 raiz estable) |
+
+**Shock temporal de PTF (+1% con rho=0.8):**
+
+| Magnitud | Valor esperado (oraculo) |
+|---|---|
+| K1 (predeterminado, no salta) | = K* approx 6.6986 |
+| C1 (salta al alza en impacto) | > C* |
+| Y1 (salta al alza en impacto) | > Y* |
+| I1 (salta al alza en impacto) | > I* |
+| Pico de K (hump, ocurre con retardo) | Entre periodos 2 y 12 |
+| Convergencia de largo plazo (C, K) | Vuelven al SS inicial (tol 1e-3) |
+| Consistencia Blanchard-Khan vs simulacion no lineal | K y C coinciden con rtol 1e-2 |
+"""))
+
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) vs No Lineal
@@ -147,6 +198,65 @@ nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) v
 
     plot(p1, p2, layout=(1,2), size=(900, 400), top_margin=10mm)
 end
+"""))
+
+# BK eigenvalues and consistency asserts
+nb.cells.append(nbf.v4.new_code_cell("""# Verificacion de los autovalores de Blanchard-Khan y la consistencia
+# entre la solucion linealizada y la no lineal (oraculo.md, Apendice N).
+
+# --- Autovalores BK ---
+# Replicamos el calculo de la matriz J del sistema linealizado.
+alpha_v = params_base.alpha
+beta_v = params_base.beta
+delta_v = params_base.delta
+
+Omega_val = 1.0 - beta_v + beta_v * delta_v
+Phi_val = 1.0 - beta_v + (1.0 - alpha_v) * beta_v * delta_v
+
+A_mat = [1.0 0.0; Omega_val -alpha_v * beta_v * delta_v]
+B_mat = [0.0 alpha_v; Phi_val 0.0]
+D_mat = [1.0 Omega_val; 0.0 1.0]
+F_mat = [-Omega_val 0.0; 0.0 0.0]
+G_mat = [1.0 0.0; 0.0 1.0 - delta_v]
+H_mat = [0.0 0.0; 0.0 delta_v]
+
+invA = inv(A_mat)
+inv_term = inv(D_mat + F_mat * invA * B_mat)
+J = inv_term * (G_mat + H_mat * invA * B_mat)
+
+mu_vals = real(eigvals(J))
+mu_sorted = sort(abs.(mu_vals))
+mu_s = mu_sorted[1]  # estable
+mu_u = mu_sorted[2]  # inestable
+
+@assert isapprox(mu_s, 0.90399; atol=1e-5)
+@assert isapprox(mu_u, 1.15229; atol=1e-5)
+println("OK: autovalores BK coinciden con el oraculo (Apendice N).")
+
+# --- Consistencia lineal vs. no lineal (shock +1% con rho=0.8) ---
+T_check = 60
+a_hat_check = zeros(T_check)
+a_hat_check[2] = 0.01  # shock en t=1 (indice 2 en Julia)
+for t in 3:T_check
+    a_hat_check[t] = params_base.rho * a_hat_check[t-1]
+end
+A_path_check = exp.(a_hat_check)
+
+res_bk = solve_blanchard_khan(params_base, ss["K"], A_path_check, T_check)
+res_nl = solve_nonlinear_simulation(params_base, ss["K"], A_path_check, T_check)
+
+# Verificar que K y C de ambas soluciones coinciden (rtol 1e-2)
+for key in ["K", "C"]
+    max_diff = maximum(abs.(res_bk[key] .- res_nl[key]))
+    rel_diff = max_diff / ss[key]
+    @assert rel_diff < 0.02 "La discrepancia relativa en $key ($rel_diff) supera rtol=1e-2"
+end
+println("OK: soluciones BK y no lineal coinciden con rtol=1e-2 (oraculo).")
+
+# --- Convergencia de largo plazo al SS inicial ---
+@assert isapprox(res_nl["K"][end], ss["K"]; atol=1e-3)
+@assert isapprox(res_nl["C"][end], ss["C"]; atol=1e-3)
+println("OK: convergencia de largo plazo al SS inicial (tol 1e-3, oraculo).")
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))

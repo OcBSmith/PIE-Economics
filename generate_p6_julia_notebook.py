@@ -32,7 +32,121 @@ using BenchmarkTools
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
+
+# --- CÁLCULO DEL ESTADO ESTACIONARIO Y ESTABILIDAD ---
+nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+# CALCULO DEL ESTADO ESTACIONARIO, AUTOVALORES Y FORMULA DE SALTO
+# ==============================================================================
+
+params_ss = TobinQParams(0.35, 0.06, 10.0, 0.04)  # alpha, delta, phi, R
+ss = compute_steady_state(params_ss)
+lin_sys = compute_linearized_system(params_ss)
+
+K_star = ss["K"]
+q_star = ss["q"]
+I_star = ss["I"]
+lambdas = lin_sys["eigenvalues"]
+theta_simple = lin_sys["theta"]
+theta_book = get(lin_sys, "theta_book", theta_simple)
+
+println("ESTADO ESTACIONARIO (R=0.04):")
+println("-"^55)
+println("  Q de Tobin (q*)               : ", round(q_star, digits=6))
+println("  Stock de capital (K*)          : ", round(K_star, digits=6))
+println("  Inversion (I* = delta*K*)      : ", round(I_star, digits=6))
+println("  Produccion (Y* = K*^alpha)     : ", round(K_star^0.35, digits=6))
+println()
+println("ESTABILIDAD (log-desviaciones):")
+println("-"^55)
+println("  Autovalor estable lambda1      : ", round(lambdas[1], digits=6))
+println("  Autovalor inestable lambda2    : ", round(lambdas[2], digits=6))
+println("  Modulo |1+lambda1|             : ", round(abs(1+lambdas[1]), digits=6), "  (< 1, estable en niveles)")
+println("  Modulo |1+lambda2|             : ", round(abs(1+lambdas[2]), digits=6), "  (> 1, inestable en niveles)")
+println("  Clasificacion                  : Punto de silla")
+println()
+println("FORMULA DE SALTO:")
+println("-"^55)
+println("  theta (simplificada = phi*lambda1): ", theta_simple)
+println("  theta_book (formula del libro)    : ", theta_book)
+println("  Diferencia                        : ", abs(theta_simple - theta_book))
+"""))
+
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
+
+# --- ASERCIÓN JULIA: SS, AUTOVALORES Y FORMULA DE SALTO ---
+nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+# VERIFICACION: SS, AUTOVALORES Y FORMULA DE SALTO (Apendice K del libro)
+# ==============================================================================
+
+# 1. Estado estacionario
+@assert isapprox(q_star, 1.0; atol=1e-6)
+@assert isapprox(K_star, 6.8711236; rtol=1e-6)
+@assert isapprox(I_star, 0.06 * K_star; rtol=1e-6)
+println("OK (SS 1/3): q*=1.0, K*~6.871, I*=delta*K*, coincide con el oraculo DYNARE.")
+
+# 2. Autovalores (log-desviaciones)
+@assert isapprox(lambdas[1], -0.060658; rtol=1e-4)
+@assert isapprox(lambdas[2], 0.107158; rtol=1e-4)
+@assert abs(1 + lambdas[1]) < 1.0 "lambda1 debe ser estable en niveles"
+@assert abs(1 + lambdas[2]) > 1.0 "lambda2 debe ser inestable en niveles"
+println("OK (SS 2/3): lambda1~-0.060658, lambda2~0.107158, punto de silla confirmado.")
+
+# 3. Identidad de la formula de salto: theta = theta_book para varias calibraciones
+for R_val in [0.02, 0.03, 0.04, 0.05]
+    for phi_val in [5.0, 10.0, 15.0]
+        p = TobinQParams(0.35, 0.06, phi_val, R_val)
+        ls = compute_linearized_system(p)
+        @assert abs(ls["theta"] - get(ls, "theta_book", ls["theta"])) < 1e-12 "theta != theta_book para R=$R_val, phi=$phi_val"
+    end
+end
+println("OK (SS 3/3): theta = theta_book para todo R, phi (atol=1e-12).")
+"""))
+
+# --- ASERCIÓN JULIA: SHOCK DE TIPO DE INTERES ---
+nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+# VERIFICACION DEL SHOCK: SALTO DE q, CONVERGENCIA Y CONSISTENCIA (Apendice K)
+# ==============================================================================
+
+ss_R04 = compute_steady_state(params_ss, 0.04)
+ss_R03 = compute_steady_state(params_ss, 0.03)
+K_star_R04 = ss_R04["K"]
+K_star_R03 = ss_R03["K"]
+
+T_sim = 100
+R_path = fill(0.03, T_sim)
+R_path[1] = 0.04
+
+K0_shock = ss_R04["K"]
+res_nonlin = solve_nonlinear_simulation(params_ss, K0_shock, R_path, T_sim)
+res_lin = solve_linearized_simulation(params_ss, K0_shock, R_path, T_sim)
+
+# 1. K0 es predeterminado
+@assert isapprox(K0_shock, K_star_R04; rtol=1e-6)
+println("OK (Shock 1/4): K0 = K*(R=4%) = ", round(K0_shock, digits=6), ", predeterminado (sin salto).")
+
+# 2. q0 salta por encima de 1.0
+q0_jump = res_nonlin["q"][2]  # periodo del shock (t=1, indice 2 en Julia)
+println("q0 (post-shock) = ", round(q0_jump, digits=6))
+@assert q0_jump > 1.0 "q0 debe saltar por encima de 1.0 tras la caida de R"
+@assert isapprox(q0_jump, 1.1033; rtol=1e-3)
+println("OK (Shock 2/4): q0 ~ 1.1033 > 1.0, la inversion se estimula.")
+
+# 3. Largo plazo: q -> 1.0, K -> K*(R=3%)
+q_long_run = res_nonlin["q"][end]
+K_long_run = res_nonlin["K"][end]
+@assert isapprox(q_long_run, 1.0; atol=1e-4)
+@assert isapprox(K_long_run, K_star_R03; rtol=1e-3)
+println("q[T-1] = ", round(q_long_run, digits=6), " (esperado: 1.0)")
+println("K[T-1] = ", round(K_long_run, digits=6), " (esperado: ", round(K_star_R03, digits=6), ")")
+println("OK (Shock 3/4): Convergencia a nuevo SS en el largo plazo.")
+
+# 4. Consistencia lineal vs no lineal
+@assert isapprox(res_lin["K"], res_nonlin["K"]; rtol=1e-2)
+@assert isapprox(res_lin["q"], res_nonlin["q"]; rtol=1e-2)
+println("OK (Shock 4/4): Trayectorias lineal y no lineal consistentes (rtol=1e-2).")
+"""))
+
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa Interés
 @manipulate for R_init in slider(0.01:0.005:0.08; value=0.04, label="R inicial"), R_final in slider(0.01:0.005:0.08; value=0.03, label="R final"), phi_val in slider(1.0:1.0:30.0; value=10.0, label="Costos Aj. (φ)"), delta_val in slider(0.01:0.01:0.15; value=0.06, label="Deprec. (δ)"), alpha_val in slider(0.20:0.05:0.50; value=0.35, label="Elasticidad (α)")
@@ -90,7 +204,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa In
 end
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal vs No Lineal
 params = TobinQParams(0.33, 0.06, 10.0, 0.04)
@@ -121,7 +235,7 @@ ylabel!("Capital (K)")
 plot(p1, p2, layout=(1,2), size=(800, 350))
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en espacio de desviaciones logarítmicas
 @manipulate for R_init in slider(0.01:0.005:0.08; value=0.04, label="R inicial"), R_final in slider(0.01:0.005:0.08; value=0.03, label="R final"), phi_val in slider(1.0:1.0:30.0; value=10.0, label="Costos Aj. (φ)"), delta_val in slider(0.01:0.01:0.15; value=0.06, label="Deprec. (δ)"), alpha_val in slider(0.20:0.05:0.50; value=0.35, label="Elasticidad (α)")
@@ -208,10 +322,10 @@ nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en espacio de desvia
 end
 """))
 
-nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
+nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
+nb.cells.append(nbf.v4.new_markdown_cell("""## 8. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation

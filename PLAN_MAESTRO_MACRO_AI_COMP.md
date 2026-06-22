@@ -282,15 +282,15 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 | # | Capítulo del libro (Bongers/Gómez/Torres 2019) | Modelo | Excel original | Apéndice MATLAB/DYNARE de verificación | Versión Python/Colab | Versión Julia | Bitácora plantilla | Prompts curados | Estado |
 |---|---|---|---|---|---|---|---|---|---|
 | P0 | Cap. 1 — Introduction to computational dynamic systems | Sistema 2 ecuaciones genérico | [ ] localizar `.xlsx` del libro | App. B (MATLAB) + App. C (DYNARE) | [x] `practicas/00/python.ipynb` | [x] `practicas/00/julia.ipynb` | [x] `practicas/00/GUION.md` | [ ] | [~] Python y Julia listos, verificados y con GUION.md; falta Excel y prompts |
-| P1 | Cap. 2 — The dynamic IS-LM model | IS-LM dinámico + Phillips | [ ] | App. D (MATLAB) + App. E (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
-| P2 | Cap. 3 — Exchange rate overshooting | Dornbusch overshooting | [ ] | App. F (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
-| P3 | Cap. 4 — Consumption-saving optimal decision | Hogar consumo-ahorro | [ ] | App. G (MATLAB) + App. H (Newton) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
-| P4 | Cap. 5 — Consumption-saving + leisure | Hogar con oferta de trabajo | [ ] | App. I (MATLAB) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
-| P5 | Cap. 6 — Government and fiscal policy | Impuestos + cotizaciones | [ ] | App. J (MATLAB) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
-| P6 | Cap. 7 — Firm/investment, Tobin's Q | Tobin Q | [ ] | App. K (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
-| P7 | Cap. 8 — Basic Dynamic General Equilibrium | DGE básico | [ ] | App. L (MATLAB) + App. M (DYNARE) + App. N (DSGE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
-| P8 | Cap. 9 — Neoclassical exogenous growth | Solow-Swan | [ ] | App. O (MATLAB) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
-| P9 | Cap. 10 — Ramsey's optimal growth | Ramsey | [ ] | App. P (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
+| P1 | Cap. 2 — The dynamic IS-LM model | IS-LM dinámico + Phillips | [ ] | App. D (MATLAB) + App. E (DYNARE) | [x] | [x] | [x] `practicas/01/GUION.md` | [ ] | [~] Python y Julia listos, verificados y con GUION.md; falta oraculo.md visible + asserts en Python |
+| P2 | Cap. 3 — Exchange rate overshooting | Dornbusch overshooting | [ ] | App. F (DYNARE) | [x] | [x] | [x] `practicas/02/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
+| P3 | Cap. 4 — Consumption-saving optimal decision | Hogar consumo-ahorro | [ ] | App. G (MATLAB) + App. H (Newton) | [x] | [x] | [x] `practicas/03/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
+| P4 | Cap. 5 — Consumption-saving + leisure | Hogar con oferta de trabajo | [ ] | App. I (MATLAB) | [x] | [x] | [x] `practicas/04/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
+| P5 | Cap. 6 — Government and fiscal policy | Impuestos + cotizaciones | [ ] | App. J (MATLAB) | [x] | [x] | [x] `practicas/05/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
+| P6 | Cap. 7 — Firm/investment, Tobin's Q | Tobin Q | [ ] | App. K (DYNARE) | [x] | [x] | [x] `practicas/06/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
+| P7 | Cap. 8 — Basic Dynamic General Equilibrium | DGE básico | [ ] | App. L (MATLAB) + App. M (DYNARE) + App. N (DSGE) | [x] | [x] | [x] `practicas/07/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
+| P8 | Cap. 9 — Neoclassical exogenous growth | Solow-Swan | [ ] | App. O (MATLAB) | [x] | [x] | [x] `practicas/08/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
+| P9 | Cap. 10 — Ramsey's optimal growth | Ramsey | [ ] | App. P (DYNARE) | [x] | [x] | [x] `practicas/09/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
 | X1 | Extra Cabello — Optimización lineal/no lineal | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
 | X2 | Extra Cabello — Matemáticas financieras (rentas, amortización) | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
 | X3 | Extra Cabello — SymPy en métodos matemáticos | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -403,7 +403,7 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
   - [x] **Variantes / extensiones para ABP**
   - [x] **Referencias** (capítulo del libro, lecturas adicionales)
 - [ ] Validar la plantilla con un guion de Química Orgánica real (AR) para confirmar paralelismo — **pendiente manual, requiere comparación humana con un guion real, no se puede hacer por código**
-- [~] Aplicar la plantilla a P0, P1, P8 como prueba piloto — P0 hecho (2026-06-22, `practicas/00-introduccion-sistemas-dinamicos/GUION.md`); P1 y P8 pendientes
+- [x] Aplicar la plantilla a P0, P1, P8 como prueba piloto — P0 (2026-06-22), P1 y P8 (2026-06-22, plan de homogeneización pedagógica); P2-P9 también con GUION.md creado
 - [ ] Iterar y aplicar al resto
 
 #### 3.2.2. Sistema de identificación y trazabilidad
