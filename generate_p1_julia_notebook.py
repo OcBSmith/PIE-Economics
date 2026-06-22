@@ -9,21 +9,31 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Política monetaria con regla de Taylor**: sustituir la oferta monetaria fija por una regla $i = i^* + \\phi_\\pi (P - P^*) + \\phi_Y (Y - Y^*)$ y analizar cómo cambia la estabilidad del sistema según $\\phi_\\pi, \\phi_Y$.
 2. **Comparación de métodos numéricos**: simular el mismo shock con RK45, Radau y BDF y comparar tiempos de ejecución y precisión (error respecto al SS analítico).
-3. **Shock combinado**: aplicar un shock monetario expansivo y uno fiscal contractivo simultáneamente para mantener $Y$ constante. ¿Es posible? ¿Qué implicaciones tiene para el policy mix?"""))
+3. **Shock combinado**: aplicar un shock monetario expansivo y uno fiscal contractivo simultáneamente para mantener $Y$ constante. ¿Es posible? ¿Qué implicaciones tiene para el policy mix?"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae a este cuaderno todo el código público del paquete X, para
 # no tener que reescribirlo (es el equivalente Julia de "import X" en
 # Python, pero sin necesidad de poner un alias para usar sus funciones).
 # Pkg.activate("../..") le dice a Julia "usa el entorno (versiones de
@@ -49,11 +59,15 @@ using LinearAlgebra
 using DifferentialEquations    # integración numérica de ODEs (equivalente a scipy.integrate)
 using Interact                 # widgets interactivos (sliders) para Jupyter
 using BenchmarkTools           # medición de rendimiento (Fase III)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Esta celda solo FIJA NÚMEROS (Apéndice D del libro): todavía no calcula
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Esta celda solo FIJA NÚMEROS (Apéndice D del libro): todavía no calcula
 # nada. default_calibration(ISLMParams) devuelve un ISLMParams, un struct
 # (definido en src/models/ISLM.jl): una "ficha" con 8 campos con nombre
 # (theta, psi, beta1, mi, ni, beta0, m0, ypot0), como el dataclass de
@@ -86,11 +100,15 @@ for field in fieldnames(typeof(params))
     println("  ", rpad(name, 10), " | ", rpad(value, 6), " | ", rpad(desc, 50))
 end
 println("="^75)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# steady_state() es una FUNCIÓN: le pasamos los parámetros (params) y nos
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# steady_state() es una FUNCIÓN: le pasamos los parámetros (params) y nos
 # devuelve un diccionario con los valores de equilibrio de largo plazo
 # (Y, P, i, Yd, dP, dY). Por dentro resuelve las condiciones dY/dt = 0,
 # dP/dt = 0 usando las fórmulas analíticas derivadas en la Sección 2 del
@@ -107,14 +125,22 @@ println("  Renta de pleno empleo (Y*) : ", ss["Y"])
 println("  Nivel de precios (P*)      : ", ss["P"])
 println("  Tipo de interés (i*)       : ", round(ss["i"], digits=2), "%")
 println("  Demanda agregada (Yd*)     : ", ss["Yd"])
-"""))
+"""
+    )
+)
 
 # Reemplazar la referencia a scipy en la celda 4
-md_4 = md_cells[4].replace("`scipy.integrate.solve_ivp`", "`DifferentialEquations.jl`").replace("Python", "Julia")
+md_4 = (
+    md_cells[4]
+    .replace("`scipy.integrate.solve_ivp`", "`DifferentialEquations.jl`")
+    .replace("Python", "Julia")
+)
 nb.cells.append(nbf.v4.new_markdown_cell(md_4))
 
 # Mostramos el system_dynamics en Julia como se hacía en Python con def
-nb.cells.append(nbf.v4.new_code_cell("""# Esta celda DEFINE (no ejecuta) la función custom_system_dynamics!(), el
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Esta celda DEFINE (no ejecuta) la función custom_system_dynamics!(), el
 # "motor" del modelo IS-LM: dado un punto (Y, P) y unos parámetros, calcula
 # [dY/dt, dP/dt] y los GUARDA en el vector du (la "!" en el nombre indica
 # que MODIFICA su primer argumento en vez de devolver un resultado nuevo,
@@ -139,11 +165,15 @@ function custom_system_dynamics!(du, u, p, t)
     du[1] = params.ni * (Y_d - Y)
     du[2] = params.mi * (Y - params.ypot0)
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @manipulate es el equivalente en Julia de interact() de Python: crea
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @manipulate es el equivalente en Julia de interact() de Python: crea
 # sliders y redibuja automáticamente cada vez que los mueves. La sintaxis
 # "for var in slider(...)" define una variable controlada por un slider.
 # El código dentro del bloque @manipulate se ejecuta completo cada vez que
@@ -229,11 +259,15 @@ nb.cells.append(nbf.v4.new_code_cell("""# @manipulate es el equivalente en Julia
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
          plot_title="Respuesta del modelo IS-LM", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Verificamos que el estado estacionario calculado numéricamente coincide con
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Verificamos que el estado estacionario calculado numéricamente coincide con
 # el oráculo del Apéndice D (MATLAB) recogido en oraculo.md.
 # @assert isapprox compara dos valores y SOLO lanza un error si la
 # diferencia supera la tolerancia atol. No usamos "==" porque la aritmética
@@ -248,7 +282,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# Verificamos que el estado estacionario
 @assert isapprox(ss["dP"], 0.0; atol=1e-6)
 @assert isapprox(ss["dY"], 0.0; atol=1e-6)
 println("OK: coincide con el oráculo MATLAB (Apéndice D).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
@@ -256,14 +292,18 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 8. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
 # tiempo mínimo/medio de ejecución y la memoria asignada. El $ delante de
 # las variables evita que BenchmarkTools las trate como globales, lo que
 # falsearía la medición de rendimiento (Fase III del proyecto). Al ejecutar
 # veremos cuántos microsegundos tarda Julia en simular 50 periodos del
 # modelo IS-LM.
 @btime simulate_shock($params, [2000.0, 81.0], (0.0, 50.0), collect(range(0.0, 50.0, length=500)))
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {

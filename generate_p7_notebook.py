@@ -36,11 +36,15 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Shock fiscal permanente**: introducir un aumento del gasto público financiado con impuestos lump-sum y analizar el crowding-out de la inversión.
 2. **DGE estocástico**: simular 1000 trayectorias con shocks aleatorios de PTF y calcular momentos (desviaciones estándar, correlaciones) para comparar con los hechos estilizados del ciclo económico.
-3. **Extensión con ocio endógeno**: añadir oferta de trabajo elástica al DGE (fusionar P4 y P7) y analizar cómo cambia la respuesta a un shock tecnológico."""))
+3. **Extensión con ocio endógeno**: añadir oferta de trabajo elástica al DGE (fusionar P4 y P7) y analizar cómo cambia la respuesta a un shock tecnológico."""
+    )
+)
 
 nb.cells.append(
     nbf.v4.new_code_cell(
@@ -235,9 +239,7 @@ interact(
 )
 
 # 5a. ORACLE VERIFICATION TABLE AND STEADY-STATE ASSERT
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 2.1 Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2.1 Verificación frente al oráculo
 
 Comparamos contra los valores reportados en el libro (Tabla 8.2) y reproducidos por el
 código MATLAB/DYNARE del Apéndice N, recogidos en `oraculo.md`:
@@ -274,9 +276,7 @@ código MATLAB/DYNARE del Apéndice N, recogidos en `oraculo.md`:
 
 Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
 debería salir en cada celda siguiente con el que realmente sale.
-"""
-    )
-)
+"""))
 
 nb.cells.append(
     nbf.v4.new_code_cell(

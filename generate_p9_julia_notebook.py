@@ -9,21 +9,31 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Comparación Solow-Swan vs Ramsey**: simular ambos modelos con la misma calibración ($s$ de Solow ajustado para igualar el $k^*$ de Ramsey) y comparar las dinámicas de transición ante el mismo shock de PTF.
 2. **Ramsey estocástico**: introducir shocks aleatorios de PTF y resolver trayectorias óptimas con certainty equivalence, comparando con el caso determinista.
-3. **Extensión con gobierno**: añadir gasto público financiado con impuestos distorsionadores en el modelo de Ramsey y analizar la pérdida de bienestar (Harberger triangle dinámico)."""))
+3. **Extensión con gobierno**: añadir gasto público financiado con impuestos distorsionadores en el modelo de Ramsey y analizar la pérdida de bienestar (Harberger triangle dinámico)."""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
 # (Project.toml) en vez del global. Pkg.instantiate() instala lo que falte.
 # "import Plots: mm" trae solo mm (unidad de margen) sin exportar el resto.
 # default() fija estilo de grid consistente con los notebooks Python.
@@ -42,11 +52,15 @@ using LinearAlgebra      # álgebra lineal: eigvals, inv, etc.
 using NLsolve             # resolvedor no lineal (shooting, equivalente a fsolve de Python)
 using Interact            # @manipulate para sliders interactivos
 using BenchmarkTools      # @btime para medir rendimiento (Fase III)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: calcula el estado estacionario del modelo de Ramsey (K*, C*, Y*, I*)
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: calcula el estado estacionario del modelo de Ramsey (K*, C*, Y*, I*)
 # usando la calibración base (alpha=0.35, beta=0.97, delta=0.06, n=0.02,
 # A=1.0). POR QUÉ: el SS es el punto fijo del sistema dinámico de Ramsey; si
 # está mal, todas las linealizaciones y simulaciones siguientes errarían.
@@ -62,11 +76,15 @@ println("  Capital por trabajador efectivo (K*) : ", round(ss["K"], digits=4))
 println("  Consumo (C*)                         : ", round(ss["C"], digits=4))
 println("  Producción (Y*)                      : ", round(ss["Y"], digits=4))
 println("  Inversión (I*)                       : ", round(ss["I"], digits=4))
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: calcula la matriz de transición J (Jacobiano log-linealizado del
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: calcula la matriz de transición J (Jacobiano log-linealizado del
 # sistema Ramsey) y extrae sus autovalores (lambda_1, lambda_2) y la
 # pendiente de salto theta. POR QUÉ: los autovalores determinan la estabilidad
 # del sistema (punto de silla si uno es estable |mu|<1 y otro inestable).
@@ -78,7 +96,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: calcula la matriz de transición
 println("Autovalores de la matriz de transición (Blanchard-Kahn):")
 J, lambda_1, lambda_2, theta = compute_ramsey_transition_matrix(params_base)
 println(eigvals(J))
-"""))
+"""
+    )
+)
 
 # Oracle table and SS/eigenvalue assert
 nb.cells.append(nbf.v4.new_markdown_cell("""## 2.1 Verificacion frente al oraculo
@@ -113,7 +133,9 @@ codigo DYNARE del Apendice P, recogidos en `oraculo.md`:
 | Consistencia lineal vs no lineal | k y c coinciden con atol 5e-2, rtol 1e-2 |
 """))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica el estado estacionario y los autovalores del modelo Ramsey
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: verifica el estado estacionario y los autovalores del modelo Ramsey
 # contra el oráculo (Tabla 10.2, Apéndice P): K*=7.9537, Y*=2.0663,
 # C*=1.4300, I*=0.6363, R*=0.0909, lambda_1=-0.0907, lambda_2=0.1115,
 # theta=0.5751. POR QUÉ: SS y autovalores determinan TODA la dinámica.
@@ -136,11 +158,15 @@ println("OK: estado estacionario coincide con el oraculo (Apendice P).")
 @assert isapprox(lambda_2, 0.1115; atol=1e-4)
 @assert isapprox(theta, 0.5751; atol=1e-4)
 println("OK: autovalores y theta coinciden con el oraculo (Apendice P).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: simula un shock PERMANENTE de TFP (A) o paciencia (beta) en t=5 en
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: simula un shock PERMANENTE de TFP (A) o paciencia (beta) en t=5 en
 # el modelo de Ramsey usando Blanchard-Khan (linealizado) y grafica 4
 # paneles: Y, C, I, K. POR QUÉ: a diferencia de Solow, en Ramsey el ahorro
 # es ENDÓGENO. Un aumento de A eleva la productividad marginal del capital,
@@ -207,11 +233,15 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: simula un shock PERMANENTE de TF
     plot(p1, p2, p3, p4, layout=(2,2), size=(900, 600),
          plot_title="Ajuste Dinámico frente a Shock Permanente (Ramsey)", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: compara la solución linealizada de Blanchard-Khan con la solución no
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: compara la solución linealizada de Blanchard-Khan con la solución no
 # lineal exacta (shooting/NLsolve) para un shock permanente de TFP, mostrando
 # el error relativo máximo en C y K. POR QUÉ: BK usa aproximación de primer
 # orden; es muy precisa para A=1.05 (~5%) pero acumula error para A=1.30
@@ -267,10 +297,14 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: compara la solución linealizada
     plot(p1, p2, layout=(1,2), size=(800, 350),
          plot_title="Comparación Lineal vs No Lineal (Shock A=$(A_shock))", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 # Linear vs nonlinear consistency and saddle path assert
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica TRES propiedades del oráculo (Apéndice P): 1) consistencia
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: verifica TRES propiedades del oráculo (Apéndice P): 1) consistencia
 # BK vs no lineal (atol=5e-2, rtol=1e-2); 2) K en t_shock es predeterminado
 # (= K* inicial); 3) C salta al ALZA en t_shock para un shock expansivo de
 # TFP (verificación cualitativa de la senda estable). POR QUÉ: un modelo de
@@ -322,7 +356,9 @@ println("OK: k en t_shock = ", round(res_nl["K"][t_shock+1], digits=4), " = k* i
 c_hat_shock_nl = log(res_nl["C"][t_shock+1] / ss["C"])
 @assert c_hat_shock_nl > 0.0 "c debe saltar al alza en t_shock para un shock de TFP positivo"
 println("OK: c salta al alza en t_shock (c_hat = ", round(c_hat_shock_nl, digits=4), " > 0).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
@@ -330,7 +366,9 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: mide el tiempo de ejecución y la memoria asignada de los dos
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: mide el tiempo de ejecución y la memoria asignada de los dos
 # resolvedores de Ramsey (no lineal/shooting vs Blanchard-Khan) usando
 # BenchmarkTools.@btime. POR QUÉ: Fase III del proyecto — cuantifica la
 # ventaja de velocidad de BK (solo álgebra matricial) frente al shooting no
@@ -349,7 +387,9 @@ println("Benchmark NLsolve (Shooting No Lineal):")
 
 println("Benchmark Blanchard-Kahn (Lineal):")
 @btime solve_ramsey_linearized($params_base, $ss["K"], 1.05, $params_base.n, $params_base.beta, 50, 1)
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {

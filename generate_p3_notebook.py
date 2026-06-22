@@ -154,9 +154,7 @@ A continuación, ejecutaremos ambos métodos con la calibración base y un salar
 )
 
 # 6.1 ORACLE TABLE (VERIFICACIÓN FRENTE AL ORÁCULO)
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 2.1 Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2.1 Verificación frente al oráculo
 
 Comparamos contra los valores reportados en el libro y reproducidos por el
 código MATLAB del Apéndice G (`referencia/consumption.m`), recogidos en
@@ -173,12 +171,12 @@ código MATLAB del Apéndice G (`referencia/consumption.m`), recogidos en
 | $\beta=0.99$ — pendiente de $C$ | Positiva ($\beta(1+R)>1$) |
 
 Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
-debería salir en cada celda siguiente con el que realmente sale."""
-    )
-)
+debería salir en cada celda siguiente con el que realmente sale."""))
 
 # 7. CÓDIGO DE EJECUCIÓN DE AMBOS SOLVERS
-nb.cells.append(nbf.v4.new_code_cell(r"""# Esta celda RESUELVE el problema del consumidor por DOS métodos distintos
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Esta celda RESUELVE el problema del consumidor por DOS métodos distintos
 # y compara los resultados. generate_income_profile("constant", T) crea un
 # array de T=30 periodos con salario W=10 en cada uno.
 # solve_foc_fsolve() plantea el sistema de T ecuaciones de Euler y la
@@ -217,10 +215,14 @@ if diferencia_max < 1e-5:
     print("✅ ¡Los solucionadores son equivalentes numéricamente!")
 else:
     print("❌ Hay diferencias entre solucionadores.")
-"""))
+"""
+    )
+)
 
 # ASSERT CELL: VERIFICACIÓN TERMINAL Y EQUIVALENCIA
-nb.cells.append(nbf.v4.new_code_cell(r"""# Verificamos la condición terminal (B_{T-1}=0) y la equivalencia entre
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificamos la condición terminal (B_{T-1}=0) y la equivalencia entre
 # solvers contra el oráculo del Apéndice G (MATLAB) recogido en oraculo.md.
 # np.testing.assert_allclose compara dos valores y SOLO lanza un error si la
 # diferencia supera la tolerancia. No usamos "==" porque la aritmética con
@@ -237,7 +239,9 @@ np.testing.assert_allclose(res_cvxpy['B'][-1], 0.0, atol=1e-6)
 np.testing.assert_allclose(res_fsolve['C'], res_cvxpy['C'], rtol=1e-4, atol=1e-4)
 np.testing.assert_allclose(res_fsolve['B'], res_cvxpy['B'], rtol=1e-4, atol=1e-4)
 print("OK: coincide con el oráculo MATLAB (Apéndice G).")
-"""))
+"""
+    )
+)
 
 # 8. DETRÁS DE LA ESCENA (CÓDIGO FOC DETALLADO)
 nb.cells.append(
@@ -355,14 +359,18 @@ interact(
 
 # 4.1 VERIFICACIÓN DE PERFILES DE INGRESO Y SENSIBILIDAD
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 4.1 Verificación de perfiles de ingreso y sensibilidad
+    nbf.v4.new_markdown_cell(
+        r"""## 4.1 Verificación de perfiles de ingreso y sensibilidad
 
 Comprobamos contra el oráculo los resultados cualitativos y cuantitativos
 para cada perfil de ingreso y el caso de sensibilidad $\beta=0.99$ (Apéndice G,
-`oraculo.md`).""")
+`oraculo.md`)."""
+    )
 )
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# Verificamos los casos adicionales del oráculo (Apéndice G):
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificamos los casos adicionales del oráculo (Apéndice G):
 
 # --- Perfil creciente: endeudamiento juvenil y pendiente negativa del consumo ---
 W_inc = generate_income_profile("increasing", params.T)
@@ -407,14 +415,20 @@ print("  beta=0.99: C[0]=", round(res_beta99['C'][0], 4),
       "(pendiente positiva) OK")
 
 print("OK: todos los perfiles coinciden con el oráculo MATLAB (Apéndice G).")
-"""))
+"""
+    )
+)
 
 # 11. BUENAS PRÁCTICAS
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Elección de jubilación endógena**: permitir que el consumidor elija $t^*$ (edad de jubilación) además del perfil de consumo. Plantear como problema de optimización con variable discreta.
 2. **Shock de renta transitorio vs permanente**: comparar la respuesta del consumo ante un shock que afecta a UN solo periodo vs uno que afecta a TODOS los periodos, verificando la teoría de la renta permanente.
-3. **Restricción de liquidez**: añadir la restricción $B_t \\ge 0$ (no se permite endeudamiento) y comparar el perfil de consumo resultante con el caso irrestricto."""))
+3. **Restricción de liquidez**: añadir la restricción $B_t \\ge 0$ (no se permite endeudamiento) y comparar el perfil de consumo resultante con el caso irrestricto."""
+    )
+)
 
 nb.cells.append(
     nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio

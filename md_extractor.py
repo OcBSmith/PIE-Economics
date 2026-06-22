@@ -29,13 +29,13 @@ def get_markdown_cells(notebook_path):
     Reads a Jupyter Notebook and returns a list of all markdown cells' source text,
     adaptado al texto y terminología de la versión Julia.
     """
-    with open(notebook_path, 'r', encoding='utf-8') as f:
+    with open(notebook_path, "r", encoding="utf-8") as f:
         nb = json.load(f)
 
     md_cells = []
-    for cell in nb.get('cells', []):
-        if cell.get('cell_type') == 'markdown':
-            source = "".join(cell.get('source', []))
+    for cell in nb.get("cells", []):
+        if cell.get("cell_type") == "markdown":
+            source = "".join(cell.get("source", []))
             # Adaptación del título: solo en la primera línea, para no
             # pegar " (Julia)" al final de objetivos u otro contenido que
             # pueda venir en la misma celda que el título.

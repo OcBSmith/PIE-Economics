@@ -45,17 +45,21 @@ nb.cells.append(
 
 # 2. CONFIGURACIÓN DEL ENTORNO
 nb.cells.append(
-    nbf.v4.new_code_cell(r"""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+    nbf.v4.new_code_cell(
+        r"""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-""")
+"""
+    )
 )
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""# "using X" trae a este cuaderno todo el código público del paquete X, para
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# "using X" trae a este cuaderno todo el código público del paquete X, para
 # no tener que reescribirlo (es el equivalente Julia de "import X" en
 # Python, pero sin necesidad de poner un alias para usar sus funciones).
 # Pkg.activate("../..") le dice a Julia "usa el entorno (versiones de
@@ -81,7 +85,9 @@ import Plots: mm          # Para usar unidades de margen (p.ej. top_margin=10mm)
 default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
 using BenchmarkTools
-"""))
+"""
+    )
+)
 
 # 4. INTRODUCCIÓN TEÓRICA
 nb.cells.append(nbf.v4.new_markdown_cell(r"""## 1. Teoría
@@ -113,7 +119,9 @@ nb.cells.append(
     )
 )
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# Esta celda solo FIJA NÚMEROS (Tabla 1.1 y 1.2 del libro): todavía no
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Esta celda solo FIJA NÚMEROS (Tabla 1.1 y 1.2 del libro): todavía no
 # calcula nada. ArmsRaceParams es un struct (definido en
 # src/models/ArmsRace.jl): una "ficha" con 6 casillas con nombre, igual que
 # el dataclass de Python, pero en Julia los structs normales se construyen
@@ -142,7 +150,9 @@ z_initial = [1.0, 1.0]
 # es una comprobación visual de que no hay errores de tecleo.
 (alpha=params_global.alpha, beta=params_global.beta, gamma=params_global.gamma,
  delta=params_global.delta, theta=params_global.theta, eta=params_global.eta)
-"""))
+"""
+    )
+)
 
 # 6. RESOLUCIÓN
 nb.cells.append(
@@ -150,7 +160,9 @@ nb.cells.append(
 """)
 )
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# steady_state() es una FUNCIÓN: le pasamos dos argumentos entre paréntesis
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# steady_state() es una FUNCIÓN: le pasamos dos argumentos entre paréntesis
 # y nos devuelve un resultado que guardamos con "=" en x_bar. Por dentro
 # resuelve x_bar = -A^{-1} B z (ec. 1.14): el punto donde Delta x1 = Delta
 # x2 = 0, es decir, donde ninguno de los dos países cambia ya su stock de
@@ -177,7 +189,9 @@ println("Moduli |lambda + 1|                   = ", round.(abs.(sort(lambdas) .+
 println("Punto de silla                        = ", is_saddle_path(params_global))
 # Resultado esperado con esta calibración: SS en (4, 4), autovalores
 # negativos con módulo < 1 (estabilidad global) y punto de silla = false.
-"""))
+"""
+    )
+)
 
 # 7. VERIFICACIÓN
 nb.cells.append(nbf.v4.new_markdown_cell(r"""## 4. Verificación frente al oráculo
@@ -199,7 +213,9 @@ Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
 debería salir en cada celda siguiente con el que realmente sale.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# isapprox(a, b; atol=...) compara dos valores (o dos arrays, elemento a
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# isapprox(a, b; atol=...) compara dos valores (o dos arrays, elemento a
 # elemento) y da `true` solo si la diferencia es menor que la tolerancia
 # atol. No usamos "==" porque el ordenador casi nunca da resultados
 # EXACTAMENTE iguales en aritmética con decimales (errores de redondeo
@@ -212,7 +228,9 @@ nb.cells.append(nbf.v4.new_code_cell(r"""# isapprox(a, b; atol=...) compara dos 
 @assert isapprox(x_bar, [4.0, 4.0]; atol=1e-6)
 @assert isapprox(sort(lambdas), [-0.75, -0.25]; atol=1e-6)
 println("OK: coincide con el oráculo MATLAB (Apéndice B).")
-"""))
+"""
+    )
+)
 
 # 8. SHOCK
 nb.cells.append(nbf.v4.new_markdown_cell(r"""## 5. Análisis de shock (Sección 1.5)
@@ -221,7 +239,9 @@ Aumentamos la variable exógena $z_1$ de 1 a 2 y observamos la transición
 hacia el nuevo estado estacionario.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# A partir de aquí cambiamos la variable exógena: el país 1 pasa de z1=1 a
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# A partir de aquí cambiamos la variable exógena: el país 1 pasa de z1=1 a
 # z1=2 (más hostilidad/gasto autónomo). simulate() reproduce la recursión
 # periodo a periodo x[t+1] = x[t] + (A*x[t] + B*z_t), empezando en el SS
 # anterior y usando z_final desde el periodo 2 (el 4º argumento, shock_period,
@@ -256,7 +276,9 @@ p2 = plot(t, x2_path,
 plot(p1, p2, layout=(1, 2), size=(800, 400),
      plot_title="Respuesta dinámica a un aumento de z1 (1 -> 2)",
      top_margin=10mm)
-"""))
+"""
+    )
+)
 
 # 9. DIAGRAMA DE FASES
 nb.cells.append(
@@ -443,7 +465,8 @@ falta. Este enfoque es equivalente pedagógicamente y funciona en cualquier ento
 """)
 )
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# Análisis de sensibilidad: 4 escenarios de shock sobre z1
+nb.cells.append(
+    nbf.v4.new_code_cell(r"""# Análisis de sensibilidad: 4 escenarios de shock sobre z1
 # (equivalente al slider interactivo de Python, sin necesitar WebIO — ver
 # celda markdown anterior para el motivo). En vez de mover un slider,
 # llamamos a simulate() una vez por cada z1_final del array z1_scenarios y
@@ -473,7 +496,8 @@ end
 plot(p_a, p_b, layout=(1,2), size=(900,400),
      plot_title="Sensibilidad al shock de z1",
      plot_titlefontsize=11, top_margin=10mm)
-"""))
+""")
+)
 
 # 13. BUENAS PRÁCTICAS
 nb.cells.append(
@@ -507,10 +531,14 @@ extensiones para ABP.
 """))
 
 # 7. BENCHMARK
-nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
-Evaluamos la velocidad de simulación de las trayectorias usando `BenchmarkTools.jl`."""))
+nb.cells.append(
+    nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
+Evaluamos la velocidad de simulación de las trayectorias usando `BenchmarkTools.jl`.""")
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation para un sistema 2D dinámico genérico (no es el modelo
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Benchmark simulation para un sistema 2D dinámico genérico (no es el modelo
 # de Richardson, solo una recursión lineal x[:,t+1] = A*x[:,t] del mismo
 # tamaño) — el objetivo es medir cuánto tarda Julia en simular una
 # trayectoria de este tipo, para comparar con el tiempo equivalente en
@@ -538,7 +566,9 @@ end
 # las variables evita que BenchmarkTools las trate como globales, lo que
 # falsearía la medición de rendimiento.
 @btime simular_sistema($A_bench, $x0_bench, $T_bench)
-"""))
+"""
+    )
+)
 
 # METADATOS DEL CUADERNO (KERNEL DE JULIA)
 nb.metadata = {

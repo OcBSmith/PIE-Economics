@@ -65,11 +65,15 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Oferta de trabajo elástica con salario endógeno**: introducir una función de producción donde el salario depende de $L$ agregado (equilibrio general parcial) y analizar la optimalidad.
 2. **Jubilación endógena con ocio**: permitir que el consumidor elija la edad de jubilación y comparar con una edad fija.
-3. **Tributación progresiva**: introducir un IRPF progresivo (tramos) en lugar de un impuesto proporcional y analizar el efecto sobre la oferta de trabajo en distintos puntos de la distribución salarial."""))
+3. **Tributación progresiva**: introducir un IRPF progresivo (tramos) en lugar de un impuesto proporcional y analizar el efecto sobre la oferta de trabajo en distintos puntos de la distribución salarial."""
+    )
+)
 
 nb.cells.append(
     nbf.v4.new_code_cell(
@@ -182,7 +186,9 @@ Para resolver este sistema, implementamos dos solvers:
 """))
 
 # 7. CÓDIGO DE EJECUCIÓN COMPARATIVA
-nb.cells.append(nbf.v4.new_code_cell(r"""# np.full(params.T, 30.0) crea un VECTOR de longitud params.T donde TODAS
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# np.full(params.T, 30.0) crea un VECTOR de longitud params.T donde TODAS
 # las posiciones valen 30.0: un salario constante de W=30 en cada periodo.
 # Es más legible que un bucle "for t in range(T): W[t]=30".
 W_base = np.full(params.T, 30.0)
@@ -224,12 +230,12 @@ if diff_C < 1e-4 and diff_L < 1e-4:
     print("✅ ¡Los resolvedores numéricos son perfectamente equivalentes!")
 else:
     print("❌ Discrepancia detectada entre solucionadores.")
-"""))
+"""
+    )
+)
 
 # 8. ORÁCULO: VERIFICACIÓN DE RESULTADOS BASE
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 3. Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3. Verificación frente al oráculo
 
 Comparamos contra los valores reportados en el libro (Capítulo 5) y
 reproducidos por el código MATLAB del Apéndice I, recogidos en
@@ -253,9 +259,7 @@ reproducidos por el código MATLAB del Apéndice I, recogidos en
 
 Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
 debería salir en cada celda siguiente con el que realmente sale.
-"""
-    )
-)
+"""))
 
 # 9. CELDA DE ASERCIÓN: CONDICIÓN TERMINAL, EQUIVALENCIA Y COTAS
 nb.cells.append(

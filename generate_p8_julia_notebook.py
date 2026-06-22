@@ -9,21 +9,31 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Contabilidad del crecimiento (growth accounting)**: descomponer el crecimiento observado de una economía real (ej. España 1980-2020) en contribuciones del capital, trabajo y PTF usando la Cobb-Douglas calibrada.
 2. **Convergencia $\\beta$ y $\\sigma$**: simular varias economías con distintos $k_0$ iniciales y verificar la convergencia condicional predicha por Solow-Swan.
-3. **Extensión con capital humano**: añadir acumulación de capital humano $h_t$ al modelo (Mankiw-Romer-Weil) y analizar cómo cambia la velocidad de convergencia y la Regla de Oro."""))
+3. **Extensión con capital humano**: añadir acumulación de capital humano $h_t$ al modelo (Mankiw-Romer-Weil) y analizar cómo cambia la velocidad de convergencia y la Regla de Oro."""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
 # (Project.toml) en vez del global. Pkg.instantiate() instala lo que falte.
 # "import Plots: mm" trae solo mm (unidad de margen) sin exportar el resto.
 # default() fija estilo de grid consistente con los notebooks Python.
@@ -41,11 +51,15 @@ default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la vers
 using LinearAlgebra
 using Interact            # @manipulate para sliders interactivos
 using BenchmarkTools      # @btime para medir rendimiento (Fase III)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: calcula el estado estacionario del modelo de Solow-Swan (k*, y*, c*,
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: calcula el estado estacionario del modelo de Solow-Swan (k*, y*, c*,
 # i*) usando la calibración base (alpha=0.35, s=0.20, A=1.0). POR QUÉ: el SS
 # es el punto fijo de la dinámica de acumulación; si está mal, todas las
 # simulaciones siguientes errarían. QUÉ VERÁS: 4 valores impresos que deben
@@ -60,10 +74,14 @@ println("  Capital por trabajador (k*)   : ", round(ss["k"], digits=4))
 println("  Producción por trabajador (y*): ", round(ss["y"], digits=4))
 println("  Consumo por trabajador (c*)   : ", round(ss["c"], digits=4))
 println("  Inversión por trabajador (i*) : ", round(ss["i"], digits=4))
-"""))
+"""
+    )
+)
 
 # SS assert against oracle
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica que compute_solow_steady_state() devuelve los valores del
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: verifica que compute_solow_steady_state() devuelve los valores del
 # oráculo (Tabla 9.3). POR QUÉ: si el SS base está mal, todas las simulaciones
 # siguientes errarían. QUÉ VERÁS: "OK: ..." o AssertionError.
 # isapprox(a, b; atol=...) compara con tolerancia. @assert es control
@@ -76,11 +94,15 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica que compute_solow_stead
 @assert isapprox(ss["c"], 1.3103; atol=1e-4)
 @assert isapprox(ss["i"], 0.3276; atol=1e-4)
 println("OK: estado estacionario coincide con el oraculo (Apendice O).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: simula un shock estructural PERMANENTE en t=5 (ahorro s, demografía n
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: simula un shock estructural PERMANENTE en t=5 (ahorro s, demografía n
 # o TFP A) en Solow-Swan y grafica 4 paneles: k, y, c, gy. POR QUÉ: el modelo
 # de Solow predice que un aumento de s sacrifica consumo hoy (cae en t=5)
 # pero eleva k, y y c a largo plazo. La tasa de crecimiento gy salta en el
@@ -157,7 +179,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: simula un shock estructural PERM
     plot(p1, p2, p3, p4, layout=(2,2), size=(900, 600),
          plot_title="Ajuste hacia el Nuevo Estado Estacionario", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 # Oracle table
 nb.cells.append(nbf.v4.new_markdown_cell("""## 2.1 Verificacion frente al oraculo
@@ -195,7 +219,9 @@ codigo MATLAB del Apendice O, recogidos en `oraculo.md`:
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: dibuja la curva c_bar(s) — consumo de estado estacionario en función
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: dibuja la curva c_bar(s) — consumo de estado estacionario en función
 # de la tasa de ahorro — marca el punto actual y el máximo (Regla de Oro
 # en s_gold = alpha = 0.35). POR QUÉ: muestra que existe una tasa de ahorro
 # óptima que maximiza el consumo de largo plazo. A la izquierda (s < alpha,
@@ -250,10 +276,14 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: dibuja la curva c_bar(s) — con
 
     plot(p1, size=(750, 500), legend=:bottom, legendfontsize=7)
 end
-"""))
+"""
+    )
+)
 
 # Golden Rule assert
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica analíticamente la Regla de Oro: s_gold = alpha = 0.35, y c*
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: verifica analíticamente la Regla de Oro: s_gold = alpha = 0.35, y c*
 # en s_gold > c* en s=0.20 (infra-acumulación) y > c* en s=0.50 (sobre-
 # acumulación). POR QUÉ: la Regla de Oro es un resultado analítico exacto
 # (PMgK = delta + n); si no se cumpliera, habría un bug en el modelo.
@@ -273,7 +303,9 @@ println("OK: s_gold = alpha = ", round(alpha_gold, digits=2))
 @assert ss_gold["c"] > ss_high["c"] "c_gold=$(ss_gold["c"]) deberia ser > c_s050=$(ss_high["c"])"
 println("OK: c_gold=", round(ss_gold["c"], digits=4), " > c_s020=", round(ss_low["c"], digits=4),
         " y c_gold > c_s050=", round(ss_high["c"], digits=4), " (oraculo, Apendice O).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
@@ -281,7 +313,9 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: mide el tiempo de ejecución y la memoria asignada de simulate_solow_swan
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: mide el tiempo de ejecución y la memoria asignada de simulate_solow_swan
 # usando BenchmarkTools.@btime. POR QUÉ: Fase III del proyecto — cuantifica
 # la velocidad de Julia en la simulación de Solow-Swan. QUÉ VERÁS: tiempo
 # mínimo en micro/milisegundos y bytes asignados para 100 periodos.
@@ -291,7 +325,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: mide el tiempo de ejecución y l
 T_bench = 100
 s_path = fill(0.20, T_bench); n_path = fill(0.02, T_bench); A_path = fill(1.0, T_bench)
 @btime simulate_solow_swan($params_base, $ss["k"], $s_path, $n_path, $A_path, $T_bench)
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {

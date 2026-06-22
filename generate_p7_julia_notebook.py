@@ -3,27 +3,39 @@ import os
 import json
 import md_extractor
 
-md_cells = md_extractor.get_markdown_cells(r"practicas\07-equilibrio-general-dinamico\python.ipynb")
+md_cells = md_extractor.get_markdown_cells(
+    r"practicas\07-equilibrio-general-dinamico\python.ipynb"
+)
 nb = nbf.v4.new_notebook()
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Shock fiscal permanente**: introducir un aumento del gasto público financiado con impuestos lump-sum y analizar el crowding-out de la inversión.
 2. **DGE estocástico**: simular 1000 trayectorias con shocks aleatorios de PTF y calcular momentos (desviaciones estándar, correlaciones) para comparar con los hechos estilizados del ciclo económico.
-3. **Extensión con ocio endógeno**: añadir oferta de trabajo elástica al DGE (fusionar P4 y P7) y analizar cómo cambia la respuesta a un shock tecnológico."""))
+3. **Extensión con ocio endógeno**: añadir oferta de trabajo elástica al DGE (fusionar P4 y P7) y analizar cómo cambia la respuesta a un shock tecnológico."""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
 # (Project.toml/Manifest.toml) en vez del global de la máquina — así todo el
 # mundo ejecuta con las mismas versiones. Pkg.instantiate() instala lo que falte.
 # "import Plots: mm" es selectivo: solo trae "mm" (unidad de margen) en vez de
@@ -45,11 +57,15 @@ using LinearAlgebra      # álgebra lineal: eigvals, inv, etc.
 using NLsolve             # resolvedor no lineal (shooting)
 using Interact            # @manipulate para sliders interactivos (equivalente a ipywidgets)
 using BenchmarkTools      # @btime para medir rendimiento (Fase III)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: calcula el estado estacionario del modelo DGE (K*, C*, Y*, I*) usando
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: calcula el estado estacionario del modelo DGE (K*, C*, Y*, I*) usando
 # la calibración base (alpha=0.35, beta=0.96, delta=0.06, A=1.0, rho=0.80).
 # POR QUÉ: el SS es el punto de partida de TODAS las simulaciones y
 # linealizaciones; si está mal, todo lo demás también. Es un punto fijo del
@@ -66,10 +82,14 @@ println("  Capital (K*)   : ", round(ss["K"], digits=4))
 println("  Consumo (C*)   : ", round(ss["C"], digits=4))
 println("  Producción (Y*): ", round(ss["Y"], digits=4))
 println("  Inversión (I*) : ", round(ss["I"], digits=4))
-"""))
+"""
+    )
+)
 
 # SS assert against oracle
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica que compute_steady_state() devuelve los valores exactos del
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: verifica que compute_steady_state() devuelve los valores exactos del
 # oráculo (Tabla 8.2 del libro). POR QUÉ: si el SS base está mal, TODAS las
 # simulaciones siguientes partirían de un punto erróneo — este assert lo
 # detecta ANTES de seguir. QUÉ VERÁS: "OK: ..." o AssertionError que detiene
@@ -83,11 +103,15 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica que compute_steady_stat
 @assert isapprox(ss["I"], 0.401916; atol=1e-6)
 @assert isapprox(ss["R"], 0.10166666666666667; atol=1e-6)
 println("OK: estado estacionario coincide con el oráculo (Apéndice N).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: simula un shock temporal de TFP (épsilon en t=1, decae con rho) y
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: simula un shock temporal de TFP (épsilon en t=1, decae con rho) y
 # grafica 4 paneles (Y, C, I, K) con líneas de SS y momento del shock.
 # POR QUÉ (intuición económica): un shock de productividad aumenta Y, el
 # consumidor anticipa mayor renta futura y eleva C YA (C salta por ser
@@ -162,7 +186,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: simula un shock temporal de TFP 
     plot(p1, p2, p3, p4, layout=(2,2), size=(900, 600),
          plot_title="Ajuste Dinámico frente a Shock TFP (No Lineal)", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 # Oracle table
 nb.cells.append(nbf.v4.new_markdown_cell("""## 2.1 Verificación frente al oraculo
@@ -203,7 +229,9 @@ codigo MATLAB/DYNARE del Apendice N, recogidos en `oraculo.md`:
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: compara la solución linealizada de Blanchard-Khan (solve_blanchard_khan)
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: compara la solución linealizada de Blanchard-Khan (solve_blanchard_khan)
 # con la solución no lineal exacta (solve_nonlinear_simulation) para un shock
 # de TFP, mostrando el error relativo máximo. POR QUÉ: BK usa una
 # aproximación de primer orden alrededor del SS que es muy buena para shocks
@@ -260,10 +288,14 @@ nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: compara la solución linealizada
 
     plot(p1, p2, layout=(1,2), size=(900, 400), top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 # BK eigenvalues and consistency asserts
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica TRES propiedades del oráculo (Apéndice N): 1) autovalores de
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: verifica TRES propiedades del oráculo (Apéndice N): 1) autovalores de
 # la matriz J (estable mu_s≈0.904, inestable mu_u≈1.152) que confirman
 # PUNTO DE SILLA; 2) consistencia BK vs no lineal (rtol=1e-2); 3) convergencia
 # al SS inicial tras shock transitorio (tol=1e-3). POR QUÉ: un sistema DGE
@@ -328,7 +360,9 @@ println("OK: soluciones BK y no lineal coinciden con rtol=1e-2 (oraculo).")
 @assert isapprox(res_nl["K"][end], ss["K"]; atol=1e-3)
 @assert isapprox(res_nl["C"][end], ss["C"]; atol=1e-3)
 println("OK: convergencia de largo plazo al SS inicial (tol 1e-3, oraculo).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
@@ -336,7 +370,9 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: mide el tiempo de ejecución y la memoria asignada de los dos
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# QUÉ: mide el tiempo de ejecución y la memoria asignada de los dos
 # resolvedores (no lineal vs Blanchard-Khan) usando BenchmarkTools.@btime.
 # POR QUÉ: Fase III del proyecto — cuantifica la ventaja de velocidad de la
 # solución linealizada (BK) frente a la no lineal (NLsolve). QUÉ VERÁS:
@@ -353,7 +389,9 @@ println("Benchmark NLsolve (No Lineal):")
 
 println("Benchmark Blanchard-Kahn (Lineal):")
 @btime solve_blanchard_khan($params_base, $ss["K"], $A_bench, 50)
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {

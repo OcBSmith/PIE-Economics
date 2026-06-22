@@ -3,27 +3,39 @@ import os
 import json
 import md_extractor
 
-md_cells = md_extractor.get_markdown_cells(r"practicas\02-overshooting-dornbusch\python.ipynb")
+md_cells = md_extractor.get_markdown_cells(
+    r"practicas\02-overshooting-dornbusch\python.ipynb"
+)
 nb = nbf.v4.new_notebook()
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Shock fiscal**: simular un aumento del gasto público ($\\beta_0$) y analizar si produce overshooting o undershooting, y por qué.
 2. **Ajuste gradual de expectativas**: modificar la UIP para que las expectativas cambiarias sean adaptativas en vez de racionales (ej. $\\Delta s^e = \\lambda(s^* - s)$) y comparar la dinámica.
-3. **Calibración con datos reales**: calibrar $\\mu$ y $\\nu$ con datos trimestrales de inflación y brecha de producción de una economía real (ej. España 1999-2019) y simular un shock de política monetaria."""))
+3. **Calibración con datos reales**: calibrar $\\mu$ y $\\nu$ con datos trimestrales de inflación y brecha de producción de una economía real (ej. España 1999-2019) y simular un shock de política monetaria."""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae a este cuaderno todo el código público del paquete X, para
 # no tener que reescribirlo. Pkg.activate("../..") usa el entorno del repo
 # (Project.toml/Manifest.toml de la raíz). Pkg.instantiate() instala lo que
 # falte de ese entorno (la primera vez puede tardar; las siguientes es
@@ -43,11 +55,15 @@ default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la vers
 using LinearAlgebra
 using Interact                 # widgets interactivos (sliders) para Jupyter
 using BenchmarkTools           # medición de rendimiento (Fase III)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Esta celda solo FIJA NÚMEROS (Capítulo 3 del libro): todavía no calcula
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Esta celda solo FIJA NÚMEROS (Capítulo 3 del libro): todavía no calcula
 # nada. default_calibration(DornbuschParams) devuelve un DornbuschParams, un
 # struct (definido en src/models/Dornbusch.jl): una "ficha" con 10 campos
 # (psi, theta, beta1, beta2, mi, beta0, m0, ypot0, pstar0, istar0). Usar
@@ -81,11 +97,15 @@ for field in fieldnames(typeof(params_sim))
     println("  ", rpad(name, 10), " | ", rpad(value, 6), " | ", rpad(desc, 50))
 end
 println("="^78)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# steady_state() es una FUNCIÓN: le pasamos los parámetros y nos devuelve un
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# steady_state() es una FUNCIÓN: le pasamos los parámetros y nos devuelve un
 # diccionario con los valores de equilibrio de largo plazo (p, s, i, yd, dp,
 # ds). Por dentro resuelve Delta_p=0, Delta_s=0 usando las fórmulas
 # analíticas: p* = m - psi*ypot + theta*istar, s* = m - beta0/beta1 +
@@ -98,11 +118,15 @@ println("VALORES DE EQUILIBRIO DE LARGO PLAZO:")
 println("  Precios nacionales (p*)    : ", ss_init["p"])
 println("  Tipo de cambio nominal (s*): ", ss_init["s"])
 println("  Tipo de interés (i*)       : ", ss_init["i"], "%")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Esta celda DEFINE (no ejecuta) simulate_dornbusch_manual(), una versión
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Esta celda DEFINE (no ejecuta) simulate_dornbusch_manual(), una versión
 # didáctica de simulate_shock() que desglosa paso a paso la recursión en
 # diferencias del modelo de Dornbusch. El objetivo es que veas CÓMO funciona
 # el salto del tipo de cambio (overshooting): en el periodo del shock, s NO
@@ -176,9 +200,13 @@ max_err_s = maximum(abs.(s_manual .- res_lib["s"]))
 println("Función de simulación manual registrada con éxito.")
 println("Diferencia máxima vs simulate_shock(): p -> ", max_err_p, ", s -> ", max_err_s)
 @assert max_err_p < 1e-8 && max_err_s < 1e-8
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# eigenvalues() devuelve los autovalores de la matriz A del sistema. En el
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# eigenvalues() devuelve los autovalores de la matriz A del sistema. En el
 # modelo de Dornbusch, la matriz A tiene un autovalor estable (lambda1 aprox
 # -0.74, cuyo |1+lambda| < 1) y otro inestable (lambda2 aprox 0.54). Esta
 # estructura de punto de silla es la que permite el overshooting: el tipo de
@@ -189,11 +217,15 @@ println("Autovalores: ", lambdas)
 stable_idx = argmin(abs.(lambdas .+ 1.0))
 stable_lambda = lambdas[stable_idx]
 println("Autovalor estable: ", stable_lambda)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @manipulate es el equivalente en Julia de interact() de Python: crea
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @manipulate es el equivalente en Julia de interact() de Python: crea
 # sliders y redibuja automáticamente cada vez que los mueves. El código
 # dentro del bloque simula el modelo de Dornbusch y dibuja 3 paneles:
 # (1) trayectorias temporales de s y p, (2) tipo de interés y demanda
@@ -296,11 +328,15 @@ nb.cells.append(nbf.v4.new_code_cell("""# @manipulate es el equivalente en Julia
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
          plot_title="Respuesta del modelo Dornbusch", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Verificamos que el estado estacionario, los autovalores y la simulación del
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Verificamos que el estado estacionario, los autovalores y la simulación del
 # shock monetario coinciden con el oráculo del Apéndice F (DYNARE) recogido en
 # oraculo.md. @assert isapprox compara dos valores y SOLO lanza un error si la
 # diferencia supera la tolerancia atol. No usamos "==" porque la aritmética
@@ -332,7 +368,9 @@ lambdas_sorted = sort(lambdas)
 @assert isapprox(res_lib["s"][30], 77.515; atol=1e-2)
 @assert isapprox(res_lib["i"][30], 3.0; atol=1e-2)    # vuelve a i*
 println("OK: coincide con el oráculo DYNARE (Apéndice F).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
@@ -340,13 +378,17 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 8. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
 # tiempo mínimo/medio de ejecución y la memoria asignada. El $ delante de
 # las variables evita que BenchmarkTools las trate como globales, lo que
 # falsearía la medición (Fase III del proyecto). Al ejecutar veremos cuánto
 # tarda Julia en simular 30 periodos del modelo de Dornbusch con salto.
 @btime simulate_shock($params_sim, [500.0, 100.0, 2000.0, 3.0, 0.0], [500.0, 101.0, 2000.0, 3.0, 0.0], 30, 1)
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {

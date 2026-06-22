@@ -9,21 +9,31 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Reforma fiscal neutral**: simular una reducción de $\\tau_r$ compensada con un aumento de $\\tau_c$ que mantenga la recaudación constante, y analizar el efecto sobre el bienestar.
 2. **Progresividad del IRPF**: sustituir $\\tau_w$ constante por una función escalonada (tramos) y analizar cómo cambia la oferta de trabajo en distintos puntos de la distribución salarial.
-3. **Comparación capitalización vs reparto**: modificar la Sección 4 para modelar un sistema de reparto puro donde las cotizaciones de los jóvenes financian las pensiones corrientes, y comparar eficiencia y equidad."""))
+3. **Comparación capitalización vs reparto**: modificar la Sección 4 para modelar un sistema de reparto puro donde las cotizaciones de los jóvenes financian las pensiones corrientes, y comparar eficiencia y equidad."""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae todo el paquete X. "import X: y" solo trae el nombre y.
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae todo el paquete X. "import X: y" solo trae el nombre y.
 # Pkg.activate("../..") usa el entorno del repo. Pkg.instantiate() instala
 # dependencias. MacroAIComp contiene la lógica fiscal del modelo; Plots e
 # Interact para visualización interactiva; BenchmarkTools para rendimiento.
@@ -40,11 +50,15 @@ using NLsolve    # solver de sistemas no lineales (equivalente a scipy.optimize.
 using Optim      # optimización numérica (equivalente a cvxpy en Python)
 using Interact   # widgets interactivos (equivalente a ipywidgets)
 using BenchmarkTools
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Esta celda solo FIJA NÚMEROS. default_calibration(FiscalPolicyParameters)
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Esta celda solo FIJA NÚMEROS. default_calibration(FiscalPolicyParameters)
 # crea un struct con los valores por defecto del modelo de política fiscal.
 # El bloque siguiente imprime una tabla con el glosario didáctico de cada
 # parámetro (nombre, valor, descripción económica) para referencia rápida.
@@ -75,9 +89,13 @@ for field in fieldnames(typeof(params_lumpsum))
     println("  ", rpad(name, 10), " | ", rpad(value, 6), " | ", rpad(desc, 50))
 end
 println("="^75)
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# @manipulate de Interact.jl conecta sliders a la función y redibuja al
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @manipulate de Interact.jl conecta sliders a la función y redibuja al
 # moverlos. El checkbox controla return_transfers: si está activado (G=T),
 # el gobierno devuelve todo lo recaudado y el consumo NO debería cambiar
 # al variar tauw (Equivalencia Ricardiana). Si está desactivado, el
@@ -108,12 +126,16 @@ nb.cells.append(nbf.v4.new_code_cell("""# @manipulate de Interact.jl conecta sli
 
     plot(p1, p2, layout=(1,2), size=(800, 350))
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 # --- ASERCIÓN JULIA: EQUIVALENCIA RICARDIANA (Sección 1) ---
-nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# ==============================================================================
 # VERIFICACIÓN SECCIÓN 1: EQUIVALENCIA RICARDIANA (Apéndice J del libro)
 # ==============================================================================
 
@@ -140,10 +162,14 @@ println("OK (Ricardiano 1/2): Con devolución, C y B son idénticos al caso sin 
 res_tax_noret = solve_non_distortionary(params_tax_ret, W10, false)
 @assert all(res_tax_noret["C"] .< res_no_tax["C"]) "Sin devolución, C debe ser menor"
 println("OK (Ricardiano 2/2): Sin devolución, C es menor que en el caso sin impuestos.")
-"""))
+"""
+    )
+)
 
 # --- ASERCIÓN JULIA: DISTORSIONES Y CAPITAL (Secciones 2 y 3) ---
-nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# ==============================================================================
 # VERIFICACIÓN SECCIONES 2-3: DISTORSIONES E IMPUESTO AL CAPITAL (Apéndice J)
 # ==============================================================================
 
@@ -198,10 +224,14 @@ slope_taur0 = res_taur0["C"][end] - res_taur0["C"][1]
 slope_taur50 = res_taur50["C"][end] - res_taur50["C"][1]
 @assert slope_taur50 < slope_taur0 "Mayor taur debe aplanar la trayectoria de consumo"
 println("OK (Dist 3/3): Activos medios menores y pendiente C mas plana con taur=0.50.")
-"""))
+"""
+    )
+)
 
 # --- ASERCIÓN JULIA: SEGURIDAD SOCIAL (Sección 4) ---
-nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# ==============================================================================
 # VERIFICACIÓN SECCIÓN 4: SEGURIDAD SOCIAL (Apéndice J)
 # ==============================================================================
 
@@ -236,11 +266,15 @@ println("OK (SS 1/2): Consumo similar con y sin Seguridad Social (diff relativa 
 @assert any(res_ss["B"][1:5] .< 0.0) "Con SS, el ahorro privado debe ser negativo al inicio"
 println("B[0] con SS: ", round(res_ss["B"][1], digits=6))
 println("OK (SS 2/2): Ahorro privado negativo al inicio de la vida laboral con SS.")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Impuestos Distorsionadores)
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Simulación interactiva con Interact.jl (Impuestos Distorsionadores)
 @manipulate for tauc_val in slider(0.0:0.05:0.50; value=0.15, label="Consumo (τc)"), tauw_val in slider(0.0:0.05:0.50; value=0.35, label="Trabajo (τw)"), taur_val in slider(0.0:0.05:0.80; value=0.25, label="Capital (τr)"), ret_opt in Widgets.dropdown(["lump_sum", "government_spending"]; value="lump_sum", label="Devolución de Recaudación")
 
     is_lump_sum_return = (ret_opt == "lump_sum")
@@ -277,9 +311,13 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350),
          plot_title="Efecto de Impuestos Distorsionadores", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# Comparación numérica: FOC (NLsolve) vs Optimización Directa.
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Comparación numérica: FOC (NLsolve) vs Optimización Directa.
 # solve_distortionary_foc() resuelve las condiciones de primer orden.
 # solve_distortionary_optim() usa optimización numérica directa.
 # Son dos caminos al mismo resultado: si coinciden (diff < 1e-4), el modelo
@@ -313,11 +351,15 @@ if diff_C < 1e-4 && diff_L < 1e-4
 else
     println("❌ Hay diferencias entre solucionadores.")
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva de la Seguridad Social. W_ss[1:t_star] .= ...
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Simulación interactiva de la Seguridad Social. W_ss[1:t_star] .= ...
 # usa broadcasting (.=) para asignar el perfil salarial creciente a los
 # periodos de vida activa (W_t = 10 + t). En la jubilación (t >= t_star),
 # W_t = 0. Al mover los sliders, el Panel 1 (Consumo) NO debería cambiar
@@ -353,7 +395,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva de la Segurida
     plot(p1, p2, layout=(1,2), size=(800, 350), 
          plot_title="Impacto del Sistema de Seguridad Social", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
@@ -362,11 +406,15 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @btime (BenchmarkTools.jl) ejecuta la función repetidamente y muestra el
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @btime (BenchmarkTools.jl) ejecuta la función repetidamente y muestra el
 # tiempo mínimo y la memoria asignada. Los "$" evitan que las variables se
 # traten como globales (falsearía la medición). (Fase III: rendimiento.)
 @btime solve_distortionary_foc($params_lumpsum, fill(30.0, $params_lumpsum.T), true)
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {

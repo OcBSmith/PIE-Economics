@@ -221,9 +221,7 @@ interact(
 )
 
 # 5a. ORACLE VERIFICATION TABLE AND STEADY-STATE ASSERT
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 2.1 Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2.1 Verificación frente al oráculo
 
 Comparamos contra los valores reportados en el libro (Tabla 9.3) y reproducidos por el
 código MATLAB del Apéndice O, recogidos en `oraculo.md`:
@@ -257,9 +255,7 @@ código MATLAB del Apéndice O, recogidos en `oraculo.md`:
 
 Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
 debería salir en cada celda siguiente con el que realmente sale.
-"""
-    )
-)
+"""))
 
 nb.cells.append(
     nbf.v4.new_code_cell(
@@ -439,11 +435,15 @@ Responde a las siguientes cuestiones tras interactuar con las simulaciones del m
 )
 
 # 8. BUENAS PRÁCTICAS
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Contabilidad del crecimiento (growth accounting)**: descomponer el crecimiento observado de una economía real (ej. España 1980-2020) en contribuciones del capital, trabajo y PTF usando la Cobb-Douglas calibrada.
 2. **Convergencia $\\beta$ y $\\sigma$**: simular varias economías con distintos $k_0$ iniciales y verificar la convergencia condicional predicha por Solow-Swan.
-3. **Extensión con capital humano**: añadir acumulación de capital humano $h_t$ al modelo (Mankiw-Romer-Weil) y analizar cómo cambia la velocidad de convergencia y la Regla de Oro."""))
+3. **Extensión con capital humano**: añadir acumulación de capital humano $h_t$ al modelo (Mankiw-Romer-Weil) y analizar cómo cambia la velocidad de convergencia y la Regla de Oro."""
+    )
+)
 
 nb.cells.append(
     nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio

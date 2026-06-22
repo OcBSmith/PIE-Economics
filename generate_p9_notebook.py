@@ -233,9 +233,7 @@ interact(
 )
 
 # 6a. ORACLE VERIFICATION TABLE AND SS/EIGENVALUE ASSERT
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 3.1 Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 3.1 Verificación frente al oráculo
 
 Comparamos contra los valores reportados en el libro (Tabla 10.2) y reproducidos por el
 código DYNARE del Apéndice P, recogidos en `oraculo.md`:
@@ -268,9 +266,7 @@ código DYNARE del Apéndice P, recogidos en `oraculo.md`:
 
 Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
 debería salir en cada celda siguiente con el que realmente sale.
-"""
-    )
-)
+"""))
 
 nb.cells.append(
     nbf.v4.new_code_cell(
@@ -485,11 +481,15 @@ Responde a las siguientes cuestiones tras interactuar con el simulador del model
 )
 
 # 9. BUENAS PRÁCTICAS APRENDER AQUÍ
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Comparación Solow-Swan vs Ramsey**: simular ambos modelos con la misma calibración ($s$ de Solow ajustado para igualar el $k^*$ de Ramsey) y comparar las dinámicas de transición ante el mismo shock de PTF.
 2. **Ramsey estocástico**: introducir shocks aleatorios de PTF y resolver trayectorias óptimas con certainty equivalence, comparando con el caso determinista.
-3. **Extensión con gobierno**: añadir gasto público financiado con impuestos distorsionadores en el modelo de Ramsey y analizar la pérdida de bienestar (Harberger triangle dinámico)."""))
+3. **Extensión con gobierno**: añadir gasto público financiado con impuestos distorsionadores en el modelo de Ramsey y analizar la pérdida de bienestar (Harberger triangle dinámico)."""
+    )
+)
 
 nb.cells.append(
     nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio

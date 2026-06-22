@@ -64,11 +64,15 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Reforma fiscal neutral**: simular una reducción de $\\tau_r$ compensada con un aumento de $\\tau_c$ que mantenga la recaudación constante, y analizar el efecto sobre el bienestar.
 2. **Progresividad del IRPF**: sustituir $\\tau_w$ constante por una función escalonada (tramos) y analizar cómo cambia la oferta de trabajo en distintos puntos de la distribución salarial.
-3. **Comparación capitalización vs reparto**: modificar la Sección 4 para modelar un sistema de reparto puro donde las cotizaciones de los jóvenes financian las pensiones corrientes, y comparar eficiencia y equidad."""))
+3. **Comparación capitalización vs reparto**: modificar la Sección 4 para modelar un sistema de reparto puro donde las cotizaciones de los jóvenes financian las pensiones corrientes, y comparar eficiencia y equidad."""
+    )
+)
 
 nb.cells.append(
     nbf.v4.new_code_cell(
@@ -193,9 +197,7 @@ interact(
 )
 
 # 6. ORÁCULO: VERIFICACIÓN DE RESULTADOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 2. Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Verificación frente al oráculo
 
 Comparamos contra los valores reportados en el libro (Capítulo 6) y
 reproducidos por el código MATLAB del Apéndice J, recogidos en
@@ -219,9 +221,7 @@ reproducidos por el código MATLAB del Apéndice J, recogidos en
 
 Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
 debería salir en cada celda siguiente con el que realmente sale.
-"""
-    )
-)
+"""))
 
 # 7. ASERCIÓN: EQUIVALENCIA RICARDIANA (Sección 1)
 nb.cells.append(

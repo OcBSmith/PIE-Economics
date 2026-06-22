@@ -9,21 +9,31 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Oferta de trabajo elástica con salario endógeno**: introducir una función de producción donde el salario depende de $L$ agregado (equilibrio general parcial) y analizar la optimalidad.
 2. **Jubilación endógena con ocio**: permitir que el consumidor elija la edad de jubilación y comparar con una edad fija.
-3. **Tributación progresiva**: introducir un IRPF progresivo (tramos) en lugar de un impuesto proporcional y analizar el efecto sobre la oferta de trabajo en distintos puntos de la distribución salarial."""))
+3. **Tributación progresiva**: introducir un IRPF progresivo (tramos) en lugar de un impuesto proporcional y analizar el efecto sobre la oferta de trabajo en distintos puntos de la distribución salarial."""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae a este cuaderno todo el código público del paquete X, para
 # no tener que reescribirlo (es el equivalente Julia de "import X" en Python,
 # pero sin necesidad de alias para usar sus funciones). "import X: y" es más
 # selectivo: solo trae el nombre y, no todo el paquete (aquí se hace con mm,
@@ -45,11 +55,14 @@ default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la vers
 using LinearAlgebra
 using Interact          # widgets interactivos para Jupyter (equivalente a ipywidgets)
 using BenchmarkTools    # medición de rendimiento (Fase III)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Esta celda solo FIJA NÚMEROS: todavía no calcula nada.
+nb.cells.append(
+    nbf.v4.new_code_cell("""# Esta celda solo FIJA NÚMEROS: todavía no calcula nada.
 # default_calibration(ConsumptionLeisureParameters) crea un struct con los
 # valores por defecto del modelo (T=30, beta=0.97, gamma=0.40, R=0.02).
 # En Julia, los structs normales se construyen con argumentos POSICIONALES
@@ -64,11 +77,14 @@ println("  Factor de descuento (beta)       : ", params.beta, " (theta ≈ ", ro
 println("  Peso del consumo en utilidad (γ) : ", round(params.gamma, digits=2))
 println("  Tasa de interés real (R)         : ", round(params.R*100, digits=2), "%")
 println("-"^60)
-"""))
+""")
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# fill(30.0, params.T) crea un Vector{Float64} de longitud params.T donde
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# fill(30.0, params.T) crea un Vector{Float64} de longitud params.T donde
 # TODAS las posiciones valen 30.0: salario constante en cada periodo.
 # Es el equivalente Julia de np.full(T, 30.0) en Python.
 W_base = fill(30.0, params.T)
@@ -100,12 +116,16 @@ if diff_C < 1e-4 && diff_L < 1e-4
 else
     println("❌ Hay diferencias entre solucionadores.")
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 # --- ASERCIÓN JULIA: CONDICIÓN TERMINAL, EQUIVALENCIA Y COTAS ---
-nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# ==============================================================================
 # VERIFICACIÓN NUMÉRICA FRENTE AL ORÁCULO (Apéndice I del libro)
 # ==============================================================================
 
@@ -140,10 +160,14 @@ println("OK (3/4): 0 <= L_t < 1.0 para todo t (ambos solvers).")
 # 4. Ocio positivo: O_t = 1 - L_t > 0 para todo t
 @assert all(res_foc["O"] .> 0.0) "O_t debe ser > 0"
 println("OK (4/4): Ocio O_t > 0 para todo t.")
-"""))
+"""
+    )
+)
 
 # --- ASERCIÓN JULIA: SENSIBILIDAD A γ Y R ---
-nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# ==============================================================================
 # VERIFICACIÓN DE SENSIBILIDAD: PREFERENCIAS (γ) Y TIPO DE INTERÉS (R)
 # ==============================================================================
 
@@ -182,11 +206,15 @@ println("Consumo final   C[T-1] (R=0.05): ", round(res_R5["C"][end], digits=6))
 println("Pendiente C[T-1]-C[0]: ", round(slope_C, digits=6))
 @assert slope_C > 0 "Con beta*(1+R)>1, el consumo debe ser creciente en el tiempo"
 println("OK (R): Pendiente de consumo positiva con R=0.05, coincide con el oráculo.")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @manipulate de Interact.jl es el equivalente Julia de interact() en Python:
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @manipulate de Interact.jl es el equivalente Julia de interact() en Python:
 # conecta sliders a una función y redibuja automáticamente al moverlos.
 # "for var in slider(...)" define cada slider con su rango, paso y valor
 # inicial. Todo el bloque dentro de @manipulate se re-ejecuta ante cada
@@ -227,7 +255,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# @manipulate de Interact.jl es el equiv
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
          plot_title="Decisión de Consumo-Ocio Intertemporal", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
@@ -235,13 +265,17 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
 # tiempo mínimo de ejecución y la memoria asignada. Los "$" delante de las
 # variables evitan que BenchmarkTools las trate como globales, lo que
 # falsearía la medición. Es el equivalente del %timeit de Python.
 # (Fase III del proyecto: rendimiento, no economía.)
 @btime solve_foc_fsolve($params, $W_base)
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {

@@ -186,9 +186,7 @@ print(f"  Diferencia                        : {abs(theta_simple - theta_book):.2
 )
 
 # 6. ORÁCULO: VERIFICACIÓN DE RESULTADOS
-nb.cells.append(
-    nbf.v4.new_markdown_cell(
-        r"""## 2. Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2. Verificación frente al oráculo
 
 Comparamos contra los valores reportados en el libro (Capítulo 7) y
 reproducidos por el código DYNARE del Apéndice K, recogidos en
@@ -218,9 +216,7 @@ reproducidos por el código DYNARE del Apéndice K, recogidos en
 
 Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
 debería salir en cada celda siguiente con el que realmente sale.
-"""
-    )
-)
+"""))
 
 # 7. ASERCIÓN: ESTADO ESTACIONARIO, AUTOVALORES Y FÓRMULA DE SALTO
 nb.cells.append(
@@ -640,11 +636,15 @@ Responde a las siguientes cuestiones tras interactuar con las simulaciones de la
 )
 
 # 9. BUENAS PRÁCTICAS APRENDER AQUÍ
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Shock de productividad**: introducir un shock de PTF ($A_t$) y comparar la dinámica de $q$ y $I$ con el shock de tipo de interés.
 2. **Costes de ajuste asimétricos**: modificar la función de costes para que desinvertir sea más costoso que invertir y analizar el efecto sobre la velocidad de ajuste.
-3. **Modelo con restricción de irreversibilidad**: añadir la restricción $I_t \\ge 0$ (no se puede desinvertir) y comparar con el modelo base."""))
+3. **Modelo con restricción de irreversibilidad**: añadir la restricción $I_t \\ge 0$ (no se puede desinvertir) y comparar con el modelo base."""
+    )
+)
 
 nb.cells.append(
     nbf.v4.new_markdown_cell(r"""## 7. Buenas Prácticas Aplicadas en este Laboratorio

@@ -9,21 +9,31 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Elección de jubilación endógena**: permitir que el consumidor elija $t^*$ (edad de jubilación) además del perfil de consumo. Plantear como problema de optimización con variable discreta.
 2. **Shock de renta transitorio vs permanente**: comparar la respuesta del consumo ante un shock que afecta a UN solo periodo vs uno que afecta a TODOS los periodos, verificando la teoría de la renta permanente.
-3. **Restricción de liquidez**: añadir la restricción $B_t \\ge 0$ (no se permite endeudamiento) y comparar el perfil de consumo resultante con el caso irrestricto."""))
+3. **Restricción de liquidez**: añadir la restricción $B_t \\ge 0$ (no se permite endeudamiento) y comparar el perfil de consumo resultante con el caso irrestricto."""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae a este cuaderno todo el código público del paquete X, para
 # no tener que reescribirlo. Pkg.activate("../..") usa el entorno del repo.
 # Pkg.instantiate() instala lo que falte (la primera vez puede tardar).
 using Pkg
@@ -40,11 +50,15 @@ default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la vers
 using LinearAlgebra
 using Interact                 # widgets interactivos (sliders) para Jupyter
 using BenchmarkTools           # medición de rendimiento (Fase III)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Esta celda solo FIJA NÚMEROS (Capítulo 4 del libro): todavía no calcula
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Esta celda solo FIJA NÚMEROS (Capítulo 4 del libro): todavía no calcula
 # nada. default_calibration(ConsumptionSavingParameters) devuelve un struct
 # (definido en src/models/ConsumptionSaving.jl) con valores por defecto:
 # T=30, beta=0.97, R=0.02. Al ejecutar veremos estos valores impresos como
@@ -58,11 +72,15 @@ println("  Duración del ciclo de vida (T)  : ", params.T, " periodos")
 println("  Factor de descuento (beta)      : ", params.beta, " (equivale a theta ≈ ", round((1-params.beta)/params.beta*100, digits=2), "%)")
 println("  Tasa de interés real (R)        : ", round(params.R*100, digits=2), "%")
 println("-"^50)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Esta celda RESUELVE el problema del consumidor por DOS métodos distintos
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Esta celda RESUELVE el problema del consumidor por DOS métodos distintos
 # y compara los resultados. generate_income_profile("constant", T) crea un
 # array de T=30 periodos con salario W=10 en cada uno. solve_foc_fsolve()
 # plantea el sistema de ecuaciones de Euler y lo resuelve con NLsolve.
@@ -95,11 +113,12 @@ if diferencia_max < 1e-5
 else
     println("❌ Hay diferencias entre solucionadores.")
 end
-"""))
+"""
+    )
+)
 
 # ORACLE TABLE + ASSERT CELLS (Bloque A y B)
-nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 2.1 Verificación frente al oráculo
+nb.cells.append(nbf.v4.new_markdown_cell(r"""## 2.1 Verificación frente al oráculo
 
 Comparamos contra los valores reportados en el libro y reproducidos por el
 código MATLAB del Apéndice G (`referencia/consumption.m`), recogidos en
@@ -116,10 +135,11 @@ código MATLAB del Apéndice G (`referencia/consumption.m`), recogidos en
 | $\beta=0.99$ — pendiente de $C$ | Positiva ($\beta(1+R)>1$) |
 
 Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
-debería salir en cada celda siguiente con el que realmente sale.""")
-)
+debería salir en cada celda siguiente con el que realmente sale."""))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# Verificamos la condición terminal (B_{T-1}=0) y la equivalencia entre
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificamos la condición terminal (B_{T-1}=0) y la equivalencia entre
 # solvers contra el oráculo del Apéndice G (MATLAB) recogido en oraculo.md.
 # @assert isapprox compara dos valores y SOLO lanza un error si la
 # diferencia supera la tolerancia. No usamos "==" porque la aritmética con
@@ -137,12 +157,16 @@ nb.cells.append(nbf.v4.new_code_cell(r"""# Verificamos la condición terminal (B
 @assert isapprox(res_foc["C"], res_opt["C"]; rtol=1e-4, atol=1e-4)
 @assert isapprox(res_foc["B"], res_opt["B"]; rtol=1e-4, atol=1e-4)
 println("OK: coincide con el oráculo MATLAB (Apéndice G).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @manipulate es el equivalente en Julia de interact() de Python: crea
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @manipulate es el equivalente en Julia de interact() de Python: crea
 # sliders y un dropdown y redibuja automáticamente cada vez que los mueves.
 # El código dentro del bloque resuelve el modelo de consumo-ahorro con los
 # valores de beta, R y perfil salarial que elijas y dibuja 3 paneles:
@@ -183,18 +207,24 @@ nb.cells.append(nbf.v4.new_code_cell("""# @manipulate es el equivalente en Julia
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
          plot_title="Decisión Óptima Intertemporal", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 # VERIFICACIÓN DE PERFILES DE INGRESO Y SENSIBILIDAD
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 4.1 Verificación de perfiles de ingreso y sensibilidad
+    nbf.v4.new_markdown_cell(
+        r"""## 4.1 Verificación de perfiles de ingreso y sensibilidad
 
 Comprobamos contra el oráculo los resultados cualitativos y cuantitativos
 para cada perfil de ingreso y el caso de sensibilidad $\beta=0.99$ (Apéndice G,
-`oraculo.md`).""")
+`oraculo.md`)."""
+    )
 )
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# Verificamos los casos adicionales del oráculo (Apéndice G):
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        r"""# Verificamos los casos adicionales del oráculo (Apéndice G):
 
 # --- Perfil creciente: endeudamiento juvenil y pendiente negativa del consumo ---
 W_inc = generate_income_profile("increasing", params.T)
@@ -229,7 +259,9 @@ println("  beta=0.99: C[1]=", round(res_beta99["C"][1], digits=4),
         " (pendiente positiva) OK")
 
 println("OK: todos los perfiles coinciden con el oráculo MATLAB (Apéndice G).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
@@ -237,13 +269,17 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
 # tiempo mínimo/medio de ejecución y la memoria asignada. El $ delante de
 # params y W_const evita que BenchmarkTools las trate como globales, lo que
 # falsearía la medición (Fase III). Al ejecutar veremos cuánto tarda Julia
 # en resolver el sistema de 30 ecuaciones de Euler con NLsolve.
 @btime solve_foc_fsolve($params, $W_const)
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {

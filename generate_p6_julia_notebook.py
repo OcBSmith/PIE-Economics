@@ -9,21 +9,31 @@ nb = nbf.v4.new_notebook()
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[0]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[1]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Este cuaderno depende del paquete `MacroAIComp` (Project.toml/Manifest.toml
 # en la raíz del repositorio). En MyBinder (ver docs/DESPLIEGUE_BINDER.md) y en
 # tu entorno local, el kernel ya arranca dentro del repositorio clonado, así
 # que la celda siguiente activa e instancia el proyecto automáticamente.
 # Nota: Google Colab no soporta Julia de forma nativa desde un notebook .ipynb;
 # para la versión Julia de esta práctica usa MyBinder.
-"""))
+"""
+    )
+)
 
-nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+nb.cells.append(
+    nbf.v4.new_markdown_cell(
+        """## Extensiones para ABP (Aprendizaje Basado en Proyectos)
 
 1. **Shock de productividad**: introducir un shock de PTF ($A_t$) y comparar la dinámica de $q$ y $I$ con el shock de tipo de interés.
 2. **Costes de ajuste asimétricos**: modificar la función de costes para que desinvertir sea más costoso que invertir y analizar el efecto sobre la velocidad de ajuste.
-3. **Modelo con restricción de irreversibilidad**: añadir la restricción $I_t \\ge 0$ (no se puede desinvertir) y comparar con el modelo base."""))
+3. **Modelo con restricción de irreversibilidad**: añadir la restricción $I_t \\ge 0$ (no se puede desinvertir) y comparar con el modelo base."""
+    )
+)
 
-nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae todo el paquete X. "import X: y" solo trae el nombre y.
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# "using X" trae todo el paquete X. "import X: y" solo trae el nombre y.
 # Pkg.activate("../..") usa el entorno del repo; Pkg.instantiate() instala
 # dependencias. MacroAIComp contiene la lógica del modelo Q de Tobin; Plots
 # e Interact para visualización interactiva; BenchmarkTools para rendimiento.
@@ -39,12 +49,16 @@ using LinearAlgebra
 using NLsolve         # solver de sistemas no lineales
 using Interact        # widgets interactivos (equivalente a ipywidgets)
 using BenchmarkTools  # medición de rendimiento (Fase III)
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
 # --- CÁLCULO DEL ESTADO ESTACIONARIO Y ESTABILIDAD ---
-nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# ==============================================================================
 # CALCULO DEL ESTADO ESTACIONARIO, AUTOVALORES Y FORMULA DE SALTO
 # ==============================================================================
 
@@ -87,12 +101,16 @@ println("-"^55)
 println("  theta (simplificada = phi*lambda1): ", theta_simple)
 println("  theta_book (formula del libro)    : ", theta_book)
 println("  Diferencia                        : ", abs(theta_simple - theta_book))
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 # --- ASERCIÓN JULIA: SS, AUTOVALORES Y FORMULA DE SALTO ---
-nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# ==============================================================================
 # VERIFICACION: SS, AUTOVALORES Y FORMULA DE SALTO (Apendice K del libro)
 # ==============================================================================
 
@@ -123,10 +141,14 @@ for R_val in [0.02, 0.03, 0.04, 0.05]
     end
 end
 println("OK (SS 3/3): theta = theta_book para todo R, phi (atol=1e-12).")
-"""))
+"""
+    )
+)
 
 # --- ASERCIÓN JULIA: SHOCK DE TIPO DE INTERES ---
-nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# ==============================================================================
 # VERIFICACION DEL SHOCK: SALTO DE q, CONVERGENCIA Y CONSISTENCIA (Apendice K)
 # ==============================================================================
 
@@ -173,11 +195,15 @@ println("OK (Shock 3/4): Convergencia a nuevo SS en el largo plazo.")
 @assert isapprox(res_lin["K"], res_nonlin["K"]; rtol=1e-2)
 @assert isapprox(res_lin["q"], res_nonlin["q"]; rtol=1e-2)
 println("OK (Shock 4/4): Trayectorias lineal y no lineal consistentes (rtol=1e-2).")
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @manipulate crea sliders y redibuja al moverlos. Al bajar R_final por
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @manipulate crea sliders y redibuja al moverlos. Al bajar R_final por
 # debajo de R_init, veremos: Panel 1) q salta > 1.0 en t=1 y converge a
 # 1.0. Panel 2) K crece gradualmente (no salta, es predeterminado). Panel
 # 3) Inversión neta positiva mientras q>1, sombreado por encima de la
@@ -236,11 +262,15 @@ nb.cells.append(nbf.v4.new_code_cell("""# @manipulate crea sliders y redibuja al
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
          plot_title="Ajuste de Inversión y Capital ante Shock", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal vs No Lineal. solve_linearized_simulation() usa la
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Comparación Lineal vs No Lineal. solve_linearized_simulation() usa la
 # aproximación de Uhlig (1999) con theta; solve_nonlinear_simulation()
 # resuelve el sistema exacto con fsolve. Al ejecutar, ambas trayectorias
 # deberían superponerse casi perfectamente: la aproximación lineal es muy
@@ -273,11 +303,15 @@ xlabel!("Período (t)")
 ylabel!("Capital (K)")
 
 plot(p1, p2, layout=(1,2), size=(800, 350))
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en el espacio de desviaciones logarítmicas (k_hat, q_hat).
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# Diagrama de Fases en el espacio de desviaciones logarítmicas (k_hat, q_hat).
 # quiver!() dibuja el campo vectorial (normalizado para que todas las
 # flechas tengan la misma longitud). scatter!() añade los puntos clave:
 # rojo = SS inicial, naranja = salto de q, verde (star) = SS final. La
@@ -366,7 +400,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en el espacio de des
     
     plot(p1, size=(700, 550), plot_title="Modelo Q de Tobin", top_margin=10mm)
 end
-"""))
+"""
+    )
+)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
@@ -374,11 +410,15 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 8. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# @btime mide el tiempo mínimo de ejecución y la memoria asignada. Los "$"
+nb.cells.append(
+    nbf.v4.new_code_cell(
+        """# @btime mide el tiempo mínimo de ejecución y la memoria asignada. Los "$"
 # evitan que las variables se traten como globales (falsearía la medición).
 # (Fase III del proyecto: rendimiento computacional, no economía.)
 @btime solve_nonlinear_simulation($params, $K0, $R_path, $T_sim)
-"""))
+"""
+    )
+)
 
 nb.metadata = {
     "kernelspec": {
