@@ -92,25 +92,25 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
     t_axis = 0:(params.T - 1)
     
     # Panel 1: Consumo e Ingresos
-    p1 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
-    plot!(t_axis, res["W_L"], color=:forestgreen, lw=2.5, ls=:dash, label="Ingreso Neto")
+    p1 = plot(t_axis, res["C"], color="#7A3E9F", lw=2.5, label="Consumo (C)")
+    plot!(t_axis, res["W_L"], color="#8EAD3A", lw=2.5, ls=:dash, label="Ingreso Neto")
     title!("Consumo e Ingreso Salarial")
     xlabel!("Periodo (t)")
     ylabel!("Bienes")
     
     # Panel 2: Oferta de Trabajo y Ocio
-    p2 = plot(t_axis, res["L"], color=:red, lw=2.5, label="Trabajo (L)")
-    plot!(t_axis, res["O"], color=:teal, lw=2.5, ls=:dot, label="Ocio (O=1-L)")
+    p2 = plot(t_axis, res["L"], color="#E05A47", lw=2.5, label="Trabajo (L)")
+    plot!(t_axis, res["O"], color="#3BB193", lw=2.5, ls=:dot, label="Ocio (O=1-L)")
     ylims!(-0.05, 1.05)
     title!("Asignación del Tiempo")
     xlabel!("Periodo (t)")
     ylabel!("Fracción")
     
     # Panel 3: Activos
-    p3 = plot(t_axis, res["B"], color=:steelblue, lw=2.5, label="Activos (B)")
+    p3 = plot(t_axis, res["B"], color="#004C97", lw=2.5, label="Activos (B)")
     hline!([0.0], color=:black, ls=:dot, label="")
-    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:steelblue, lw=0, label="Ahorro")
-    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:orange, lw=0, label="Deuda")
+    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color="#004C97", lw=0, label="Ahorro")
+    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color="#D95319", lw=0, label="Deuda")
     title!("Evolución de Activos")
     xlabel!("Periodo (t)")
     ylabel!("Riqueza Neta")
@@ -135,16 +135,16 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
     t_axis = 0:(params_ss.T - 1)
     
     # Panel 1: Consumo e Ingresos Laborales
-    p1 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo Óptimo")
+    p1 = plot(t_axis, res["C"], color="#7A3E9F", lw=2.5, label="Consumo Óptimo")
     plot!(t_axis, W_ss, color=:gray, lw=2.0, ls=:dash, label="Salario Bruto (W)")
-    plot!(t_axis, res["W_net"], color=:forestgreen, lw=2.5, label="Ingreso Disponible")
+    plot!(t_axis, res["W_net"], color="#8EAD3A", lw=2.5, label="Ingreso Disponible")
     title!("Consumo e Ingresos")
     xlabel!("Periodo (t)")
     ylabel!("Bienes")
     
     # Panel 2: Activos
-    p2 = plot(t_axis, res["B"], color=:steelblue, lw=2.5, label="Ahorro Privado (B)")
-    plot!(t_axis, res["B_ss"], color=:orange, lw=2.5, label="Fondo SS (B_ss)")
+    p2 = plot(t_axis, res["B"], color="#D95319", lw=2.5, label="Ahorro Privado (B)")
+    plot!(t_axis, res["B_ss"], color="#8EAD3A", lw=2.5, label="Fondo SS (B_ss)")
     plot!(t_axis, res["B_total"], color=:black, lw=3.0, ls=:dashdot, label="Riqueza Total")
     hline!([0.0], color=:black, ls=:dot, label="")
     title!("Evolución de Riqueza")

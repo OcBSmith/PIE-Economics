@@ -68,25 +68,25 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
     t_axis = 0:(params_int.T - 1)
     
     # Panel 1: Consumo e Ingresos
-    p1 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
-    plot!(t_axis, res["W_L"], color=:forestgreen, lw=2.5, ls=:dash, label="Ingreso (W·L)")
+    p1 = plot(t_axis, res["C"], color="#7A3E9F", lw=2.5, label="Consumo (C)")
+    plot!(t_axis, res["W_L"], color="#8EAD3A", lw=2.5, ls=:dash, label="Ingreso (W·L)")
     title!("Consumo e Ingreso Salarial")
     xlabel!("Periodo (t)")
     ylabel!("Bienes")
     
     # Panel 2: Oferta de Trabajo y Ocio
-    p2 = plot(t_axis, res["L"], color=:red, lw=2.5, label="Trabajo (L)")
-    plot!(t_axis, res["O"], color=:teal, lw=2.5, ls=:dot, label="Ocio (O=1-L)")
+    p2 = plot(t_axis, res["L"], color="#E05A47", lw=2.5, label="Trabajo (L)")
+    plot!(t_axis, res["O"], color="#3BB193", lw=2.5, ls=:dot, label="Ocio (O=1-L)")
     ylims!(-0.05, 1.05)
     title!("Asignación del Tiempo")
     xlabel!("Periodo (t)")
     ylabel!("Fracción de Tiempo")
     
     # Panel 3: Activos
-    p3 = plot(t_axis, res["B"], color=:steelblue, lw=2.5, label="Activos (B)")
+    p3 = plot(t_axis, res["B"], color="#004C97", lw=2.5, label="Activos (B)")
     hline!([0.0], color=:black, ls=:dot, label="")
-    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:steelblue, lw=0, label="Acreedor")
-    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:orange, lw=0, label="Deudor")
+    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color="#004C97", lw=0, label="Acreedor")
+    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color="#D95319", lw=0, label="Deudor")
     title!("Evolución de Activos")
     xlabel!("Periodo (t)")
     ylabel!("Riqueza Neta")

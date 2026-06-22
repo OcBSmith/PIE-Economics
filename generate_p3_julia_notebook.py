@@ -67,24 +67,24 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
     t_axis = 0:(params_interactive.T - 1)
     
     # Panel 1: Consumo e Ingresos
-    p1 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
-    plot!(t_axis, res["W"], color=:forestgreen, lw=2.5, ls=:dash, label="Ingreso (W)")
+    p1 = plot(t_axis, res["C"], color="#7A3E9F", lw=2.5, label="Consumo (C)")
+    plot!(t_axis, res["W"], color="#8EAD3A", lw=2.5, ls=:dash, label="Ingreso (W)")
     title!("Consumo e Ingresos")
     xlabel!("Periodo (t)")
     ylabel!("Bienes")
     
     # Panel 2: Activos
-    p2 = plot(t_axis, res["B"], color=:steelblue, lw=2.5, label="Activos (B)")
+    p2 = plot(t_axis, res["B"], color="#004C97", lw=2.5, label="Activos (B)")
     hline!([0.0], color=:black, ls=:dot, label="")
     # Fill between (trick in Plots: fillrange=0)
-    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:steelblue, lw=0, label="Ahorro")
-    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color=:orange, lw=0, label="Deuda")
+    plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color="#004C97", lw=0, label="Ahorro")
+    plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color="#D95319", lw=0, label="Deuda")
     title!("Evolución de Activos")
     xlabel!("Periodo (t)")
     ylabel!("Riqueza Neta")
     
     # Panel 3: Utilidad
-    p3 = plot(t_axis, res["U"], color=:orange, lw=2.0, label="Utilidad")
+    p3 = plot(t_axis, res["U"], color="#D95319", lw=2.0, label="Utilidad")
     title!("Utilidad Descontada")
     xlabel!("Periodo (t)")
     ylabel!("Utilidad")

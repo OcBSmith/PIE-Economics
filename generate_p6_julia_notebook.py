@@ -54,7 +54,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa In
     t_axis = 0:(T_sim - 1)
     
     # Panel 1: Q de Tobin
-    p1 = plot(t_axis, res["q"], color=:purple, lw=2.5, label="Q (Valor de Mercado)")
+    p1 = plot(t_axis, res["q"], color="#7A3E9F", lw=2.5, label="Q (Valor de Mercado)")
     hline!([ss_init["q"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_final["q"]], color=:black, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
@@ -62,7 +62,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa In
     xlabel!("Periodos")
     
     # Panel 2: Capital
-    p2 = plot(t_axis, res["K"], color=:blue, lw=2.5, label="Capital (K)")
+    p2 = plot(t_axis, res["K"], color="#004C97", lw=2.5, label="Capital (K)")
     hline!([ss_init["K"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_final["K"]], color=:black, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
@@ -72,9 +72,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa In
     # Panel 3: Inversión con depreciación y sombreado
     I_dep = delta_val .* res["K"]
     I_net = res["I"] .- I_dep
-    p3 = plot(t_axis, res["I"], color=:orange, lw=2.5, label="Inversión Bruta (I)")
+    p3 = plot(t_axis, res["I"], color="#D95319", lw=2.5, label="Inversión Bruta (I)")
     plot!(t_axis, I_dep, color=:red, ls=:dash, lw=1.5, label="Depreciación (δK)")
-    plot!(t_axis, max.(I_net, 0.0), fillrange=0, color=:orange, fillalpha=0.15, label="Inv. Neta (+)", lw=0)
+    plot!(t_axis, max.(I_net, 0.0), fillrange=0, color="#D95319", fillalpha=0.15, label="Inv. Neta (+)", lw=0)
     plot!(t_axis, min.(I_net, 0.0), fillrange=0, color=:red, fillalpha=0.15, label="Desinv. Neta (-)", lw=0)
     hline!([ss_init["I"]], color=:gray, ls=:dot, label="I Inicial")
     hline!([ss_final["I"]], color=:black, ls=:dash, label="I Final")
@@ -103,13 +103,13 @@ res_nonlin = solve_nonlinear_simulation(params, K0, R_path, T_sim)
 
 t_axis = 0:(T_sim - 1)
 
-p1 = plot(t_axis, res_nonlin["q"], label="No Lineal", color=:purple, lw=3)
-plot!(t_axis, res_lin["q"], label="Linealizado", color=:purple, ls=:dash, lw=2)
+p1 = plot(t_axis, res_nonlin["q"], label="No Lineal", color="#7A3E9F", lw=3)
+plot!(t_axis, res_lin["q"], label="Linealizado", color="#7A3E9F", ls=:dash, lw=2)
 title!("q de Tobin (Lineal vs No Lineal)")
 xlabel!("Tiempo")
 
-p2 = plot(t_axis, res_nonlin["K"], label="No Lineal", color=:blue, lw=3)
-plot!(t_axis, res_lin["K"], label="Linealizado", color=:blue, ls=:dash, lw=2)
+p2 = plot(t_axis, res_nonlin["K"], label="No Lineal", color="#004C97", lw=3)
+plot!(t_axis, res_lin["K"], label="Linealizado", color="#004C97", ls=:dash, lw=2)
 title!("Capital (Lineal vs No Lineal)")
 xlabel!("Tiempo")
 
@@ -155,11 +155,11 @@ nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en espacio de desvia
     quiver!(k_grid', q_grid', quiver=(dk_hat_norm', dq_hat_norm'), color=:lightgray, alpha=0.4, label="")
     
     # Loci (curvas de demarcación)
-    hline!([0.0], color=:blue, ls=:dash, lw=1.5, label="Delta k_hat = 0")
+    hline!([0.0], color="#004C97", ls=:dash, lw=1.5, label="Delta k_hat = 0")
     
     slope_dq = -A[1,2] / A[1,1]
     k_line = collect(range(k_min, k_max, length=100))
-    plot!(k_line, slope_dq .* k_line, color=:purple, ls=:dash, lw=1.5, label="Delta q_hat = 0")
+    plot!(k_line, slope_dq .* k_line, color="#7A3E9F", ls=:dash, lw=1.5, label="Delta q_hat = 0")
     
     # Saddle Path
     plot!(k_line, theta .* k_line, color=:black, lw=2.5, label="Saddle Path")

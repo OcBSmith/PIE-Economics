@@ -114,14 +114,14 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     ss_final = steady_state(params_sim)
     
     # Panel 1: Renta
-    p1 = plot(t_eval, Y_path, color=:steelblue, lw=2.5, label="Producción (Y)")
+    p1 = plot(t_eval, Y_path, color="#004C97", lw=2.5, label="Producción (Y)")
     hline!([params_sim.ypot0], color=:red, ls=:dash, label="Renta Potencial")
     title!("Evolución de la Renta")
     xlabel!("Tiempo (t)")
     ylabel!("Y")
     
     # Panel 2: Precios
-    p2 = plot(t_eval, P_path, color=:forestgreen, lw=2.5, label="Precios (P)")
+    p2 = plot(t_eval, P_path, color="#8EAD3A", lw=2.5, label="Precios (P)")
     hline!([ss_init["P"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_final["P"]], color=:black, ls=:dash, label="SS Final")
     title!("Evolución de Precios")
@@ -129,19 +129,19 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     ylabel!("P")
     
     # Panel 3: Diagrama de Fases
-    p3 = plot(Y_path, P_path, color=:purple, lw=3, label="Trayectoria dinámica")
-    vline!([params_sim.ypot0], color=:orange, ls=:dash, lw=2, label="P_dot = 0")
-    
+    p3 = plot(Y_path, P_path, color="#7A3E9F", lw=3, label="Trayectoria dinámica")
+    vline!([params_sim.ypot0], color="#D95319", ls=:dash, lw=2, label="P_dot = 0")
+
     Y_vals = range(minimum(Y_path)-15, maximum(Y_path)+15, length=100)
     slope = params_sim.theta * params_sim.mi - params_sim.theta / params_sim.beta1 - params_sim.psi
     int_init = ss_init["P"] - slope * params_sim.ypot0
     int_final = ss_final["P"] - slope * params_sim.ypot0
-    
+
     P_loc_init = int_init .+ slope .* Y_vals
     P_loc_final = int_final .+ slope .* Y_vals
-    
-    plot!(Y_vals, P_loc_init, color=:blue, ls=:dot, label="Y_dot = 0 (Inicial)")
-    plot!(Y_vals, P_loc_final, color=:blue, ls=:dash, lw=2, label="Y_dot = 0 (Final)")
+
+    plot!(Y_vals, P_loc_init, color="#0072BD", ls=:dot, label="Y_dot = 0 (Inicial)")
+    plot!(Y_vals, P_loc_final, color="#0072BD", ls=:dash, lw=2, label="Y_dot = 0 (Final)")
     
     # Quiver
     Y_grid = range(minimum(Y_path)-8, maximum(Y_path)+8, length=12)

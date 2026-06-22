@@ -70,28 +70,28 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición D
     t_shock = 5
     t_axis = 0:(T_sim - 1)
     
-    p1 = plot(t_axis, res["k"], color=:blue, lw=2.5, label="Capital (k)")
+    p1 = plot(t_axis, res["k"], color="#8EAD3A", lw=2.5, label="Capital (k)")
     hline!([ss_init["k"]], color=:gray, ls=:dot, label="SS Inicial")
-    hline!([ss_fin["k"]], color=:black, ls=:dash, label="SS Final")
+    hline!([ss_fin["k"]], color=:red, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Capital por trabajador")
     xlabel!("Tiempo")
 
-    p2 = plot(t_axis, res["y"], color=:purple, lw=2.5, label="Renta (y)")
+    p2 = plot(t_axis, res["y"], color="#004C97", lw=2.5, label="Renta (y)")
     hline!([ss_init["y"]], color=:gray, ls=:dot, label="SS Inicial")
-    hline!([ss_fin["y"]], color=:black, ls=:dash, label="SS Final")
+    hline!([ss_fin["y"]], color=:red, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Renta per cápita")
     xlabel!("Tiempo")
 
-    p3 = plot(t_axis, res["c"], color=:forestgreen, lw=2.5, label="Consumo (c)")
+    p3 = plot(t_axis, res["c"], color="#7A3E9F", lw=2.5, label="Consumo (c)")
     hline!([ss_init["c"]], color=:gray, ls=:dot, label="SS Inicial")
-    hline!([ss_fin["c"]], color=:black, ls=:dash, label="SS Final")
+    hline!([ss_fin["c"]], color=:red, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Consumo per cápita")
     xlabel!("Tiempo")
-    
-    p4 = plot(t_axis, res["gy"], color=:orange, lw=2.5, label="Crecimiento (gy)")
+
+    p4 = plot(t_axis, res["gy"], color="#D95319", lw=2.5, label="Crecimiento (gy)")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Tasa de Crecimiento del PIB p.c. (%)")
     xlabel!("Tiempo")
@@ -119,13 +119,13 @@ nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Or
     c_gold = compute_solow_steady_state(params, alpha_val)["c"]
 
     # 2. Gráfica
-    p1 = plot(s_grid, c_ss_grid, color=:purple, lw=3, label="Consumo de Estado Estacionario (c̄)")
+    p1 = plot(s_grid, c_ss_grid, color="#7A3E9F", lw=3, label="Consumo de Estado Estacionario (c̄)")
 
     # Regiones de (in)eficiencia dinámica
-    plot!([0.01, alpha_val], [0.0, 0.0], fillrange=maximum(c_ss_grid) * 1.1, fillalpha=0.15,
-          color=:steelblue, lw=0, label="Bajo-acumulación (Eficiente)")
-    plot!([alpha_val, 0.95], [0.0, 0.0], fillrange=maximum(c_ss_grid) * 1.1, fillalpha=0.15,
-          color=:red, lw=0, label="Sobre-acumulación (Ineficiente)")
+    plot!([0.01, alpha_val], [0.0, 0.0], fillrange=maximum(c_ss_grid) * 1.1, fillalpha=0.5,
+          color="#E6F2FF", lw=0, label="Bajo-acumulación (Eficiente)")
+    plot!([alpha_val, 0.95], [0.0, 0.0], fillrange=maximum(c_ss_grid) * 1.1, fillalpha=0.5,
+          color="#FFE6E6", lw=0, label="Sobre-acumulación (Ineficiente)")
 
     # Punto actual
     scatter!([s_current], [c_current], color=:red, markersize=6,
@@ -134,10 +134,10 @@ nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Or
     hline!([c_current], color=:red, ls=:dot, alpha=0.5, label="")
 
     # Regla de Oro
-    scatter!([alpha_val], [c_gold], color=:forestgreen, markersize=10, marker=:star,
+    scatter!([alpha_val], [c_gold], color="#8EAD3A", markersize=10, marker=:star,
              label="Regla de Oro (s_gold=α=$(round(alpha_val, digits=2)), c_gold=$(round(c_gold, digits=3)))")
-    vline!([alpha_val], color=:forestgreen, ls=:dash, alpha=0.7, label="")
-    hline!([c_gold], color=:forestgreen, ls=:dash, alpha=0.7, label="")
+    vline!([alpha_val], color="#8EAD3A", ls=:dash, alpha=0.7, label="")
+    hline!([c_gold], color="#8EAD3A", ls=:dash, alpha=0.7, label="")
 
     title!("La Regla de Oro: Consumo Estacionario vs. Tasa de Ahorro")
     xlabel!("Tasa de Ahorro (s)")

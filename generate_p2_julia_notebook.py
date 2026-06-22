@@ -168,30 +168,30 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     
     # Panel 1: Dinámica Temporal p y s
     t_axis = 0:(periods-1)
-    p1 = plot(t_axis, res["s"], color=:purple, lw=2.5, label="Tipo cambio (s)")
-    plot!(t_axis, res["p"], color=:forestgreen, lw=2.5, label="Precios (p)")
-    hline!([ss_init["s"]], color=:purple, ls=:dot, label="s Inicial")
-    hline!([ss_final["s"]], color=:purple, ls=:dash, label="s Final")
-    hline!([ss_init["p"]], color=:forestgreen, ls=:dot, label="p Inicial")
-    hline!([ss_final["p"]], color=:forestgreen, ls=:dash, label="p Final")
+    p1 = plot(t_axis, res["s"], color="#7A3E9F", lw=2.5, label="Tipo cambio (s)")
+    plot!(t_axis, res["p"], color="#8EAD3A", lw=2.5, label="Precios (p)")
+    hline!([ss_init["s"]], color="#7A3E9F", ls=:dot, label="s Inicial")
+    hline!([ss_final["s"]], color="#7A3E9F", ls=:dash, label="s Final")
+    hline!([ss_init["p"]], color="#8EAD3A", ls=:dot, label="p Inicial")
+    hline!([ss_final["p"]], color="#8EAD3A", ls=:dash, label="p Final")
     vline!([1], color=:red, ls=:dash, label="Shock (t=1)")
     title!("Trayectorias (s y p)")
     xlabel!("Tiempo (t)")
     ylabel!("Escala Log")
     
     # Panel 2: Interés y Demanda Agregada
-    p2 = plot(t_axis, res["i"], color=:steelblue, lw=2.0, label="Interés (i)")
-    plot!(t_axis, res["yd"], color=:orange, lw=2.0, label="Demanda (yd)")
-    hline!([z_final[4]], color=:steelblue, ls=:dash, label="i*")
-    hline!([z_final[3]], color=:orange, ls=:dash, label="ypot")
+    p2 = plot(t_axis, res["i"], color="#004C97", lw=2.0, label="Interés (i)")
+    plot!(t_axis, res["yd"], color="#D95319", lw=2.0, label="Demanda (yd)")
+    hline!([z_final[4]], color="#004C97", ls=:dash, label="i*")
+    hline!([z_final[3]], color="#D95319", ls=:dash, label="ypot")
     vline!([1], color=:red, ls=:dash, label="")
     title!("Tipos y Demanda")
     xlabel!("Tiempo (t)")
     
     # Panel 3: Diagrama de Fases
-    p3 = plot(res["p"], res["s"], color=:purple, lw=3, label="Trayectoria dinámica")
-    vline!([ss_final["p"]], color=:steelblue, ls=:dash, lw=2, label="ds = 0 (Final)")
-    vline!([ss_init["p"]], color=:steelblue, ls=:dot, label="ds = 0 (Inicial)")
+    p3 = plot(res["p"], res["s"], color="#7A3E9F", lw=3, label="Trayectoria dinámica")
+    vline!([ss_final["p"]], color="#004C97", ls=:dash, lw=2, label="ds = 0 (Final)")
+    vline!([ss_init["p"]], color="#004C97", ls=:dot, label="ds = 0 (Inicial)")
     
     p_vals = range(minimum(res["p"]) - 0.5, maximum(res["p"]) + 0.5, length=100)
     slope_dp = 1.0 + params_sim.beta2 / (params_sim.theta * params_sim.beta1)
@@ -201,8 +201,8 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     s_locus_init = c_locus_init .+ slope_dp .* p_vals
     s_locus_final = c_locus_final .+ slope_dp .* p_vals
     
-    plot!(p_vals, s_locus_init, color=:forestgreen, ls=:dot, label="dp = 0 (Inicial)")
-    plot!(p_vals, s_locus_final, color=:forestgreen, ls=:dash, lw=2, label="dp = 0 (Final)")
+    plot!(p_vals, s_locus_init, color="#8EAD3A", ls=:dot, label="dp = 0 (Inicial)")
+    plot!(p_vals, s_locus_final, color="#8EAD3A", ls=:dash, lw=2, label="dp = 0 (Final)")
     
     a_mat, _ = coefficient_matrices(params_sim)
     k_slope = (stable_lambda - a_mat[1,1]) / a_mat[1,2]
@@ -238,8 +238,8 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     scatter!([ss_final["p"]], [ss_final["s"]], color=:black, marker=:star, markersize=8, label="EE Fin")
 
     # Salto instantáneo del tipo de cambio en el periodo del shock (t=0 -> t=1)
-    plot!([res["p"][1], res["p"][2]], [res["s"][1], res["s"][2]], color=:purple, lw=2, arrow=:closed, label="")
-    annotate!(res["p"][1] - 0.15, (res["s"][1] + res["s"][2]) / 2, text("Jump", :purple, :bold, 9))
+    plot!([res["p"][1], res["p"][2]], [res["s"][1], res["s"][2]], color="#7A3E9F", lw=2, arrow=:closed, label="")
+    annotate!(res["p"][1] - 0.15, (res["s"][1] + res["s"][2]) / 2, text("Jump", "#7A3E9F", :bold, 9))
 
     title!("Plano de Fases (p, s)")
     xlabel!("Precios (p)")

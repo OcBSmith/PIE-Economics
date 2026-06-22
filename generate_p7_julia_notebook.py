@@ -67,25 +67,25 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tecnol�
     t_axis = 0:(T_sim - 1)
     t_shock = 1
 
-    p1 = plot(t_axis, res["Y"], color=:blue, lw=2.5, label="Producción (Y)")
+    p1 = plot(t_axis, res["Y"], color="#004C97", lw=2.5, label="Producción (Y)")
     hline!([ss_sim["Y"]], color=:gray, ls=:dot, label="")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Producción (Y)")
     xlabel!("Periodos")
 
-    p2 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
+    p2 = plot(t_axis, res["C"], color="#7A3E9F", lw=2.5, label="Consumo (C)")
     hline!([ss_sim["C"]], color=:gray, ls=:dot, label="")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Consumo (C)")
     xlabel!("Periodos")
 
-    p3 = plot(t_axis, res["I"], color=:orange, lw=2.5, label="Inversión (I)")
+    p3 = plot(t_axis, res["I"], color="#D95319", lw=2.5, label="Inversión (I)")
     hline!([ss_sim["I"]], color=:gray, ls=:dot, label="")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Inversión (I)")
     xlabel!("Periodos")
 
-    p4 = plot(t_axis, res["K"], color=:forestgreen, lw=2.5, label="Capital (K)")
+    p4 = plot(t_axis, res["K"], color="#8EAD3A", lw=2.5, label="Capital (K)")
     hline!([ss_sim["K"]], color=:gray, ls=:dot, label="")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Capital (K)")
@@ -121,22 +121,27 @@ nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) v
     t_axis = 0:(T_sim - 1)
     t_shock = 1
 
-    # Error de Capital
-    diff_K = abs.(res_nonlin["K"] .- res_lin["K"])
+    # Error relativo máximo en Consumo y Capital
+    diff_C = maximum(abs.(res_lin["C"] .- res_nonlin["C"])) / ss_comp["C"] * 100
+    diff_K = maximum(abs.(res_lin["K"] .- res_nonlin["K"])) / ss_comp["K"] * 100
+    println("Error relativo máximo en Consumo : ", round(diff_C, digits=4), "%")
+    println("Error relativo máximo en Capital  : ", round(diff_K, digits=4), "%")
 
-    p1 = plot(t_axis, res_nonlin["K"], color=:purple, lw=3, label="No Lineal")
-    plot!(t_axis, res_lin["K"], color=:blue, ls=:dash, lw=2, label="Lineal (BK)")
+    p1 = plot(t_axis, res_lin["C"], color="#7A3E9F", ls=:dash, lw=2, label="Blanchard-Khan (Linealizado)")
+    plot!(t_axis, res_nonlin["C"], color="#7A3E9F", lw=2, label="Exacto No Lineal")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
-    title!("Stock de Capital (K)")
-    xlabel!("Tiempo")
+    title!("Consumo (C): Comparación de resolvedores")
+    xlabel!("Periodo (t)")
+    ylabel!("C")
 
-    p2 = plot(t_axis, diff_K, color=:red, lw=2.5, label="Error Absoluto")
+    p2 = plot(t_axis, res_lin["K"], color="#8EAD3A", ls=:dash, lw=2, label="Blanchard-Khan (Linealizado)")
+    plot!(t_axis, res_nonlin["K"], color="#8EAD3A", lw=2, label="Exacto No Lineal")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
-    title!("Error de Aproximación")
-    xlabel!("Tiempo")
-    
-    plot(p1, p2, layout=(1,2), size=(800, 350), 
-         plot_title="Comparativa de Solucionadores (Shock $(epsilon_shock))", top_margin=10mm)
+    title!("Capital (K): Comparación de resolvedores")
+    xlabel!("Periodo (t)")
+    ylabel!("K")
+
+    plot(p1, p2, layout=(1,2), size=(900, 400), top_margin=10mm)
 end
 """))
 

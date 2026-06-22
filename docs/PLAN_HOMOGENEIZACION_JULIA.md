@@ -79,16 +79,16 @@ Bloque C+D, Bloque G+H completos.
 - [x] E24. P8: Añadir Panel 4 (tasa de crecimiento g_y)
 - [x] E25. P8: Cambiar diagrama de Regla de Oro al estilo curva consumo-ahorro — reescrito como `c̄(s)` con regiones sombreadas de (in)eficiencia dinámica, igual que Python
 - [x] E26. P3, P4, P5: Migrar sombreado acreedor/deudor a fillrange condicional — ya estaba hecho (usan `max./min.` + `fillrange=0`, el equivalente idiomático de Plots.jl al `fill_between(..., where=)` de matplotlib)
-- [ ] E27. Unificar colores con paleta UMA en P0
-- [ ] E28. Unificar colores con paleta UMA en P1
-- [ ] E29. Unificar colores con paleta UMA en P2
-- [ ] E30. Unificar colores con paleta UMA en P3
-- [ ] E31. Unificar colores con paleta UMA en P4
-- [ ] E32. Unificar colores con paleta UMA en P5
-- [ ] E33. Unificar colores con paleta UMA en P6
-- [ ] E34. Unificar colores con paleta UMA en P7
-- [ ] E35. Unificar colores con paleta UMA en P8
-- [ ] E36. Unificar colores con paleta UMA en P9
+- [~] E27. Unificar colores con paleta UMA en P0 — **no aplica**: el Python original de P0 usa estilo neutro en escala de grises (`color="0.25"`, `"0.3"`, `"black"` en `src/macroaicomp/plotting/phase_diagram.py`), no la paleta UMA; no hay nada que unificar
+- [x] E28. Unificar colores con paleta UMA en P1 — Y→#004C97, P→#8EAD3A, trayectoria→#7A3E9F, locus P_dot=0→#D95319, locus Y_dot=0→#0072BD
+- [x] E29. Unificar colores con paleta UMA en P2 — s/trayectoria→#7A3E9F, p→#8EAD3A, i→#004C97, yd/ypot→#D95319
+- [x] E30. Unificar colores con paleta UMA en P3 — C→#7A3E9F, W→#8EAD3A, B→#004C97, U/deuda→#D95319
+- [x] E31. Unificar colores con paleta UMA en P4 — C→#7A3E9F, W·L→#8EAD3A, L→#E05A47, O(ocio)→#3BB193, B→#004C97, deudor→#D95319
+- [x] E32. Unificar colores con paleta UMA en P5 — colores distintos por sección (lump-sum/distorsionador/SS) igual que Python: C→#7A3E9F, ingreso→#8EAD3A, L→#E05A47, O→#3BB193, B distorsionador→#004C97/#D95319, B privado SS→#D95319, Fondo SS→#8EAD3A
+- [x] E33. Unificar colores con paleta UMA en P6 — q→#7A3E9F, K→#004C97, I→#D95319 (la sección de diagrama de fases ya usaba estos mismos hex de antes; el scatter "Salto Inicial" se deja en `:orange` porque Python también usa el 'orange' genérico ahí, no el hex)
+- [x] E34. Unificar colores con paleta UMA en P7 — Y→#004C97, C→#7A3E9F, I→#D95319, K→#8EAD3A (de paso se corrigió J4: la celda de comparación BK-vs-no-lineal mostraba K y un "error absoluto" en vez de C y K con error relativo, como hace Python)
+- [x] E35. Unificar colores con paleta UMA en P8 — corregido un mapeo de colores "desordenado" (k usaba azul, y usaba púrpura, c usaba verde — ninguno coincidía con Python): k→#8EAD3A, y→#004C97, c→#7A3E9F, gy→#D95319; SS Final corregido de negro a rojo; panel de Regla de Oro con las regiones pastel exactas de Python (#E6F2FF/#FFE6E6) y el punto de la Regla de Oro en #8EAD3A
+- [x] E36. Unificar colores con paleta UMA en P9 — Y→#004C97, C→#7A3E9F, I→#D95319, K→#8EAD3A; SS Final corregido de negro a rojo (coincidiendo con P8)
 - [ ] E37. Unificar etiquetas/títulos/leyendas descriptivos en P0
 - [ ] E38. Unificar etiquetas/títulos/leyendas descriptivos en P1
 - [ ] E39. Unificar etiquetas/títulos/leyendas descriptivos en P2
@@ -149,7 +149,7 @@ la Sección 1 imprime una diferencia de consumo de `0.0` exacto.
 - [ ] J1. P2: Igualar tolerancias @assert con las del texto markdown
 - [ ] J2. P3: Añadir valores C(0), C(T-1), B(T-1) ambos solvers + ✅/❌
 - [ ] J3. P4: Añadir valores C(0), L(0), B(T-1) ambos solvers + ✅/❌
-- [ ] J4. P7: Añadir cálculo e impresión de error relativo máximo (C y K)
+- [x] J4. P7: Añadir cálculo e impresión de error relativo máximo (C y K) — corregido de paso al unificar colores (E34): la celda solo comparaba K con un "error absoluto" en un panel separado; ahora compara C y K igual que Python, con el error relativo máximo de ambos impreso
 - [x] J5. P9: Añadir cálculo e impresión de error relativo máximo
 
 ## TIPO K — Bugs de implementación
