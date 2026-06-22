@@ -25,6 +25,8 @@ no está bien reflejado en el plan maestro, añádelo a **Hallazgos**.
 | 3 | Empezar por **contenido** (P0 en Python) antes que por infraestructura completa (CI, pre-commit, Julia, GitHub Actions) | 2026-06-17 | Con el presupuesto y dedicación parcial del equipo, el rigor de ingeniería completo arriesga llegar al Mes 7 (piloto en aula) sin nada probado con alumnos reales; se prioriza tener algo demostrable pronto |
 | 4 | Entorno reproducible local: `venv` (`.venv/`) + `pip install -e ".[dev]"` | 2026-06-17 | Más simple que Conda/devcontainer para una sola máquina de desarrollo; se revisará cuando haya que dar el entorno a Torres/Cabello o a alumnos |
 | 5 | Notebooks se ejecutan con `jupyter nbconvert --execute` antes de comitear, y los outputs se limpian con `nbstripout` | 2026-06-17 | Cumple la regla del plan (§0.3): "Restart & Run All" sin error es el test mínimo; outputs no van al repo |
+| 6 | En P0 se usa un **gráfico estático multi-escenario** en vez de un slider interactivo (`@manipulate`/`Interact.jl`) en Julia | 2026-06-22 | `WebIO.jl` (la base de `Interact.jl`) depende de la extensión `webio-jupyterlab-provider`, que solo soporta JupyterLab 3.x (`@jupyterlab/application >=3.0.0 <4.0.0` declarado en su propio manifiesto) — incompatibilidad estructural confirmada con JupyterLab 4.5.9, el que usa este proyecto. La única alternativa sería bajar JupyterLab a 3.x en las 10 prácticas, que se descarta por ahora. El gráfico estático (4 escenarios fijos en la misma figura) da la misma información pedagógica y funciona siempre (local, Binder, Colab) |
+| 7 | **P0 se va a usar como práctica de referencia pedagógica**: se revisará a fondo (Python y Julia) para maximizar su calidad didáctica, y esa revisión servirá de plantilla/ejemplo para mejorar la pedagogía del resto de prácticas (P1-P9) | 2026-06-22 | Decisión del usuario tras cerrar el plan de homogeneización Julia↔Python; pendiente de definir el alcance concreto de "aumentar la pedagogía" en una próxima sesión |
 
 ## Hallazgos sobre el libro / la fuente
 
@@ -320,4 +322,48 @@ Pendiente del monorepo objetivo (plan §1.2): `prompts/`, `bitacora/`,
   ya que esa funcionalidad nunca se implementó de verdad en ninguno de los
   dos lenguajes). Verificado con `nbconvert --execute` que la celda ahora
   ejecuta limpia de principio a fin.
+
+### 2026-06-22 (Sesión 22 — Bug de WebIO en P0, investigación y cierre)
+
+- El usuario reportó en vivo (vía capturas de pantalla del servidor Jupyter
+  local) el error `WebIO not detected` en dos celdas de la versión Julia
+  de P0, y un `NameError: name 'interact' is not defined` en la versión
+  Python.
+- **P0 Julia — causa raíz encontrada**: una sesión anterior (2026-06-21,
+  commits `3d87664`/`9a20a80`) ya había diagnosticado y arreglado este
+  mismo problema, reemplazando `@manipulate` por un gráfico estático de 4
+  escenarios. Pero ese fix solo tocó el `.ipynb` generado, nunca
+  `generate_p0_julia_notebook.py` — exactamente el mismo patrón que ya
+  había pasado con P1 (ver Sesión 21). Al regenerar P0 varias veces durante
+  el plan de homogeneización del 22 de junio, `using Interact` y
+  `@manipulate` volvieron a aparecer. Corregido de verdad en el script
+  esta vez (commit `e9f40a0`).
+- De paso se detectó que esa celda estática portada usaba colores Julia
+  genéricos (`:steelblue, :darkorange, :purple, :crimson`) en vez de la
+  paleta UMA recién unificada en el resto del notebook esa misma sesión —
+  corregido (commit `805d333`).
+- **Investigación de fondo sobre WebIO** (a petición explícita del
+  usuario, que quería intentar el slider real antes de aceptar el
+  estático): se instaló la extensión oficial `webio_jupyter_extension` y
+  `jupyter labextension list --verbose` confirmó la incompatibilidad
+  exacta: `webio-jupyterlab-provider@0.1.0` declara
+  `@jupyterlab/application >=3.0.0 <4.0.0`, mientras el proyecto usa
+  JupyterLab `4.5.9`. Es una incompatibilidad estructural del paquete
+  (sin actualizar desde la era de JupyterLab 3.x), no un problema de
+  configuración local — afectaría igual en Binder o Colab. Extensión
+  desinstalada tras confirmar el hallazgo. Decisión registrada como
+  Decisión técnica #6: mantener el gráfico estático en P0.
+- **P0 Python**: confirmado que no había ningún bug real — el `NameError`
+  ocurría porque el usuario ejecutó la celda del widget sin ejecutar antes
+  la celda de imports en ese kernel. Verificado con
+  `nbconvert --execute` (Restart & Run All) que el notebook completo
+  ejecuta sin ningún error (commit `7771d2d`).
+- **Nueva decisión de alcance** (Decisión técnica #7): P0 se usará como
+  práctica de referencia pedagógica. Se revisará a fondo en Python y
+  Julia para maximizar su calidad didáctica, y esa revisión servirá de
+  plantilla para mejorar la pedagogía de P1-P9. **Pendiente**: definir en
+  una próxima sesión qué significa concretamente "aumentar la pedagogía"
+  para P0 (¿más derivaciones paso a paso?, ¿más preguntas de bitácora?,
+  ¿mejor guía para dummies?, ¿comparación lado a lado Python/Julia?) antes
+  de empezar a implementarlo.
 
