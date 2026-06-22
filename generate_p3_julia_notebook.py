@@ -32,7 +32,13 @@ using BenchmarkTools
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
 nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration(ConsumptionSavingParameters)
-println("Parámetros: ", params)
+
+println("CALIBRACIÓN ECONÓMICA BASE:")
+println("-"^50)
+println("  Duración del ciclo de vida (T)  : ", params.T, " periodos")
+println("  Factor de descuento (beta)      : ", params.beta, " (equivale a theta ≈ ", round((1-params.beta)/params.beta*100, digits=2), "%)")
+println("  Tasa de interés real (R)        : ", round(params.R*100, digits=2), "%")
+println("-"^50)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))

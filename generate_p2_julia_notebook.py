@@ -32,7 +32,32 @@ using BenchmarkTools
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
 nb.cells.append(nbf.v4.new_code_cell("""params_sim = default_calibration(DornbuschParams)
-println(params_sim)
+
+# Glosario didáctico: descripción económica y símbolo de cada parámetro técnico
+descriptions = Dict(
+    "psi" => "Sensibilidad de la demanda de dinero respecto al PIB [ψ]",
+    "theta" => "Sensibilidad de la demanda de dinero respecto al interés nominal [θ]",
+    "beta1" => "Sensibilidad de la demanda agregada respecto al tipo de cambio real [β1]",
+    "beta2" => "Sensibilidad de la demanda agregada respecto al interés nominal [β2]",
+    "mi" => "Velocidad de ajuste de precios ante excesos de demanda (Phillips) [μ]",
+    "beta0" => "Demanda agregada autónoma base [β0]",
+    "m0" => "Oferta monetaria nominal (logaritmo) [M0]",
+    "ypot0" => "Producción potencial (pleno empleo) [ypot]",
+    "pstar0" => "Logaritmo del nivel de precios extranjero [pstar]",
+    "istar0" => "Tipo de interés nominal extranjero (porcentaje) [istar]",
+)
+
+println("CALIBRACIÓN ECONÓMICA DE REFERENCIA (Valores base del Libro):")
+println("="^78)
+println(rpad("Variable", 12), " | ", rpad("Valor", 6), " | ", rpad("Descripción Económica", 50))
+println("-"^78)
+for field in fieldnames(typeof(params_sim))
+    name = string(field)
+    value = getfield(params_sim, field)
+    desc = get(descriptions, name, "Parámetro del modelo")
+    println("  ", rpad(name, 10), " | ", rpad(value, 6), " | ", rpad(desc, 50))
+end
+println("="^78)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))

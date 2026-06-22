@@ -34,7 +34,32 @@ using BenchmarkTools
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
 nb.cells.append(nbf.v4.new_code_cell("""params_lumpsum = default_calibration(FiscalPolicyParameters)
-println("Parámetros Base: ", params_lumpsum)
+
+# Glosario didáctico: descripción económica y símbolo de cada parámetro técnico
+descriptions = Dict(
+    "T" => "Duración del ciclo de vida [T]",
+    "beta" => "Factor de descuento intertemporal [β]",
+    "R" => "Tipo de interés real [R]",
+    "gamma" => "Peso del consumo en la función de utilidad [γ]",
+    "B0" => "Activos iniciales [B0]",
+    "tauw" => "Tasa impositiva sobre el salario [τw]",
+    "tauc" => "Tasa impositiva sobre el consumo [τc]",
+    "taur" => "Tasa impositiva sobre las rentas del capital [τr]",
+    "tau_ss" => "Cotización a la Seguridad Social [τss]",
+    "t_star" => "Periodo de jubilación [t*]",
+)
+
+println("CALIBRACIÓN ECONÓMICA DE REFERENCIA (Valores base del Libro):")
+println("="^75)
+println(rpad("Variable", 12), " | ", rpad("Valor", 6), " | ", rpad("Descripción Económica", 50))
+println("-"^75)
+for field in fieldnames(typeof(params_lumpsum))
+    name = string(field)
+    value = getfield(params_lumpsum, field)
+    desc = get(descriptions, name, "Parámetro del modelo")
+    println("  ", rpad(name, 10), " | ", rpad(value, 6), " | ", rpad(desc, 50))
+end
+println("="^75)
 """))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante (calibración base: T=30, beta=0.97, R=0.05)

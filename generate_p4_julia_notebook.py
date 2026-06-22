@@ -32,7 +32,14 @@ using BenchmarkTools
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
 nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration(ConsumptionLeisureParameters)
-println("Parámetros Base: ", params)
+
+println("CALIBRACIÓN BASE DE REFERENCIA:")
+println("-"^60)
+println("  Lifespan (T)                     : ", params.T, " periodos")
+println("  Factor de descuento (beta)       : ", params.beta, " (theta ≈ ", round((1-params.beta)/params.beta*100, digits=2), "%)")
+println("  Peso del consumo en utilidad (γ) : ", round(params.gamma, digits=2))
+println("  Tasa de interés real (R)         : ", round(params.R*100, digits=2), "%")
+println("-"^60)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))

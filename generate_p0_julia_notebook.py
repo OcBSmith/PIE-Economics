@@ -106,7 +106,9 @@ nb.cells.append(nbf.v4.new_code_cell(r"""params_global = ArmsRaceParams(
 )
 z_initial = [1.0, 1.0]
 
-params_global
+# Equivalente al asdict(params_global) de Python: muestra cada campo con su nombre
+(alpha=params_global.alpha, beta=params_global.beta, gamma=params_global.gamma,
+ delta=params_global.delta, theta=params_global.theta, eta=params_global.eta)
 """))
 
 # 6. RESOLUCIÓN

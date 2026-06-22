@@ -138,11 +138,11 @@ la Sección 1 imprime una diferencia de consumo de `0.0` exacto.
 
 ## TIPO I — Calibración menos informativa
 
-- [ ] I1. P0: Añadir printing formateado de calibración con tabla
-- [ ] I2. P2: Añadir printing formateado de calibración con tabla y descripciones
-- [ ] I3. P3: Añadir printing formateado de calibración con θ calculado
-- [ ] I4. P4: Añadir printing formateado de calibración con θ calculado
-- [ ] I5. P5: Añadir printing formateado de calibración con tabla
+- [x] I1. P0: Añadir printing formateado de calibración con tabla — Python solo usa `asdict(params_global)`; equivalente en Julia con un NamedTuple explícito (muestra nombre de cada campo)
+- [x] I2. P2: Añadir printing formateado de calibración con tabla y descripciones
+- [x] I3. P3: Añadir printing formateado de calibración con θ calculado
+- [x] I4. P4: Añadir printing formateado de calibración con θ calculado
+- [x] I5. P5: Añadir printing formateado de calibración con tabla — Python no tiene un equivalente exacto aquí (no construye un único objeto de calibración con print formateado); se añadió la misma tabla con glosario usada en P1/P2 para mantener la coherencia pedagógica
 
 ## TIPO J — Verificación más pobre
 
