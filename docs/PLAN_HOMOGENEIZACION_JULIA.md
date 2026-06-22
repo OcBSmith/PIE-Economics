@@ -103,7 +103,7 @@ Bloque C+D, Bloque G+H completos.
 
 ## TIPO F — Falta de interactividad (widgets)
 
-- [x] F1. P0: Implementar @manipulate con slider en vez de función estática
+- [!] F1. P0: Implementar @manipulate con slider en vez de función estática — **revertido intencionadamente**: el `@manipulate` (vía `Interact.jl`) depende de `WebIO.jl`, que requiere una extensión de Jupyter no garantizada en todos los entornos y produce el error "WebIO not detected" (confirmado por el usuario el 2026-06-22 en P0). El equipo ya había decidido esto antes (commits `3d87664`/`9a20a80`, 2026-06-21: "reemplazar Interact.jl/WebIO por gráfico estático multi-escenario"), pero el fix solo se aplicó al notebook generado, nunca al script `generate_p0_julia_notebook.py` — por eso volvió a aparecer al regenerar. Corregido en el script esta vez, no solo en el `.ipynb`. P0 usa un gráfico estático con 4 escenarios de z1 en vez de `@manipulate`; no se debe revertir este ítem sin resolver primero el problema de WebIO.
 - [x] F2. P1: Implementar @manipulate con ambos sliders (m0 + beta0)
 - [x] F3. Añadir descripciones en español a sliders en P3, P4, P5, P6, P7, P8, P9 — vía `slider(rango; value=..., label="...")` de Interact.jl, con el mismo texto que el `description=` de Python; aplicado también a P0/P1/P2 donde aplicaba
 

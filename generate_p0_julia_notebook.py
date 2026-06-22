@@ -63,7 +63,6 @@ using Plots
 import Plots: mm          # Para usar unidades de margen (p.ej. top_margin=10mm)
 default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
-using Interact   # Para el widget interactivo equivalente a ipywidgets en Python
 using BenchmarkTools
 """))
 
@@ -285,35 +284,37 @@ plot(p_s1, p_s2, layout=(1, 2), size=(800, 400),
     )
 )
 
-# 12. WIDGET INTERACTIVO SHOCK Z1 (equivalente al FloatSlider de Python)
+# 12. ANÁLISIS DE SENSIBILIDAD AL SHOCK Z1 (gráfico estático multi-escenario)
 nb.cells.append(
-    nbf.v4.new_markdown_cell(r"""## 9. Widget interactivo — sensibilidad al shock de z1
+    nbf.v4.new_markdown_cell(r"""## 9. Análisis de sensibilidad al shock de z1
 
-Equivalente al `FloatSlider` de `ipywidgets` en Python: usa `@manipulate` de `Interact.jl`
-para mover el slider de $z_1^{\text{final}}$ en tiempo real y ver la respuesta dinámica
-del sistema ante distintas magnitudes de shock.
+Comparamos la respuesta dinámica ante **cuatro magnitudes de shock** distintas sobre
+$z_1^{\text{final}}$ (−1.0, 0.5, 2.0 y 3.5). Usamos un gráfico estático con varios
+escenarios en vez de un slider interactivo de `Interact.jl`/`@manipulate`: ese widget
+depende de `WebIO.jl`, que requiere una extensión de Jupyter que no está garantizada en
+todos los entornos (local, Binder, Colab) y produce el aviso "WebIO not detected" cuando
+falta. Este enfoque es equivalente pedagógicamente y funciona en cualquier entorno.
 """)
 )
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# Widget interactivo equivalente al FloatSlider de Python
-# Mueve el slider para cambiar la magnitud del shock sobre z1
-@manipulate for z1_final in slider(-2.0:0.25:4.0; value=2.0)
-    x1_p, x2_p = simulate(params_global, z_initial, [z1_final, 1.0], 30, 2)
+nb.cells.append(nbf.v4.new_code_cell(r"""# Análisis de sensibilidad: 4 escenarios de shock sobre z1
+# (equivalente al slider interactivo de Python, sin necesitar WebIO)
+z1_scenarios = [-1.0, 0.5, 2.0, 3.5]
+colors = [:steelblue, :darkorange, :purple, :crimson]
+t_ax = 0:29
 
-    t_ax = 0:29
-    p_a = plot(t_ax, x1_p,
-               label="x1", color=:steelblue, linewidth=2.5,
-               title="Variable x1", xlabel="Periodos", ylabel="Stock de armamento")
+p_a = plot(title="Variable x1", xlabel="Periodos", ylabel="Stock de armamento", legend=:bottomright)
+p_b = plot(title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento", legend=:topright)
 
-    p_b = plot(t_ax, x2_p,
-               label="x2", color=:forestgreen, linewidth=2.5,
-               title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento")
-
-    # top_margin reserva espacio para el plot_title y evita solapamiento con los títulos de subplot
-    plot(p_a, p_b, layout=(1, 2), size=(820, 400),
-         plot_title="Shock z1: 1 -> $z1_final",
-         top_margin=10mm)
+for (z1_val, col) in zip(z1_scenarios, colors)
+    x1_p, x2_p = simulate(params_global, z_initial, [z1_val, 1.0], 30, 2)
+    plot!(p_a, t_ax, x1_p, label="z1 → $(z1_val)", color=col, linewidth=2.0)
+    plot!(p_b, t_ax, x2_p, label="z1 → $(z1_val)", color=col, linewidth=2.0)
 end
+
+plot(p_a, p_b, layout=(1,2), size=(900,400),
+     plot_title="Sensibilidad al shock de z1",
+     plot_titlefontsize=11, top_margin=10mm)
 """))
 
 # 13. BUENAS PRÁCTICAS
