@@ -24,6 +24,7 @@ Pkg.instantiate()
 using MacroAIComp
 using Plots
 import Plots: mm
+default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
 using DifferentialEquations
 using Interact

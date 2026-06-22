@@ -61,6 +61,7 @@ Pkg.instantiate()
 using MacroAIComp
 using Plots
 import Plots: mm          # Para usar unidades de margen (p.ej. top_margin=10mm)
+default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
 using Interact   # Para el widget interactivo equivalente a ipywidgets en Python
 using BenchmarkTools

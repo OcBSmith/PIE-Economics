@@ -53,22 +53,22 @@ Bloque C+D, Bloque G+H completos.
 
 ## TIPO E — Visualización inferior o distinta
 
-- [ ] E1. Añadir grid a todos los gráficos de P0
-- [ ] E2. Añadir grid a todos los gráficos de P1
-- [ ] E3. Añadir grid a todos los gráficos de P2
-- [ ] E4. Añadir grid a todos los gráficos de P3
-- [ ] E5. Añadir grid a todos los gráficos de P4
-- [ ] E6. Añadir grid a todos los gráficos de P5
-- [ ] E7. Añadir grid a todos los gráficos de P6
-- [ ] E8. Añadir grid a todos los gráficos de P7
-- [ ] E9. Añadir grid a todos los gráficos de P8
-- [ ] E10. Añadir grid a todos los gráficos de P9
-- [ ] E11. Añadir línea vertical de shock (vline! en t=shock) en P1
-- [ ] E12. Añadir línea vertical de shock en P2
-- [ ] E13. Añadir línea vertical de shock en P7
+- [x] E1. Añadir grid a todos los gráficos de P0 — Plots.jl ya muestra grid por defecto (`gridalpha=0.1`, sólido), pero era casi invisible comparado con el `ax.grid(True, linestyle=':', alpha=0.6)` de matplotlib; añadido `default(gridalpha=0.6, gridstyle=:dot)` global en la celda de imports, una sola vez por notebook, aplica a todos los gráficos
+- [x] E2. Añadir grid a todos los gráficos de P1
+- [x] E3. Añadir grid a todos los gráficos de P2
+- [x] E4. Añadir grid a todos los gráficos de P3
+- [x] E5. Añadir grid a todos los gráficos de P4
+- [x] E6. Añadir grid a todos los gráficos de P5
+- [x] E7. Añadir grid a todos los gráficos de P6
+- [x] E8. Añadir grid a todos los gráficos de P7
+- [x] E9. Añadir grid a todos los gráficos de P8
+- [x] E10. Añadir grid a todos los gráficos de P9
+- [~] E11. Añadir línea vertical de shock (vline! en t=shock) en P1 — **no aplica**: el modelo es de tiempo continuo y el shock se aplica desde t=0 (todo el tramo simulado es post-shock), Python tampoco tiene esta línea en ningún panel
+- [x] E12. Añadir línea vertical de shock en P2
+- [x] E13. Añadir línea vertical de shock en P7 — de paso se corrigió un bug real de indexado: el shock se aplicaba en t=0 (índice 1 de Julia) en vez de t=1 (índice 2), un período antes que en Python
 - [x] E14. Añadir línea vertical de shock en P8 (unificar t_shock=5)
 - [x] E15. Añadir línea vertical de shock en P9 (unificar t_shock=5)
-- [ ] E16. P1: Añadir Panel 3 (diagrama de fases con quiver, loci Ydot=0, Pdot=0)
+- [x] E16. P1: Añadir Panel 3 (diagrama de fases con quiver, loci Ydot=0, Pdot=0) — ya estaba en el generador
 - [ ] E17. P2: Añadir anotación de flecha "Jump" en diagrama de fases
 - [x] E18. P6: Añadir streamplot/campo vectorial en diagrama de fases
 - [x] E19. P6: Añadir Saddle Path como línea dibujada explícitamente

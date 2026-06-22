@@ -24,6 +24,7 @@ Pkg.instantiate()
 using MacroAIComp
 using Plots
 import Plots: mm
+default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
 using NLsolve
 using Interact
@@ -52,36 +53,41 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tecnol�
     K0 = ss_sim["K"]
     T_sim = 50
     
-    # Path del TFP
+    # Path del TFP: shock ocurre en t=1 (índice 2 en Julia), igual que en Python
     A_path = ones(T_sim)
     a_shock = zeros(T_sim)
-    a_shock[1] = epsilon
-    for t in 2:T_sim
+    a_shock[2] = epsilon
+    for t in 3:T_sim
         a_shock[t] = rho_val * a_shock[t-1]
     end
     A_path .= exp.(a_shock)
-    
+
     res = solve_nonlinear_simulation(params, K0, A_path, T_sim)
-    
+
     t_axis = 0:(T_sim - 1)
-    
+    t_shock = 1
+
     p1 = plot(t_axis, res["Y"], color=:blue, lw=2.5, label="Producción (Y)")
     hline!([ss_sim["Y"]], color=:gray, ls=:dot, label="")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Producción (Y)")
     xlabel!("Periodos")
-    
+
     p2 = plot(t_axis, res["C"], color=:purple, lw=2.5, label="Consumo (C)")
     hline!([ss_sim["C"]], color=:gray, ls=:dot, label="")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Consumo (C)")
     xlabel!("Periodos")
-    
+
     p3 = plot(t_axis, res["I"], color=:orange, lw=2.5, label="Inversión (I)")
     hline!([ss_sim["I"]], color=:gray, ls=:dot, label="")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Inversión (I)")
     xlabel!("Periodos")
-    
+
     p4 = plot(t_axis, res["K"], color=:forestgreen, lw=2.5, label="Capital (K)")
     hline!([ss_sim["K"]], color=:gray, ls=:dot, label="")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Capital (K)")
     xlabel!("Periodos")
     
@@ -102,27 +108,30 @@ nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) v
     
     A_path = ones(T_sim)
     a_s = zeros(T_sim)
-    a_s[1] = epsilon_shock
-    for t in 2:T_sim
+    a_s[2] = epsilon_shock  # shock ocurre en t=1 (índice 2 en Julia), igual que en Python
+    for t in 3:T_sim
         a_s[t] = params.rho * a_s[t-1]
     end
     A_path .= exp.(a_s)
-    
+
     # Resolver
     res_lin = solve_blanchard_khan(params, K0, A_path, T_sim)
     res_nonlin = solve_nonlinear_simulation(params, K0, A_path, T_sim)
-    
+
     t_axis = 0:(T_sim - 1)
-    
+    t_shock = 1
+
     # Error de Capital
     diff_K = abs.(res_nonlin["K"] .- res_lin["K"])
-    
+
     p1 = plot(t_axis, res_nonlin["K"], color=:purple, lw=3, label="No Lineal")
     plot!(t_axis, res_lin["K"], color=:blue, ls=:dash, lw=2, label="Lineal (BK)")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Stock de Capital (K)")
     xlabel!("Tiempo")
-    
+
     p2 = plot(t_axis, diff_K, color=:red, lw=2.5, label="Error Absoluto")
+    vline!([t_shock], color=:grey, ls=:dot, alpha=0.7, label="")
     title!("Error de Aproximación")
     xlabel!("Tiempo")
     
