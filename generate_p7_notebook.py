@@ -236,10 +236,10 @@ def plot_solver_comparison(epsilon_shock=0.01, use_matlab_timing=False):
     A_path = np.exp(a_hat)
     
     # 1. Solución Blanchard-Khan
-    res_bk = solve_blanchard_khan(params, K0, A_path, T=T, use_matlab_timing=use_matlab_timing)
-    
+    res_bk = solve_blanchard_khan(params, K0, A_path, T=T)
+
     # 2. Solución No Lineal Exacta
-    res_nonlin = solve_nonlinear_simulation(params, K0, A_path, T=T, use_matlab_timing=use_matlab_timing)
+    res_nonlin = solve_nonlinear_simulation(params, K0, A_path, T=T)
     
     # Graficar comparación de Consumo y Capital
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))

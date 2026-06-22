@@ -167,7 +167,7 @@ la Sección 1 imprime una diferencia de consumo de `0.0` exacto.
 
 - [ ] M1. P5: Añadir simulación interactiva de lump-sum (Sección 1)
 - [ ] M2. P5: Añadir verificación FOC vs optimización directa
-- [!] M3. P7: Añadir checkbox use_matlab_timing — **BLOQUEADO, bug real en Python**: `generate_p7_notebook.py` llama a `solve_blanchard_khan(..., use_matlab_timing=...)` y `solve_nonlinear_simulation(..., use_matlab_timing=...)`, pero esas funciones en `src/macroaicomp/models/dge.py` NO aceptan ese parámetro (confirmado: lanza `TypeError` si se ejecuta). No hay comportamiento de referencia que copiar a Julia sin antes diseñar e implementar `use_matlab_timing` en ambos lenguajes — eso es trabajo nuevo, no homogeneización. Pendiente de decisión del usuario.
+- [!] M3. P7: Añadir checkbox use_matlab_timing — **bug en Python ya corregido** (se quitó el kwarg `use_matlab_timing=...` de las llamadas a `solve_blanchard_khan`/`solve_nonlinear_simulation` en `generate_p7_notebook.py`, que lanzaban `TypeError` si se ejecutaban; verificado con `nbconvert --execute` que la celda ahora corre limpia). El checkbox sigue en el Python original pero ya **no tiene ningún efecto real** — nunca se implementó un `use_matlab_timing` que cambie el comportamiento del modelo en ninguno de los dos lenguajes. Añadir un checkbox equivalente en Julia solo replicaría un control decorativo sin función; queda sin hacer hasta que (si alguna vez se quiere) se diseñe e implemente el toggle real en ambos lenguajes — eso sería trabajo nuevo, no homogeneización.
 - [x] M4. P7: Añadir slider de δ (actualmente hardcodeado) — `delta_val` estaba fijo a 0.05 en `DGEParams(alpha_val, beta_val, 0.05, rho_val, 1.0)`; añadido como slider interactivo igual que en Python
 
 ---

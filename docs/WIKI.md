@@ -300,4 +300,24 @@ Pendiente del monorepo objetivo (plan §1.2): `prompts/`, `bitacora/`,
 - 44/44 tests pytest y la suite completa de Julia (867 tests) en verde.
 - Checklist actualizado: Bloque G+H completo (más F1/F2, que ya estaban
   satisfechos de sesiones anteriores pero nunca se habían marcado).
+- **Cierre del Bloque E completo** (E1-E47) en varios commits adicionales:
+  grid global (`default(gridalpha=0.6, gridstyle=:dot)`), paleta de colores
+  UMA en los 9 notebooks (con bugs reales encontrados de paso: mapeo de
+  colores desordenado en P8, "SS Final" en negro en vez de rojo en P8/P9,
+  estructura de la celda de comparación de P7 no coincidía con Python),
+  y títulos/etiquetas descriptivos.
+- **F3, G2, M4, J1-J3 cerrados**: descripciones en español a los sliders
+  vía `slider(rango; value=..., label="...")` de Interact.jl; slider de δ
+  añadido en P7 (antes hardcodeado); tolerancias de verificación ajustadas
+  en P2/P3/P4.
+- **Bug real encontrado en el Python original (no en Julia)**: al intentar
+  implementar M3 (checkbox `use_matlab_timing` en P7), se descubrió que
+  `generate_p7_notebook.py` llamaba a `solve_blanchard_khan` y
+  `solve_nonlinear_simulation` con un kwarg `use_matlab_timing` que esas
+  funciones de `src/macroaicomp/models/dge.py` no aceptan — lanzaba
+  `TypeError` si un alumno ejecutaba esa celda. Corregido quitando el kwarg
+  de las llamadas (el checkbox queda en la interfaz pero sin efecto real,
+  ya que esa funcionalidad nunca se implementó de verdad en ninguno de los
+  dos lenguajes). Verificado con `nbconvert --execute` que la celda ahora
+  ejecuta limpia de principio a fin.
 
