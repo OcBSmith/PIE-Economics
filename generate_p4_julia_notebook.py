@@ -51,7 +51,7 @@ println("Diferencia media en Trabajo (FOC vs Optim): ", sum(abs.(res_foc["L"] .-
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl
-@manipulate for beta_val in 0.90:0.01:0.99, gamma_val in 0.10:0.05:0.90, R_val in -0.05:0.01:0.15, W_val in 10.0:5.0:100.0
+@manipulate for beta_val in slider([0.90:0.01:0.99; 0.999]; value=0.97), gamma_val in 0.10:0.05:0.90, R_val in -0.05:0.01:0.15, W_val in 10.0:5.0:100.0
     
     params_int = ConsumptionLeisureParameters(30, beta_val, gamma_val, R_val, 0.0)
     W = fill(W_val, params_int.T)

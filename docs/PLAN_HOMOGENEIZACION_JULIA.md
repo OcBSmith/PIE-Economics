@@ -4,6 +4,16 @@
 
 ---
 
+## ESTADO — EMPEZAR AQUÍ
+
+**Commiteado y verificado** (ver `git log`): Bloque K, Bloque A, Bloque B,
+Bloque C+D, Bloque G+H completos.
+
+**Siguiente**: Bloque I (calibración informativa), luego Bloque E
+(visualización — el más grande, ~3 días), F, J, M.
+
+---
+
 ## TIPO A — Errores de copy-paste (texto no adaptado a Julia)
 
 - [x] A1. Buscar/reemplazar `.py` → `.jl` en secciones "Buenas Prácticas" (P0-P9) — vía `scratch/md_extractor.py` (P0 no usa md_extractor y ya no contenía el término)
@@ -93,30 +103,38 @@
 
 ## TIPO F — Falta de interactividad (widgets)
 
-- [ ] F1. P0: Implementar @manipulate con slider en vez de función estática
-- [ ] F2. P1: Implementar @manipulate con ambos sliders (m0 + beta0)
+- [x] F1. P0: Implementar @manipulate con slider en vez de función estática
+- [x] F2. P1: Implementar @manipulate con ambos sliders (m0 + beta0)
 - [ ] F3. Añadir descripciones en español a sliders en P3, P4, P5, P6, P7, P8, P9
 
 ## TIPO G — Rangos de sliders diferentes
 
-- [ ] G1. P0: Unificar z1_final default a 2.0, rango -2.0:0.25:4.0
-- [ ] G2. P1: Unificar m0_shock default a 110.0, rango 80:2:120
-- [ ] G3. P3: Extender β max a 0.999 (desde 0.99)
-- [ ] G4. P4: Extender β max a 0.999 (desde 0.99)
-- [ ] G5. P5: Unificar τss max a 0.60, τr max a 0.80
+- [x] G1. P0: Unificar z1_final default a 2.0, rango -2.0:0.25:4.0 — vía `slider(-2.0:0.25:4.0; value=2.0)`
+- [ ] G2. P1: Unificar m0_shock default a 110.0, rango 80:2:120 — sin tocar; el rango actual (`80.0:1.0:120.0`) no coincide en step (1.0 vs 2) ni en centrado del default
+- [x] G3. P3: Extender β max a 0.999 (desde 0.99) — vía `slider([0.90:0.01:0.99; 0.999]; value=0.97)`
+- [x] G4. P4: Extender β max a 0.999 (desde 0.99) — mismo fix que G3
+- [x] G5. P5: Unificar τss max a 0.60, τr max a 0.80
 - [x] G6. P6: Unificar R range 0.01:0.005:0.08, φ max 30, δ range 0.01:0.01:0.15, α max 0.50
-- [ ] G7. P7: Permitir ε negativos (-0.05:0.01:0.05), ρ 0.0:0.05:0.99
+- [x] G7. P7: Permitir ε negativos (-0.05:0.01:0.05), ρ 0.0:0.05:0.99 — vía `slider(-0.05:0.005:0.05; value=0.01)` y `slider(0.0:0.05:0.99; value=0.80)`
 - [x] G8. P9: Unificar A_final default a 1.05, rango 0.90:0.01:1.20
-- [ ] G9. P9: Unificar β_final default a 0.97, A comparación rango 0.70:0.02:1.30
+- [x] G9. P9: Unificar β_final default a 0.97, A comparación rango 0.70:0.02:1.30 — vía `slider(0.92:0.01:0.99; value=0.97)`
 
 ## TIPO H — Parámetros económicos distintos
 
-- [ ] H1. P5: Unificar R=0.05 (desde 0.02)
-- [ ] H2. P5: Unificar γ=0.40 (desde 0.50)
-- [ ] H3. P5: Unificar W lumpsum=10.0, distortionary=100.0
-- [ ] H4. P5: Unificar perfil salarial SS creciente (10+t) en vez de constante
+- [x] H1. P5: Unificar R=0.05 (desde 0.02) — en las 3 secciones (lump-sum, distorsionador, SS)
+- [x] H2. P5: Unificar γ=0.40 (desde 0.50) — en la sección distorsionadora (Python no sobreescribe γ en lump-sum/SS, se deja el default 0.5 ahí)
+- [x] H3. P5: Unificar W lumpsum=10.0, distortionary=100.0
+- [x] H4. P5: Unificar perfil salarial SS creciente (10+t) en vez de constante
 - [x] H5. P6: Unificar α=0.35 (desde 0.33)
-- [ ] H6. P8: Unificar n=0.02 en benchmark (desde 0.015)
+- [x] H6. P8: Unificar n=0.02 en benchmark (desde 0.015)
+
+**Bug real corregido de paso (P5):** el widget de impuestos distorsionadores
+pasaba los argumentos posicionales de `FiscalPolicyParameters(...)` en el
+orden equivocado (struct real: T, beta, R, gamma, B0, tauw, tauc, taur,
+tau_ss, t_star) — el slider `taur_val` (impuesto al capital) no tenía ningún
+efecto y `tauc_val` se filtraba al campo `B0` (activos iniciales). Corregido
+junto con H1-H4. Verificado: la comprobación de Equivalencia Ricardiana de
+la Sección 1 imprime una diferencia de consumo de `0.0` exacto.
 
 ## TIPO I — Calibración menos informativa
 

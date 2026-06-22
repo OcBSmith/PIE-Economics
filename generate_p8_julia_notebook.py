@@ -162,7 +162,7 @@ Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
 T_bench = 100
-s_path = fill(0.20, T_bench); n_path = fill(0.015, T_bench); A_path = fill(1.0, T_bench)
+s_path = fill(0.20, T_bench); n_path = fill(0.02, T_bench); A_path = fill(1.0, T_bench)
 @btime simulate_solow_swan($params_base, $ss["k"], $s_path, $n_path, $A_path, $T_bench)
 """))
 

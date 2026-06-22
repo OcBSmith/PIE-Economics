@@ -37,15 +37,18 @@ nb.cells.append(nbf.v4.new_code_cell("""params_lumpsum = default_calibration(Fis
 println("Parámetros Base: ", params_lumpsum)
 """))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante
-W = fill(30.0, params_lumpsum.T)
+nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante (calibración base: T=30, beta=0.97, R=0.05)
+W = fill(10.0, params_lumpsum.T)
+
+# Caso con impuesto de suma fija (tauw=0.40) y devolución de la recaudación (G=T)
+params_tax = FiscalPolicyParameters(30, 0.97, 0.05, params_lumpsum.gamma, 0.0, 0.40, 0.0, 0.0, 0.0, 26)
 
 # 1. Resolver caso base sin impuestos
-params_no_tax = FiscalPolicyParameters(30, 0.97, 0.02, 0.5, 0.0, 0.0, 0.0, 0.0, 0.0, 26)
+params_no_tax = FiscalPolicyParameters(30, 0.97, 0.05, params_lumpsum.gamma, 0.0, 0.0, 0.0, 0.0, 0.0, 26)
 res_base = solve_non_distortionary(params_no_tax, W)
 
 # 2. Resolver con impuestos de suma fija y devolución (Equivalencia Ricardiana)
-res_tax = solve_non_distortionary(params_lumpsum, W, true)
+res_tax = solve_non_distortionary(params_tax, W, true)
 
 println("Diferencia media en Consumo (Equivalencia Ricardiana): ", sum(abs.(res_base["C"] .- res_tax["C"])) / params_lumpsum.T)
 """))
@@ -53,11 +56,11 @@ println("Diferencia media en Consumo (Equivalencia Ricardiana): ", sum(abs.(res_
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Impuestos Distorsionadores)
-@manipulate for tauc_val in 0.0:0.05:0.50, tauw_val in 0.0:0.05:0.50, taur_val in 0.0:0.05:0.50, ret_opt in ["lump_sum", "government_spending"]
-    
+@manipulate for tauc_val in 0.0:0.05:0.50, tauw_val in 0.0:0.05:0.50, taur_val in 0.0:0.05:0.80, ret_opt in ["lump_sum", "government_spending"]
+
     is_lump_sum_return = (ret_opt == "lump_sum")
-    params = FiscalPolicyParameters(30, 0.97, 0.02, 0.5, tauc_val, tauw_val, taur_val, 0.0, 0.0, 0)
-    W_sim = fill(30.0, params.T)
+    params = FiscalPolicyParameters(30, 0.97, 0.05, 0.40, 0.0, tauw_val, tauc_val, taur_val, 0.0, 0)
+    W_sim = fill(100.0, params.T)
     res = solve_distortionary_foc(params, W_sim, is_lump_sum_return)
     
     t_axis = 0:(params.T - 1)
@@ -94,12 +97,13 @@ end
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Seguridad Social)
-@manipulate for tau_ss_val in 0.0:0.04:0.50, t_star_val in 15:1:29
-    
-    params_ss = FiscalPolicyParameters(30, 0.97, 0.02, 0.5, 0.0, 0.0, 0.0, 0.0, tau_ss_val, t_star_val)
+@manipulate for tau_ss_val in 0.0:0.05:0.60, t_star_val in 15:1:29
+
+    params_ss = FiscalPolicyParameters(30, 0.97, 0.05, 0.5, 0.0, 0.0, 0.0, 0.0, tau_ss_val, t_star_val)
+    # Perfil salarial creciente: W_t = 10 + t durante la vida activa, 0 después
     W_ss = zeros(params_ss.T)
-    W_ss[1:params_ss.t_star] .= 10.0
-    
+    W_ss[1:params_ss.t_star] .= 10.0 .+ (0:(params_ss.t_star - 1))
+
     res = solve_social_security(params_ss, W_ss)
     
     t_axis = 0:(params_ss.T - 1)

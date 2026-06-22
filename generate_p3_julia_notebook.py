@@ -51,7 +51,7 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl
-@manipulate for beta_val in 0.90:0.01:0.99, R_val in -0.05:0.01:0.15, profile in ["constant", "increasing", "retirement"]
+@manipulate for beta_val in slider([0.90:0.01:0.99; 0.999]; value=0.97), R_val in -0.05:0.01:0.15, profile in ["constant", "increasing", "retirement"]
     
     params_interactive = ConsumptionSavingParameters(30, beta_val, R_val, 0.0)
     W = generate_income_profile(profile, params_interactive.T)

@@ -294,7 +294,7 @@ del sistema ante distintas magnitudes de shock.
 
 nb.cells.append(nbf.v4.new_code_cell(r"""# Widget interactivo equivalente al FloatSlider de Python
 # Mueve el slider para cambiar la magnitud del shock sobre z1
-@manipulate for z1_final in -2.0:0.25:4.0
+@manipulate for z1_final in slider(-2.0:0.25:4.0; value=2.0)
     x1_p, x2_p = simulate(params_global, z_initial, [z1_final, 1.0], 30, 2)
 
     t_ax = 0:29

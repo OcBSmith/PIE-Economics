@@ -275,3 +275,29 @@ Pendiente del monorepo objetivo (plan §1.2): `prompts/`, `bitacora/`,
   - Ejecutada con éxito la suite completa de ejecución dinámica de cuadernos (`execute_and_check_all_notebooks.py`). Los 10 cuadernos Julia (`julia.ipynb` del P0 al P9) compilan y se ejecutan correctamente sin ningún error de salida.
   - La suite de pruebas unitarias (`pytest tests/`) sigue pasando al 100% (44/44 tests aprobados).
 
+- **Sesión 20 — Ejecución del Plan de Homogeneización Julia↔Python (continuación, mismo día):**
+  - Creado `docs/PLAN_HOMOGENEIZACION_JULIA.md` con ~150 ítems categorizados A-M para igualar los notebooks Julia a los Python. Se trabajó en orden recomendado, verificando cada cambio con `nbconvert --execute` real (no solo lectura de código) antes de marcar un checkbox.
+  - **Bloque K (críticos)** — commit `8aa55f5`: K1-K4 (t_shock mal puesto en P8/P9, locus y diagrama de fases en niveles en P6) ya estaban en el working tree de una sesión anterior pero sin verificar; al re-ejecutar P6 se encontró que el fix introducía un `UndefVarError` (`@L_str` sin `using LaTeXStrings`), corregido con un string plano. Además K5 (escala asimétrica del quiver en P2) y K6 (verificación Ricardiana mal ubicada en P5, con un desfase en cascada que también afectaba a Seguridad Social) se corrigieron de cero. K7 quedó bloqueado por M1 (sección 1 de P5 sin widget interactivo todavía).
+  - **Bloque A (texto copy-paste)** — commit `e38ed3c`: centralizados los reemplazos `.py→.jl`, `cvxpy→solve_direct_optim`, `pytest→Test.jl`, etc. en `md_extractor.py`. Se descubrió que ese archivo vivía en `scratch/` (gitignored, nunca commiteado) — los 9 `generate_pX_julia_notebook.py` (P1-P9) dependían de un módulo que no existía en un clon nuevo del repo. Movido a la raíz. También se encontró y corrigió un bug real en P6: `compute_linearized_system(params, R_final)` se llamaba con 2 argumentos pero la función solo tiene un método de 1 argumento en `TobinQ.jl`.
+  - **Bloque B (setup funcional)** — commit `ce66d3b`: la celda de "instalación Colab" estaba 100% comentada (no hacía nada) y la celda real nunca llamaba a `Pkg.instantiate()`. Se decidió no implementar un instalador de Julia para Google Colab (no se puede probar desde aquí y la documentación del propio proyecto, `docs/DESPLIEGUE_BINDER.md`, dice que la distribución Julia es vía MyBinder, no Colab) — en su lugar se documentó la situación honestamente y se activó `Pkg.instantiate()` de verdad.
+  - **Bloque C+D (contenido P0-P2)** — commit `b069668`: D1/D3/D4 de P1 resultaron ser falsos negativos (el contenido ya estaba en el generador vía `md_cells[2]/[3]/[4]`, solo había que regenerar el notebook). D2 (glosario formateado P1) y D5 (`simulate_dornbusch_manual` en P2, con verificación cruzada contra `simulate_shock`) sí eran carencias reales, implementadas y verificadas.
+  - **Bloque G+H (parámetros y rangos)**: editados `generate_p0/p3/p4/p5/p7/p9_julia_notebook.py`. Al revisar H1/H2 en P5 se encontró un **bug real preexistente**: el widget de impuestos distorsionadores pasaba los argumentos posicionales de `FiscalPolicyParameters(...)` en el orden equivocado, dejando el slider de impuesto al capital (`taur_val`) sin efecto alguno y filtrando `tauc_val` al campo `B0`. Corregido junto con los valores H1-H4. Quedó sin commitear al cierre de esta sesión (Sesión 20); el resto (H6 en P8, regenerar, ejecutar y commitear) se completó en la Sesión 21 (2026-06-22) — ver `git log` (commit del lote G+H).
+  - Lección de proceso anotada en memoria: una notificación de tarea en background con "exit code 0" no es prueba suficiente de que un notebook ejecutó sin error si no se lee el log completo (pasó con P6 en esta misma sesión).
+
+### 2026-06-22 (Sesión 21 — Cierre de Bloque G+H)
+
+- Retomada la sesión anterior exactamente donde quedó (ver bloque "ESTADO" al
+  principio de `docs/PLAN_HOMOGENEIZACION_JULIA.md`, ahora ya resuelto y
+  limpiado tras el cierre de este bloque).
+- Completado H6 (P8: `n=0.02` en el benchmark, antes `0.015`).
+- Regenerados y ejecutados los 7 notebooks afectados (P0, P3, P4, P5, P7,
+  P8, P9) con `nbconvert --execute`, leyendo el log completo de cada uno
+  (no solo el exit code, aplicando la lección de la sesión anterior).
+- Verificación específica del bug de P5: la celda de Equivalencia Ricardiana
+  de la Sección 1 imprime una diferencia de consumo de `0.0` exacto tras el
+  fix, confirmando que el modelo con impuesto de suma fija + devolución de
+  recaudación es indistinguible del caso sin impuestos.
+- 44/44 tests pytest y la suite completa de Julia (867 tests) en verde.
+- Checklist actualizado: Bloque G+H completo (más F1/F2, que ya estaban
+  satisfechos de sesiones anteriores pero nunca se habían marcado).
+

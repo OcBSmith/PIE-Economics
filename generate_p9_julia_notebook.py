@@ -52,7 +52,7 @@ println(eigvals(J))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock permanente Ramsey
-@manipulate for A_final in 0.90:0.01:1.20, beta_final in 0.92:0.01:0.99
+@manipulate for A_final in slider(0.90:0.01:1.20; value=1.05), beta_final in slider(0.92:0.01:0.99; value=0.97)
     
     params_init = default_calibration(RamseyParams)
     ss_init = compute_ramsey_steady_state(params_init)
