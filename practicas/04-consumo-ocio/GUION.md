@@ -7,66 +7,24 @@
 - **ID de práctica:** LAB-P4-v1.0
 - **Capítulo del libro:** Cap. 5 — *Consumption-saving + leisure* (Bongers, Gómez y Torres, 2019). Elección conjunta de consumo, ahorro y oferta de trabajo.
 
-## Objetivos didácticos
+> ⚠️ **Este documento es material de referencia para el profesor.**
+> El alumno encuentra todo lo necesario (objetivos, prerrequisitos, tiempo,
+> cuestionario de bitácora y extensiones ABP) dentro del propio notebook
+> (python.ipynb / julia.ipynb). Este GUION queda como chuleta del
+> instructor con los detalles técnicos que el alumno no necesita ver:
+> librerías, versiones, accidentes típicos y referencias.
 
-1. **Resolver** la decisión conjunta de consumo-ahorro (intertemporal) y consumo-ocio (intratemporal) mediante dos enfoques equivalentes (FOC con `fsolve` y optimización convexa con `cvxpy`).
-2. **Interpretar** la condición intratemporal que iguala la tasa marginal de sustitución consumo-ocio con el salario real, y cómo interactúa con la condición intertemporal de Euler.
-3. **Evaluar** los efectos renta y sustitución de un cambio en el salario ($W$) o en la preferencia por consumo ($\gamma$) sobre la oferta de trabajo y la acumulación de activos.
-
-## Conocimientos previos requeridos
-
-- **Matemáticas**: optimización multivariante con restricciones, condiciones de primer orden.
-- **Economía**: elección renta-ocio (modelo de oferta de trabajo), decisión intertemporal de consumo-ahorro (P3).
-- **Programación**: ninguno previo.
-- **Práctica previa recomendada**: P3 (consumo-ahorro) — P4 extiende ese modelo añadiendo la elección de ocio.
-
-## Tiempo estimado y nivel
-
-~90-120 minutos. Grado en Economía, asignatura de Macroeconomía (fundamentos micro) o Economía Laboral.
-
-## "Reactivos" digitales
+## "Reactivos" digitales (librerías y versiones)
 
 - **Python**: `numpy`, `scipy`, `matplotlib`, `cvxpy`, `ipywidgets` + paquete `macroaicomp` (`src/macroaicomp/models/consumption_leisure.py`).
 - **Julia**: `Plots.jl`, `NLsolve.jl`, `Optim.jl`, `Interact.jl` + paquete `MacroAIComp` (`src/models/ConsumptionLeisure.jl`).
 - **Oráculo numérico**: `oraculo.md` de esta misma carpeta (valores del libro + Apéndice I MATLAB).
 
-## Procedimiento paso a paso
-
-1. **Teoría**: función de utilidad $U(C_t, O_t) = \gamma \ln C_t + (1-\gamma) \ln O_t$, restricción de tiempo $L_t + O_t = 1$, restricción presupuestaria, condición terminal $B_T=0$.
-2. **Calibración base**: $\beta=0.97, R=0.02, \gamma=0.50, T=30$, salario constante $W_t=30$.
-3. **Resolución vía FOC con fsolve**: sistema de $3T$ ecuaciones (Euler + restricción presupuestaria + condición intratemporal) — atención al indexado corregido respecto al Apéndice I.
-4. **Resolución vía optimización directa con cvxpy**: programa convexo con utilidad cóncava y restricciones lineales.
-5. **Verificación frente al oráculo**: equivalencia FOC vs cvxpy, $B_T=0$, $0 \le L_t < 1$.
-6. **Perfiles óptimos**: visualizar consumo, ingresos salariales, trabajo/ocio y activos financieros en 3 paneles interactivos.
-7. **Sensibilidad a $\gamma$**: comparar $\gamma=0.40$ (más peso al ocio) con $\gamma=0.60$ (más peso al consumo) — efecto sobre la oferta de trabajo media.
-8. **Efecto de $R$**: subir $R$ al 5% — efecto renta (mayor rentabilidad del ahorro) vs sustitución (consumo futuro más barato) sobre la pendiente del consumo.
-9. **Widgets interactivos**: modificar $\beta, R, \gamma$ y el salario en vivo.
-10. **Conclusión**: la decisión de ocio es intratemporal (depende del salario corriente), mientras que la de consumo-ahorro es intertemporal (depende de $R$ y $\beta$). Ambas se acoplan a través de la restricción presupuestaria.
-
-## Reacciones esperadas
-
-Ver `oraculo.md`. Con $\beta(1+R)<1$, consumo con pendiente negativa. $L_t$ aproximadamente constante si el salario es constante (sin motivo para variar la oferta de trabajo). $B_T=0$ exacto. Mayor $\gamma \Rightarrow$ mayor $L$ media. $R=0.05 \Rightarrow \beta(1+R)=1.0185>1 \Rightarrow$ consumo creciente a lo largo del ciclo vital.
-
-## Posibles accidentes de laboratorio
+## Posibles accidentes de laboratorio (chuleta del profesor)
 
 - **Indexado out-of-bounds en el sistema FOC**: el Apéndice I (MATLAB) original contiene una errata de indexación que deja $f(2T-1)$ vacío y referencia $f(2T+1)$ (fuera de rango). El código del proyecto ya está corregido con indexado 0 a $2T-1$ cuadrado y robusto. Si modificas el bucle de residuos y ves `IndexError`, revisa los índices contra el tamaño del vector de variables.
 - **$L_t \ge 1$**: si la solución da $L_t \ge 1$, significa que el consumidor "trabajaría más horas de las que tiene". Esto puede ocurrir con salarios extremadamente altos o $\gamma$ muy cercano a 1. El modelo no impone explícitamente $L_t < 1$ en la FOC; se verifica a posteriori.
 - **Confundir efecto renta y sustitución en el widget de salario**: un aumento de salario tiene efecto renta positivo (consumo de ocio aumenta) y efecto sustitución (ocio se encarece, se consume menos). Cuál domina depende de la calibración — no asumir que el trabajo siempre aumenta con el salario.
-
-## Cuestionario de bitácora
-
-1. ¿Por qué la oferta de trabajo $L_t$ es aproximadamente constante cuando el salario es constante, pero NO exactamente constante? ¿Qué fuerza económica la hace variar ligeramente?
-2. Compara los perfiles de activos $B_t$ de P3 (solo consumo-ahorro) y P4 (consumo-ocio-ahorro). ¿En cuál se acumulan más activos? ¿Por qué?
-3. ¿Qué ocurre con la oferta de trabajo a lo largo del ciclo vital si el salario es creciente con la edad (perfil de ingresos con "joroba")? Predice y comprueba.
-4. ¿Cómo cambia el consumo de ocio $O_t$ al subir $\beta$? ¿Es un efecto renta o sustitución?
-5. Si se introduce un impuesto proporcional sobre el salario $\tau_w$, ¿cómo afecta a la oferta de trabajo? Diferencia el efecto renta del efecto sustitución.
-6. ¿Por qué el sistema FOC de P4 tiene $3T$ ecuaciones pero P3 solo $2T-1$? ¿De dónde salen las ecuaciones adicionales?
-
-## Variantes / extensiones para ABP
-
-1. **Oferta de trabajo elástica con salario endógeno**: introducir una función de producción donde el salario depende de $L$ agregado (equilibrio general parcial) y analizar la optimalidad.
-2. **Jubilación endógena con ocio**: permitir que el consumidor elija la edad de jubilación y comparar con una edad fija.
-3. **Tributación progresiva**: introducir un IRPF progresivo (tramos) en lugar de un impuesto proporcional y analizar el efecto sobre la oferta de trabajo en distintos puntos de la distribución salarial.
 
 ## Referencias
 

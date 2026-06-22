@@ -17,6 +17,12 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Contabilidad del crecimiento (growth accounting)**: descomponer el crecimiento observado de una economía real (ej. España 1980-2020) en contribuciones del capital, trabajo y PTF usando la Cobb-Douglas calibrada.
+2. **Convergencia $\\beta$ y $\\sigma$**: simular varias economías con distintos $k_0$ iniciales y verificar la convergencia condicional predicha por Solow-Swan.
+3. **Extensión con capital humano**: añadir acumulación de capital humano $h_t$ al modelo (Mankiw-Romer-Weil) y analizar cómo cambia la velocidad de convergencia y la Regla de Oro."""))
+
 nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
 # (Project.toml) en vez del global. Pkg.instantiate() instala lo que falte.
 # "import Plots: mm" trae solo mm (unidad de margen) sin exportar el resto.

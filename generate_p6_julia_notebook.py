@@ -17,6 +17,12 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Shock de productividad**: introducir un shock de PTF ($A_t$) y comparar la dinámica de $q$ y $I$ con el shock de tipo de interés.
+2. **Costes de ajuste asimétricos**: modificar la función de costes para que desinvertir sea más costoso que invertir y analizar el efecto sobre la velocidad de ajuste.
+3. **Modelo con restricción de irreversibilidad**: añadir la restricción $I_t \\ge 0$ (no se puede desinvertir) y comparar con el modelo base."""))
+
 nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae todo el paquete X. "import X: y" solo trae el nombre y.
 # Pkg.activate("../..") usa el entorno del repo; Pkg.instantiate() instala
 # dependencias. MacroAIComp contiene la lógica del modelo Q de Tobin; Plots

@@ -485,6 +485,12 @@ Responde a las siguientes cuestiones tras interactuar con el simulador del model
 )
 
 # 9. BUENAS PRÁCTICAS APRENDER AQUÍ
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Comparación Solow-Swan vs Ramsey**: simular ambos modelos con la misma calibración ($s$ de Solow ajustado para igualar el $k^*$ de Ramsey) y comparar las dinámicas de transición ante el mismo shock de PTF.
+2. **Ramsey estocástico**: introducir shocks aleatorios de PTF y resolver trayectorias óptimas con certainty equivalence, comparando con el caso determinista.
+3. **Extensión con gobierno**: añadir gasto público financiado con impuestos distorsionadores en el modelo de Ramsey y analizar la pérdida de bienestar (Harberger triangle dinámico)."""))
+
 nb.cells.append(
     nbf.v4.new_markdown_cell(r"""## 6. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Aislamiento del Backend Computacional**: Las rutinas paramétricas, el cálculo de estado estacionario y los resolvedores dinámicos están aislados en el módulo [`ramsey.py`](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/ramsey.py), manteniendo el notebook limpio y enfocado exclusivamente en la didáctica y visualización.

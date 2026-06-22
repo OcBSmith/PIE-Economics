@@ -17,6 +17,12 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Elección de jubilación endógena**: permitir que el consumidor elija $t^*$ (edad de jubilación) además del perfil de consumo. Plantear como problema de optimización con variable discreta.
+2. **Shock de renta transitorio vs permanente**: comparar la respuesta del consumo ante un shock que afecta a UN solo periodo vs uno que afecta a TODOS los periodos, verificando la teoría de la renta permanente.
+3. **Restricción de liquidez**: añadir la restricción $B_t \\ge 0$ (no se permite endeudamiento) y comparar el perfil de consumo resultante con el caso irrestricto."""))
+
 nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
 # no tener que reescribirlo. Pkg.activate("../..") usa el entorno del repo.
 # Pkg.instantiate() instala lo que falte (la primera vez puede tardar).

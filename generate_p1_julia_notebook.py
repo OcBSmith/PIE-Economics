@@ -17,6 +17,12 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Política monetaria con regla de Taylor**: sustituir la oferta monetaria fija por una regla $i = i^* + \\phi_\\pi (P - P^*) + \\phi_Y (Y - Y^*)$ y analizar cómo cambia la estabilidad del sistema según $\\phi_\\pi, \\phi_Y$.
+2. **Comparación de métodos numéricos**: simular el mismo shock con RK45, Radau y BDF y comparar tiempos de ejecución y precisión (error respecto al SS analítico).
+3. **Shock combinado**: aplicar un shock monetario expansivo y uno fiscal contractivo simultáneamente para mantener $Y$ constante. ¿Es posible? ¿Qué implicaciones tiene para el policy mix?"""))
+
 nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
 # no tener que reescribirlo (es el equivalente Julia de "import X" en
 # Python, pero sin necesidad de poner un alias para usar sus funciones).

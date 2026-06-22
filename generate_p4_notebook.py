@@ -38,7 +38,13 @@ nb.cells.append(
 
 > *   **📋 Antes de empezar**, consulta ' (en esta misma carpeta): objetivos, tiempo estimado y conocimientos previos de esta práctica." + "
 " + "
-" + "### 🕹️ GUÍA RÁPIDA DE INICIO - Consumo y Ocio
+" + "> ⏱️ **~90-120 minutos**
+> 
+> 📋 **Prerrequisitos**: **Matemáticas**: optimización multivariante con restricciones, condiciones de primer orden. | **Economía**: elección renta-ocio (modelo de oferta de trabajo), decisión intertemporal de consumo-ahorro (P3). | **Programación**: ninguno previo.\n" + "
+" + "
+> \n" + "
+" + "
+### 🕹️ GUÍA RÁPIDA DE INICIO - Consumo y Ocio
 *   **¿Qué estamos haciendo aquí?** Decidiendo cuántas horas trabajar (para tener dinero y consumir) frente a cuántas horas descansar (ocio).
 *   **Efecto Sustitución vs Efecto Renta:** Si te suben el sueldo, ¿trabajas más porque cada hora vale más (sustitución) o trabajas menos porque ya eres rico y quieres descansar (renta)?
 *   **¡Prueba esto!** Modifica el salario base en el código y observa si el gráfico de horas trabajadas sube o baja.
@@ -59,6 +65,12 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Oferta de trabajo elástica con salario endógeno**: introducir una función de producción donde el salario depende de $L$ agregado (equilibrio general parcial) y analizar la optimalidad.
+2. **Jubilación endógena con ocio**: permitir que el consumidor elija la edad de jubilación y comparar con una edad fija.
+3. **Tributación progresiva**: introducir un IRPF progresivo (tramos) en lugar de un impuesto proporcional y analizar el efecto sobre la oferta de trabajo en distintos puntos de la distribución salarial."""))
+
 nb.cells.append(
     nbf.v4.new_code_cell(
         r"""# ==============================================================================

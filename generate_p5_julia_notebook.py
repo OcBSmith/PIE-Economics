@@ -17,6 +17,12 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Reforma fiscal neutral**: simular una reducción de $\\tau_r$ compensada con un aumento de $\\tau_c$ que mantenga la recaudación constante, y analizar el efecto sobre el bienestar.
+2. **Progresividad del IRPF**: sustituir $\\tau_w$ constante por una función escalonada (tramos) y analizar cómo cambia la oferta de trabajo en distintos puntos de la distribución salarial.
+3. **Comparación capitalización vs reparto**: modificar la Sección 4 para modelar un sistema de reparto puro donde las cotizaciones de los jóvenes financian las pensiones corrientes, y comparar eficiencia y equidad."""))
+
 nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae todo el paquete X. "import X: y" solo trae el nombre y.
 # Pkg.activate("../..") usa el entorno del repo. Pkg.instantiate() instala
 # dependencias. MacroAIComp contiene la lógica fiscal del modelo; Plots e

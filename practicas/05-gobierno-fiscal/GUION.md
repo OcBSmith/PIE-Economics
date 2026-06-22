@@ -7,63 +7,25 @@
 - **ID de práctica:** LAB-P5-v1.0
 - **Capítulo del libro:** Cap. 6 — *Government and fiscal policy* (Bongers, Gómez y Torres, 2019). Tres escenarios: impuestos de suma fija, impuestos distorsionadores y Seguridad Social.
 
-## Objetivos didácticos
+> ⚠️ **Este documento es material de referencia para el profesor.**
+> El alumno encuentra todo lo necesario (objetivos, prerrequisitos, tiempo,
+> cuestionario de bitácora y extensiones ABP) dentro del propio notebook
+> (python.ipynb / julia.ipynb). Este GUION queda como chuleta del
+> instructor con los detalles técnicos que el alumno no necesita ver:
+> librerías, versiones, accidentes típicos y referencias.
 
-1. **Verificar** la Equivalencia Ricardiana en un modelo con impuestos de suma fija: el consumo no depende del timing impositivo si las transferencias se devuelven.
-2. **Cuantificar** la distorsión de los impuestos sobre el consumo ($\tau_c$), el trabajo ($\tau_w$) y el capital ($\tau_r$) sobre la oferta de trabajo, el ahorro y el perfil de consumo.
-3. **Evaluar** un sistema de Seguridad Social de capitalización como sustituto perfecto del ahorro privado voluntario.
-
-## Conocimientos previos requeridos
-
-- **Matemáticas**: optimización con restricciones, condiciones de primer orden, sistemas de ecuaciones no lineales.
-- **Economía**: Equivalencia Ricardiana (Barro), incidencia fiscal, efecto sustitución vs efecto renta, sistema de pensiones de capitalización vs reparto.
-- **Programación**: ninguno previo.
-- **Práctica previa recomendada**: P3 (consumo-ahorro) y P4 (consumo-ocio-ahorro) — P5 añade el sector público.
-
-## Tiempo estimado y nivel
-
-~120-150 minutos (3 secciones diferenciadas). Grado en Economía, asignatura de Macroeconomía (política fiscal) o Hacienda Pública.
-
-## "Reactivos" digitales
+## "Reactivos" digitales (librerías y versiones)
 
 - **Python**: `numpy`, `scipy`, `matplotlib`, `cvxpy`, `ipywidgets` + paquete `macroaicomp` (`src/macroaicomp/models/fiscal_policy.py`).
 - **Julia**: `Plots.jl`, `NLsolve.jl`, `Optim.jl`, `Interact.jl` + paquete `MacroAIComp` (`src/models/FiscalPolicy.jl`).
 - **Oráculo numérico**: `oraculo.md` de esta misma carpeta (valores del libro + Apéndice J MATLAB).
 
-## Procedimiento paso a paso
-
-1. **Sección 1 — Impuestos de suma fija**: modelo con $\tau_w$ lump-sum sobre el salario y devolución de transferencias. Demostrar Equivalencia Ricardiana comparando casos con y sin impuestos.
-2. **Sección 2 — Impuestos distorsionadores**: introducir $\tau_c$ (IVA), $\tau_w$ (IRPF/cotizaciones) y $\tau_r$ (impuesto al capital). Resolver por FOC y por optimización directa (surrogate convex problem con tasas de descuento efectivas). Comparar distorsión sobre $L$ y $C$.
-3. **Sección 3 — Impuesto al capital**: aislar el efecto de $\tau_r$ sobre la pendiente del consumo y el nivel de activos financieros.
-4. **Sección 4 — Seguridad Social**: introducir cotizaciones $\tau_{ss}$ durante la vida laboral y pensión durante la jubilación. Demostrar que el ahorro privado se reduce exactamente en la cuantía capitalizada de las cotizaciones.
-5. **Widgets interactivos**: sliders para todas las tasas impositivas y checkbox de devolución de transferencias.
-6. **Conclusión**: solo los impuestos de suma fija son no distorsionadores. Los impuestos al consumo, trabajo y capital distorsionan decisiones reales. La SS de capitalización es equivalente a ahorro forzoso.
-
-## Reacciones esperadas
-
-Ver `oraculo.md`. Sección 1: diferencia de consumo entre caso sin impuestos y caso con impuestos + devolución = 0.0 exacto. Sección 2: equivalencia FOC vs optimización con diferencia $<10^{-7}$. Mayor $\tau_w$ o $\tau_c \Rightarrow$ menor $L$ media. Sección 3: mayor $\tau_r \Rightarrow$ menor nivel de activos y perfil de consumo más plano. Sección 4: consumo idéntico con y sin SS, activos privados negativos durante vida laboral.
-
-## Posibles accidentes de laboratorio
+## Posibles accidentes de laboratorio (chuleta del profesor)
 
 - **El widget de $\tau_r$ no parece tener efecto**: antes de la homogeneización Julia↔Python (2026-06-22), el widget de impuestos distorsionadores de P5 Julia pasaba los argumentos posicionales de `FiscalPolicyParameters` en orden equivocado, filtrando `taur_val` a un campo que no era $\tau_r$. Si observas este bug regresado, comprueba el orden de los argumentos del struct.
 - **La Equivalencia Ricardiana no se cumple exactamente**: si la diferencia de consumo no es 0.0, comprueba que las transferencias se están devolviendo correctamente (el gobierno recauda $\tau_w W_t$ y lo transfiere como lump-sum $G_t = \tau_w W_t$ a cada hogar en cada periodo).
 - **Surrogate convex problem**: la Sección 2 usa un problema sustituto con pesos de utilidad y tasas de descuento modificados ($\beta^{eff}, \gamma^{eff}$). Si cambias las fórmulas de este problema sustituto, la equivalencia FOC vs cvxpy se romperá — el surrogate NO es un truco numérico, es una derivación analítica exacta.
 - **Confundir SS de capitalización con SS de reparto**: en este modelo la SS es de capitalización (lo cotizado se invierte y se devuelve capitalizado), NO de reparto (los jóvenes pagan las pensiones de los jubilados). El resultado de "ahorro privado negativo" solo se da con capitalización.
-
-## Cuestionario de bitácora
-
-1. ¿Por qué un impuesto de suma fija con devolución de transferencias no distorsiona las decisiones de consumo ni trabajo, pero un impuesto sobre el trabajo sí? Identifica qué margen de elección distorsiona cada uno.
-2. En la Sección 2, ¿por qué el impuesto al trabajo y el impuesto al consumo tienen efectos cualitativamente similares sobre $L$? ¿En qué se diferencian sus efectos?
-3. ¿Cómo afecta un impuesto al capital ($\tau_r$) a la Ecuación de Euler? Deriva la nueva condición y explica por qué aplana el perfil de consumo.
-4. ¿Por qué en la Sección 4 el ahorro privado se vuelve negativo durante la vida laboral? ¿Es óptimo ese endeudamiento desde el punto de vista del consumidor?
-5. Si se combinaran un impuesto al trabajo distorsionador con un sistema de SS de capitalización, ¿seguiría habiendo equivalencia perfecta con un modelo sin SS? ¿Por qué?
-6. ¿Qué ocurriría con la Equivalencia Ricardiana si el gobierno no devolviera las transferencias en el mismo periodo sino en el futuro (deuda pública)?
-
-## Variantes / extensiones para ABP
-
-1. **Reforma fiscal neutral**: simular una reducción de $\tau_r$ compensada con un aumento de $\tau_c$ que mantenga la recaudación constante, y analizar el efecto sobre el bienestar.
-2. **Progresividad del IRPF**: sustituir $\tau_w$ constante por una función escalonada (tramos) y analizar cómo cambia la oferta de trabajo en distintos puntos de la distribución salarial.
-3. **Comparación capitalización vs reparto**: modificar la Sección 4 para modelar un sistema de reparto puro donde las cotizaciones de los jóvenes financian las pensiones corrientes, y comparar eficiencia y equidad.
 
 ## Referencias
 

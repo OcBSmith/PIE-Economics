@@ -36,6 +36,12 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Shock fiscal permanente**: introducir un aumento del gasto público financiado con impuestos lump-sum y analizar el crowding-out de la inversión.
+2. **DGE estocástico**: simular 1000 trayectorias con shocks aleatorios de PTF y calcular momentos (desviaciones estándar, correlaciones) para comparar con los hechos estilizados del ciclo económico.
+3. **Extensión con ocio endógeno**: añadir oferta de trabajo elástica al DGE (fusionar P4 y P7) y analizar cómo cambia la respuesta a un shock tecnológico."""))
+
 nb.cells.append(
     nbf.v4.new_code_cell(
         r"""# "import X as np" trae la librería X con alias np. "from X import Y" es selectivo.

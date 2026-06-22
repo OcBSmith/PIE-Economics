@@ -17,6 +17,12 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Shock fiscal**: simular un aumento del gasto público ($\\beta_0$) y analizar si produce overshooting o undershooting, y por qué.
+2. **Ajuste gradual de expectativas**: modificar la UIP para que las expectativas cambiarias sean adaptativas en vez de racionales (ej. $\\Delta s^e = \\lambda(s^* - s)$) y comparar la dinámica.
+3. **Calibración con datos reales**: calibrar $\\mu$ y $\\nu$ con datos trimestrales de inflación y brecha de producción de una economía real (ej. España 1999-2019) y simular un shock de política monetaria."""))
+
 nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
 # no tener que reescribirlo. Pkg.activate("../..") usa el entorno del repo
 # (Project.toml/Manifest.toml de la raíz). Pkg.instantiate() instala lo que

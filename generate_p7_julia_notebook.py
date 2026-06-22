@@ -17,6 +17,12 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Shock fiscal permanente**: introducir un aumento del gasto público financiado con impuestos lump-sum y analizar el crowding-out de la inversión.
+2. **DGE estocástico**: simular 1000 trayectorias con shocks aleatorios de PTF y calcular momentos (desviaciones estándar, correlaciones) para comparar con los hechos estilizados del ciclo económico.
+3. **Extensión con ocio endógeno**: añadir oferta de trabajo elástica al DGE (fusionar P4 y P7) y analizar cómo cambia la respuesta a un shock tecnológico."""))
+
 nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
 # (Project.toml/Manifest.toml) en vez del global de la máquina — así todo el
 # mundo ejecuta con las mismas versiones. Pkg.instantiate() instala lo que falte.

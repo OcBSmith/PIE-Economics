@@ -410,6 +410,12 @@ print("OK: todos los perfiles coinciden con el oráculo MATLAB (Apéndice G).")
 """))
 
 # 11. BUENAS PRÁCTICAS
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Elección de jubilación endógena**: permitir que el consumidor elija $t^*$ (edad de jubilación) además del perfil de consumo. Plantear como problema de optimización con variable discreta.
+2. **Shock de renta transitorio vs permanente**: comparar la respuesta del consumo ante un shock que afecta a UN solo periodo vs uno que afecta a TODOS los periodos, verificando la teoría de la renta permanente.
+3. **Restricción de liquidez**: añadir la restricción $B_t \\ge 0$ (no se permite endeudamiento) y comparar el perfil de consumo resultante con el caso irrestricto."""))
+
 nb.cells.append(
     nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Higiene del Sistema de Optimización**: El modelo evita declarar variables globales. Los resolvedores reciben un dataclass `ConsumptionSavingParameters` facilitando la escalabilidad del modelo.

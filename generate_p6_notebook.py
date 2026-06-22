@@ -44,7 +44,13 @@ nb.cells.append(
 
 > *   **📋 Antes de empezar**, consulta ' (en esta misma carpeta): objetivos, tiempo estimado y conocimientos previos de esta práctica." + "
 " + "
-" + "### 🕹️ GUÍA RÁPIDA DE INICIO - Q de Tobin (Inversión)
+" + "> ⏱️ **~90-120 minutos**
+> 
+> 📋 **Prerrequisitos**: **Matemáticas**: log-linealización alrededor del estado estacionario, descomposición de autovalores para punto de silla, sistemas de ecuaciones no lineales. | **Economía**: teoría neoclásica de la inversión, costes de ajuste convexos, Q de Tobin, ...\n" + "
+" + "
+> \n" + "
+" + "
+### 🕹️ GUÍA RÁPIDA DE INICIO - Q de Tobin (Inversión)
 *   **¿Qué estamos haciendo aquí?** Explicando cuándo decide una empresa comprar más maquinaria e invertir.
 *   **La Regla de la Q:** Si la Q de Tobin es mayor que 1.0, significa que la empresa vale más en bolsa de lo que cuesta comprar sus máquinas. ¡Es hora de invertir y expandirse! Si es menor que 1.0, no conviene invertir.
 *   **¡Prueba esto!** Cambia la tasa de interés y observa cómo el ratio Q cae o sube, arrastrando consigo la inversión de la empresa.
@@ -634,6 +640,12 @@ Responde a las siguientes cuestiones tras interactuar con las simulaciones de la
 )
 
 # 9. BUENAS PRÁCTICAS APRENDER AQUÍ
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Shock de productividad**: introducir un shock de PTF ($A_t$) y comparar la dinámica de $q$ y $I$ con el shock de tipo de interés.
+2. **Costes de ajuste asimétricos**: modificar la función de costes para que desinvertir sea más costoso que invertir y analizar el efecto sobre la velocidad de ajuste.
+3. **Modelo con restricción de irreversibilidad**: añadir la restricción $I_t \\ge 0$ (no se puede desinvertir) y comparar con el modelo base."""))
+
 nb.cells.append(
     nbf.v4.new_markdown_cell(r"""## 7. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Aislamiento de Lógica Computacional**: La resolución numérica no lineal y el análisis matricial están desacoplados de las celdas didácticas de visualización, residiendo enteramente en el módulo [tobin_q.py](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/tobin_q.py).

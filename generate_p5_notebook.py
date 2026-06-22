@@ -39,7 +39,13 @@ nb.cells.append(
 
 > *   **📋 Antes de empezar**, consulta ' (en esta misma carpeta): objetivos, tiempo estimado y conocimientos previos de esta práctica." + "
 " + "
-" + "### 🕹️ GUÍA RÁPIDA DE INICIO - Gobierno y Política Fiscal
+" + "> ⏱️ **~120-150 minutos (3 secciones diferenciadas)**
+> 
+> 📋 **Prerrequisitos**: **Matemáticas**: optimización con restricciones, condiciones de primer orden, sistemas de ecuaciones no lineales. | **Economía**: Equivalencia Ricardiana (Barro), incidencia fiscal, efecto sustitución vs efecto renta, sistema de pensiones de capit...\n" + "
+" + "
+> \n" + "
+" + "
+### 🕹️ GUÍA RÁPIDA DE INICIO - Gobierno y Política Fiscal
 *   **¿Qué estamos haciendo aquí?** Estudiando cómo afectan los impuestos del gobierno a las decisiones de las personas.
 *   **Impuestos Distorsionadores:** Cuando el gobierno cobra impuestos sobre el trabajo, la gente decide trabajar menos porque se queda con menos dinero neto.
 *   **¡Prueba esto!** Incrementa la tasa impositiva (los impuestos) en el modelo y observa la caída en el consumo y en las horas de trabajo.
@@ -58,6 +64,12 @@ if 'google.colab' in sys.modules:
 """))
 
 # 3. IMPORTACIONES
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Reforma fiscal neutral**: simular una reducción de $\\tau_r$ compensada con un aumento de $\\tau_c$ que mantenga la recaudación constante, y analizar el efecto sobre el bienestar.
+2. **Progresividad del IRPF**: sustituir $\\tau_w$ constante por una función escalonada (tramos) y analizar cómo cambia la oferta de trabajo en distintos puntos de la distribución salarial.
+3. **Comparación capitalización vs reparto**: modificar la Sección 4 para modelar un sistema de reparto puro donde las cotizaciones de los jóvenes financian las pensiones corrientes, y comparar eficiencia y equidad."""))
+
 nb.cells.append(
     nbf.v4.new_code_cell(
         r"""# ==============================================================================

@@ -439,6 +439,12 @@ Responde a las siguientes cuestiones tras interactuar con las simulaciones del m
 )
 
 # 8. BUENAS PRÁCTICAS
+nb.cells.append(nbf.v4.new_markdown_cell("""## Extensiones para ABP (Aprendizaje Basado en Proyectos)
+
+1. **Contabilidad del crecimiento (growth accounting)**: descomponer el crecimiento observado de una economía real (ej. España 1980-2020) en contribuciones del capital, trabajo y PTF usando la Cobb-Douglas calibrada.
+2. **Convergencia $\\beta$ y $\\sigma$**: simular varias economías con distintos $k_0$ iniciales y verificar la convergencia condicional predicha por Solow-Swan.
+3. **Extensión con capital humano**: añadir acumulación de capital humano $h_t$ al modelo (Mankiw-Romer-Weil) y analizar cómo cambia la velocidad de convergencia y la Regla de Oro."""))
+
 nb.cells.append(
     nbf.v4.new_markdown_cell(r"""## 5. Buenas Prácticas Aplicadas en este Laboratorio
 1.  **Modularización del Modelo**: Las ecuaciones y simulaciones del modelo de Solow-Swan no están dispersas, sino importadas del módulo de biblioteca [`growth.py`](file:///c:/Users/AntonioRC/Desktop/PIE/src/macroaicomp/models/growth.py), aislando la visualización del backend computacional.
