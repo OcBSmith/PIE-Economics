@@ -160,13 +160,13 @@ la Sección 1 imprime una diferencia de consumo de `0.0` exacto.
 - [x] K4. P6: Migrar diagrama de fases a espacio de desviaciones logarítmicas — CRÍTICO
 - [x] K5. P2: Corregir escala asimétrica del quiver (normalizar uniformemente) — ahora ambos ejes usan la misma fracción (5%) de su propio rango
 - [x] K6. P5: Reubicar código de verificación Ricardiana antes del header Sección 2 — además corregido el desfase en cascada que arrastraba Seguridad Social bajo el header de Bitácora
-- [ ] K7. P5: Actualizar texto de Actividades para que coincida con widgets reales de Julia — BLOQUEADO por M1 (Sección 1 de P5 no tiene widget interactivo en Julia todavía, así que el texto de "Activa la casilla Devolver recaudación" no tiene a qué referirse)
+- [x] K7. P5: Actualizar texto de Actividades para que coincida con widgets reales de Julia — desbloqueado por M1: ya existe el checkbox "Devolver recaudación (G=T)" al que se refiere el texto de la Bitácora
 - [x] K8. P9: Unificar claves de diccionario minúsculas ("y","k","c","i") — ya satisfecho: `Ramsey.jl` devuelve ambas variantes de clave
 
 ## TIPO M — Diferencias estructurales
 
-- [ ] M1. P5: Añadir simulación interactiva de lump-sum (Sección 1)
-- [ ] M2. P5: Añadir verificación FOC vs optimización directa
+- [x] M1. P5: Añadir simulación interactiva de lump-sum (Sección 1) — widget `@manipulate` con sliders `tauw_val` y checkbox `return_transfers`, igual que `plot_non_distortionary` en Python (antes era solo una comprobación estática sin widget)
+- [x] M2. P5: Añadir verificación FOC vs optimización directa — `solve_distortionary_foc` vs `solve_distortionary_optim`, con C(0)/L(0)/B(T-1) de ambos y el check ✅/❌, igual que Python. Verificado: coinciden a 6 decimales
 - [!] M3. P7: Añadir checkbox use_matlab_timing — **bug en Python ya corregido** (se quitó el kwarg `use_matlab_timing=...` de las llamadas a `solve_blanchard_khan`/`solve_nonlinear_simulation` en `generate_p7_notebook.py`, que lanzaban `TypeError` si se ejecutaban; verificado con `nbconvert --execute` que la celda ahora corre limpia). El checkbox sigue en el Python original pero ya **no tiene ningún efecto real** — nunca se implementó un `use_matlab_timing` que cambie el comportamiento del modelo en ninguno de los dos lenguajes. Añadir un checkbox equivalente en Julia solo replicaría un control decorativo sin función; queda sin hacer hasta que (si alguna vez se quiere) se diseñe e implemente el toggle real en ambos lenguajes — eso sería trabajo nuevo, no homogeneización.
 - [x] M4. P7: Añadir slider de δ (actualmente hardcodeado) — `delta_val` estaba fijo a 0.05 en `DGEParams(alpha_val, beta_val, 0.05, rho_val, 1.0)`; añadido como slider interactivo igual que en Python
 

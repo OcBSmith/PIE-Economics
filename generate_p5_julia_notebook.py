@@ -63,20 +63,33 @@ end
 println("="^75)
 """))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante (calibración base: T=30, beta=0.97, R=0.05)
-W = fill(10.0, params_lumpsum.T)
+nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Impuesto de Suma Fija y Equivalencia Ricardiana)
+@manipulate for tauw_val in slider(0.0:0.05:0.80; value=0.40, label="Impuesto (τw)"), return_transfers in Widgets.checkbox(value=true, label="Devolver recaudación (G=T)")
 
-# Caso con impuesto de suma fija (tauw=0.40) y devolución de la recaudación (G=T)
-params_tax = FiscalPolicyParameters(30, 0.97, 0.05, params_lumpsum.gamma, 0.0, 0.40, 0.0, 0.0, 0.0, 26)
+    W = fill(10.0, params_lumpsum.T)
+    params = FiscalPolicyParameters(30, 0.97, 0.05, params_lumpsum.gamma, 0.0, tauw_val, 0.0, 0.0, 0.0, 26)
+    params_no_tax = FiscalPolicyParameters(30, 0.97, 0.05, params_lumpsum.gamma, 0.0, 0.0, 0.0, 0.0, 0.0, 26)
 
-# 1. Resolver caso base sin impuestos
-params_no_tax = FiscalPolicyParameters(30, 0.97, 0.05, params_lumpsum.gamma, 0.0, 0.0, 0.0, 0.0, 0.0, 26)
-res_base = solve_non_distortionary(params_no_tax, W)
+    res_base = solve_non_distortionary(params_no_tax, W)
+    res_tax = solve_non_distortionary(params, W, return_transfers)
 
-# 2. Resolver con impuestos de suma fija y devolución (Equivalencia Ricardiana)
-res_tax = solve_non_distortionary(params_tax, W, true)
+    t_axis = 0:(params.T - 1)
 
-println("Diferencia media en Consumo (Equivalencia Ricardiana): ", sum(abs.(res_base["C"] .- res_tax["C"])) / params_lumpsum.T)
+    p1 = plot(t_axis, res_base["C"], color=:black, ls=:dash, lw=2.0, label="Consumo sin impuestos")
+    plot!(t_axis, res_tax["C"], color="#004C97", lw=2.5, label="Consumo con impuesto (τw=$(round(tauw_val, digits=2)))")
+    title!("Decisión de Consumo Óptimo")
+    xlabel!("Periodo (t)")
+    ylabel!("Consumo (C)")
+
+    p2 = plot(t_axis, res_base["B"], color=:black, ls=:dash, lw=2.0, label="Ahorro sin impuestos")
+    plot!(t_axis, res_tax["B"], color="#D95319", lw=2.5, label="Ahorro con impuesto (τw=$(round(tauw_val, digits=2)))")
+    hline!([0.0], color=:black, ls=:dot, alpha=0.5, label="")
+    title!("Evolución de Activos Financieros")
+    xlabel!("Periodo (t)")
+    ylabel!("Activos (B)")
+
+    plot(p1, p2, layout=(1,2), size=(800, 350))
+end
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
@@ -115,8 +128,39 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
     xlabel!("Periodo (t)")
     ylabel!("Activos (B)")
     
-    plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
+    plot(p1, p2, p3, layout=(1,3), size=(1100, 350),
          plot_title="Efecto de Impuestos Distorsionadores", top_margin=10mm)
+end
+"""))
+
+nb.cells.append(nbf.v4.new_code_cell("""# Comparación numérica: FOC (NLsolve) vs Optimización Directa
+params_dist = default_calibration(FiscalPolicyParameters)
+W_dist = fill(100.0, params_dist.T)
+
+# 1. Resolver con FOC
+res_foc = solve_distortionary_foc(params_dist, W_dist, false)
+
+# 2. Resolver con optimización directa (equivalente a CVXPY en Python)
+res_optim = solve_distortionary_optim(params_dist, W_dist, false)
+
+println("VERIFICACIÓN DE CONSISTENCIA NUMÉRICA (FOC vs Optimización Directa):")
+println("-"^75)
+println("  Consumo Inicial C(0) [FOC]      : ", round(res_foc["C"][1], digits=6))
+println("  Consumo Inicial C(0) [Optim]    : ", round(res_optim["C"][1], digits=6))
+println("  Trabajo Inicial L(0) [FOC]      : ", round(res_foc["L"][1], digits=6))
+println("  Trabajo Inicial L(0) [Optim]    : ", round(res_optim["L"][1], digits=6))
+println("  Activos Finales B(T-1) [FOC]    : ", res_foc["B"][end])
+println("  Activos Finales B(T-1) [Optim]  : ", res_optim["B"][end])
+println("-"^75)
+
+diff_C = maximum(abs.(res_foc["C"] .- res_optim["C"]))
+diff_L = maximum(abs.(res_foc["L"] .- res_optim["L"]))
+println("Máxima diferencia absoluta en Consumo : ", diff_C)
+println("Máxima diferencia absoluta en Trabajo : ", diff_L)
+if diff_C < 1e-4 && diff_L < 1e-4
+    println("✅ ¡Los resolvedores numéricos son perfectamente equivalentes!")
+else
+    println("❌ Hay diferencias entre solucionadores.")
 end
 """))
 
