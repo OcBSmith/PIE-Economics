@@ -17,7 +17,11 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell("""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae todo el paquete X. "import X: y" solo trae el nombre y.
+# Pkg.activate("../..") usa el entorno del repo; Pkg.instantiate() instala
+# dependencias. MacroAIComp contiene la lógica del modelo Q de Tobin; Plots
+# e Interact para visualización interactiva; BenchmarkTools para rendimiento.
+using Pkg
 Pkg.activate("../..")
 Pkg.instantiate()
 
@@ -26,9 +30,9 @@ using Plots
 import Plots: mm
 default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
-using NLsolve
-using Interact
-using BenchmarkTools
+using NLsolve         # solver de sistemas no lineales
+using Interact        # widgets interactivos (equivalente a ipywidgets)
+using BenchmarkTools  # medición de rendimiento (Fase III)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
@@ -38,6 +42,14 @@ nb.cells.append(nbf.v4.new_code_cell("""# ======================================
 # CALCULO DEL ESTADO ESTACIONARIO, AUTOVALORES Y FORMULA DE SALTO
 # ==============================================================================
 
+# TobinQParams es un struct (definido en src/models/TobinQ.jl) con
+# argumentos POSICIONALES: alpha, delta, phi, R (en ese orden, el orden
+# importa). compute_steady_state() calcula el punto fijo; compute_
+# linearized_system() obtiene la matriz A, autovalores y theta (pendiente
+# del saddle path). En Julia los índices empiezan en 1: lambdas[1] es el
+# primer autovalor. Al ejecutar veremos SS, estabilidad y theta comparado
+# con theta_book — la diferencia debe ser < 1e-12 (son algebraicamente
+# idénticas, igual que en Python).
 params_ss = TobinQParams(0.35, 0.06, 10.0, 0.04)  # alpha, delta, phi, R
 ss = compute_steady_state(params_ss)
 lin_sys = compute_linearized_system(params_ss)
@@ -78,6 +90,11 @@ nb.cells.append(nbf.v4.new_code_cell("""# ======================================
 # VERIFICACION: SS, AUTOVALORES Y FORMULA DE SALTO (Apendice K del libro)
 # ==============================================================================
 
+# isapprox(a, b; rtol=...) compara con tolerancia. @assert es PUNTO DE
+# CONTROL silencioso. Verificamos: 1) q*=1, K*~6.87, I*=delta*K*.
+# 2) lambda1~-0.0607 (estable, |1+lambda1|<1), lambda2~0.1072 (inestable)
+# => punto de silla. 3) theta = theta_book para varias calibraciones.
+
 # 1. Estado estacionario
 @assert isapprox(q_star, 1.0; atol=1e-6)
 @assert isapprox(K_star, 6.8711236; rtol=1e-6)
@@ -106,6 +123,12 @@ println("OK (SS 3/3): theta = theta_book para todo R, phi (atol=1e-12).")
 nb.cells.append(nbf.v4.new_code_cell("""# ==============================================================================
 # VERIFICACION DEL SHOCK: SALTO DE q, CONVERGENCIA Y CONSISTENCIA (Apendice K)
 # ==============================================================================
+
+# Cuatro verificaciones: 1) K0 es predeterminado (K* en R=4%). 2) q0 SALTA a
+# ~1.1033 (>1.0) en t=1 (variable forward-looking). En Julia los índices
+# empiezan en 1: res["q"][2] es el periodo del shock (t=1). 3) Convergencia
+# a largo plazo: q -> 1.0, K -> K*(R=3%). 4) Lineal y no lineal consistentes
+# (rtol=1e-2).
 
 ss_R04 = compute_steady_state(params_ss, 0.04)
 ss_R03 = compute_steady_state(params_ss, 0.03)
@@ -148,7 +171,12 @@ println("OK (Shock 4/4): Trayectorias lineal y no lineal consistentes (rtol=1e-2
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa Interés
+nb.cells.append(nbf.v4.new_code_cell("""# @manipulate crea sliders y redibuja al moverlos. Al bajar R_final por
+# debajo de R_init, veremos: Panel 1) q salta > 1.0 en t=1 y converge a
+# 1.0. Panel 2) K crece gradualmente (no salta, es predeterminado). Panel
+# 3) Inversión neta positiva mientras q>1, sombreado por encima de la
+# depreciación. Cuanto mayor phi (costes de ajuste), más lenta la
+# convergencia de K y menor el salto inicial de q.
 @manipulate for R_init in slider(0.01:0.005:0.08; value=0.04, label="R inicial"), R_final in slider(0.01:0.005:0.08; value=0.03, label="R final"), phi_val in slider(1.0:1.0:30.0; value=10.0, label="Costos Aj. (φ)"), delta_val in slider(0.01:0.01:0.15; value=0.06, label="Deprec. (δ)"), alpha_val in slider(0.20:0.05:0.50; value=0.35, label="Elasticidad (α)")
     
     params_base = TobinQParams(alpha_val, delta_val, phi_val, R_init)
@@ -206,7 +234,13 @@ end
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal vs No Lineal
+nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal vs No Lineal. solve_linearized_simulation() usa la
+# aproximación de Uhlig (1999) con theta; solve_nonlinear_simulation()
+# resuelve el sistema exacto con fsolve. Al ejecutar, ambas trayectorias
+# deberían superponerse casi perfectamente: la aproximación lineal es muy
+# precisa para shocks moderados. plot!() (con "!") añade al gráfico
+# existente: primero se dibuja la curva no lineal (lw=3, sólida) y luego
+# la linealizada (ls=:dash, discontinua) encima.
 params = TobinQParams(0.33, 0.06, 10.0, 0.04)
 ss_init = compute_steady_state(params, 0.04)
 K0 = ss_init["K"]
@@ -237,7 +271,13 @@ plot(p1, p2, layout=(1,2), size=(800, 350))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en espacio de desviaciones logarítmicas
+nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en el espacio de desviaciones logarítmicas (k_hat, q_hat).
+# quiver!() dibuja el campo vectorial (normalizado para que todas las
+# flechas tengan la misma longitud). scatter!() añade los puntos clave:
+# rojo = SS inicial, naranja = salto de q, verde (star) = SS final. La
+# trayectoria simulada (roja) recorre el saddle path desde el salto hasta el
+# origen. Cualquier punto fuera del saddle path divergería: solo el salto
+# EXACTO a q_hat_0 = theta * k_hat_0 garantiza la convergencia.
 @manipulate for R_init in slider(0.01:0.005:0.08; value=0.04, label="R inicial"), R_final in slider(0.01:0.005:0.08; value=0.03, label="R final"), phi_val in slider(1.0:1.0:30.0; value=10.0, label="Costos Aj. (φ)"), delta_val in slider(0.01:0.01:0.15; value=0.06, label="Deprec. (δ)"), alpha_val in slider(0.20:0.05:0.50; value=0.35, label="Elasticidad (α)")
     params = TobinQParams(alpha_val, delta_val, phi_val, R_final)
     
@@ -328,7 +368,9 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 8. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+nb.cells.append(nbf.v4.new_code_cell("""# @btime mide el tiempo mínimo de ejecución y la memoria asignada. Los "$"
+# evitan que las variables se traten como globales (falsearía la medición).
+# (Fase III del proyecto: rendimiento computacional, no economía.)
 @btime solve_nonlinear_simulation($params, $K0, $R_path, $T_sim)
 """))
 

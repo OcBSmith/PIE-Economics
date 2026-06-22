@@ -17,22 +17,34 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell("""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
+# no tener que reescribirlo. Pkg.activate("../..") usa el entorno del repo.
+# Pkg.instantiate() instala lo que falte (la primera vez puede tardar).
+using Pkg
 Pkg.activate("../..")
 Pkg.instantiate()
 
+# La lógica del modelo consumo-ahorro vive en src/models/ConsumptionSaving.jl
+# dentro del paquete MacroAIComp. El notebook solo llama funciones ya
+# probadas, no reimplementa ecuaciones de Euler ni el solver.
 using MacroAIComp
 using Plots
 import Plots: mm
 default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
-using Interact
-using BenchmarkTools
+using Interact                 # widgets interactivos (sliders) para Jupyter
+using BenchmarkTools           # medición de rendimiento (Fase III)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration(ConsumptionSavingParameters)
+nb.cells.append(nbf.v4.new_code_cell("""# Esta celda solo FIJA NÚMEROS (Capítulo 4 del libro): todavía no calcula
+# nada. default_calibration(ConsumptionSavingParameters) devuelve un struct
+# (definido en src/models/ConsumptionSaving.jl) con valores por defecto:
+# T=30, beta=0.97, R=0.02. Al ejecutar veremos estos valores impresos como
+# comprobación visual. La tasa de impaciencia theta se calcula como
+# (1-beta)/beta: a menor beta (menos paciente), mayor theta.
+params = default_calibration(ConsumptionSavingParameters)
 
 println("CALIBRACIÓN ECONÓMICA BASE:")
 println("-"^50)
@@ -44,7 +56,17 @@ println("-"^50)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Generar salario constante
+nb.cells.append(nbf.v4.new_code_cell("""# Esta celda RESUELVE el problema del consumidor por DOS métodos distintos
+# y compara los resultados. generate_income_profile("constant", T) crea un
+# array de T=30 periodos con salario W=10 en cada uno. solve_foc_fsolve()
+# plantea el sistema de ecuaciones de Euler y lo resuelve con NLsolve.
+# solve_direct_optim() maximiza directamente la suma de utilidades
+# descontadas usando optimización convexa. Al ejecutar veremos que ambos
+# métodos dan resultados numéricamente idénticos (diferencia < 1e-5).
+# W_const[1:5] muestra SOLO los 5 primeros elementos del array para no
+# llenar la pantalla con 30 números.
+
+# Generar salario constante
 W_const = generate_income_profile("constant", params.T)
 println("W constante: ", W_const[1:5], "...")
 
@@ -114,7 +136,13 @@ println("OK: coincide con el oráculo MATLAB (Apéndice G).")
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl
+nb.cells.append(nbf.v4.new_code_cell("""# @manipulate es el equivalente en Julia de interact() de Python: crea
+# sliders y un dropdown y redibuja automáticamente cada vez que los mueves.
+# El código dentro del bloque resuelve el modelo de consumo-ahorro con los
+# valores de beta, R y perfil salarial que elijas y dibuja 3 paneles:
+# (1) consumo C_t e ingreso W_t, (2) activos financieros B_t con áreas de
+# ahorro (azul) y deuda (naranja), (3) utilidad descontada por periodo.
+# Al mover los sliders verás en vivo cómo cambia el perfil de consumo.
 @manipulate for beta_val in slider([0.90:0.01:0.99; 0.999]; value=0.97, label="Paciencia (β)"), R_val in slider(-0.05:0.01:0.15; value=0.02, label="Interés (R)"), profile in Widgets.dropdown(["constant", "increasing", "retirement"]; value="constant", label="Perfil Salarial")
     
     params_interactive = ConsumptionSavingParameters(30, beta_val, R_val, 0.0)
@@ -203,7 +231,11 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[7]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 7. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+nb.cells.append(nbf.v4.new_code_cell("""# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
+# tiempo mínimo/medio de ejecución y la memoria asignada. El $ delante de
+# params y W_const evita que BenchmarkTools las trate como globales, lo que
+# falsearía la medición (Fase III). Al ejecutar veremos cuánto tarda Julia
+# en resolver el sistema de 30 ecuaciones de Euler con NLsolve.
 @btime solve_foc_fsolve($params, $W_const)
 """))
 

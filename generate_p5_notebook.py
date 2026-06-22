@@ -49,8 +49,9 @@ nb.cells.append(
 
 # 3. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
-# Esta celda se ejecuta silenciosamente. Si estás en Google Colab, instalará las librerías necesarias.
-# En tu entorno local de desarrollo (venv), estas dependencias ya deberían estar instaladas.
+# %%capture suprime la salida de la celda. "import sys; 'google.colab' in
+# sys.modules" detecta si estamos en Google Colab. Si es Colab, !pip install
+# descarga las librerías. En local (venv) ya están instaladas: no hace nada.
 import sys
 if 'google.colab' in sys.modules:
     !pip install numpy scipy matplotlib ipywidgets cvxpy
@@ -63,16 +64,26 @@ nb.cells.append(
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
-import numpy as np
-import matplotlib.pyplot as plt
-import cvxpy as cp
-from ipywidgets import interact, FloatSlider, IntSlider, Checkbox
+# "import X as np" trae la librería X con un alias corto (np, plt, cp) para
+# no teclear el nombre completo cada vez. "from X import Y" es más selectivo:
+# trae solo la función/clase Y del módulo X. Así el notebook se limita a
+# llamar funciones ya probadas (ver Sección 6, Buenas Prácticas).
 
-# Añadir el directorio src al PATH de Python para poder importar el módulo macroaicomp
+# Librerías de terceros (instaladas con pip)
+import numpy as np                      # cálculo numérico: vectores, matrices, álgebra lineal
+import matplotlib.pyplot as plt         # gráficos 2D con estilo MATLAB
+import cvxpy as cp                      # optimización convexa
+from ipywidgets import interact, FloatSlider, IntSlider, Checkbox  # widgets interactivos
+
+# sys.path.append añade una carpeta al PATH para que "import" la encuentre.
+# "../" sube dos niveles desde practicas/05-gobierno-fiscal/ hasta la raíz
+# del repo, donde está src/.
 import sys
 sys.path.append('../../src')
 
-# Importar funciones del modelo modularizado (Core de la biblioteca)
+# Proyecto (src/macroaicomp/): la lógica fiscal del modelo está en
+# fiscal_policy.py, separada de la visualización. Los nombres entre
+# paréntesis se podrán usar como si estuvieran definidos en este cuaderno.
 from macroaicomp.models.fiscal_policy import (
     FiscalPolicyParameters,
     solve_non_distortionary,
@@ -115,6 +126,12 @@ nb.cells.append(
 # SIMULACIÓN INTERACTIVA: IMPUESTO DE SUMA FIJA Y EQUIVALENCIA RICARDIANA
 # ==============================================================================
 
+# "def nombre(argumentos):" define una FUNCIÓN reutilizable que no se
+# ejecuta al escribirla, solo cuando interact() la llame al mover un slider.
+# return_transfers=True significa que el gobierno DEVUELVE toda la
+# recaudación como transferencia (G=T): si el agente recibe de vuelta lo
+# mismo que pagó, el impuesto no debería alterar sus decisiones — eso es la
+# Equivalencia Ricardiana que verificamos en esta celda.
 def plot_non_distortionary(tauw_val=0.40, return_transfers=True):
     # Calibración base: T = 30, beta = 0.97, R = 0.05
     params = FiscalPolicyParameters(T=30, beta=0.97, R=0.05, tauw=tauw_val)
@@ -201,6 +218,13 @@ nb.cells.append(
 # VERIFICACIÓN SECCIÓN 1: EQUIVALENCIA RICARDIANA (Apéndice J del libro)
 # ==============================================================================
 
+# np.testing.assert_allclose(a, b, rtol=...) compara con tolerancia y SOLO
+# lanza error si la diferencia supera el margen. Si pasa, es silencioso
+# (PUNTO DE CONTROL). La Equivalencia Ricardiana predice que si el gobierno
+# devuelve TODO lo recaudado como transferencia, el agente descuenta el
+# impuesto futuro y NO cambia su consumo ni su ahorro: C y B deben ser
+# IDÉNTICOS al caso sin impuestos (rtol=1e-6). Esta celda lo comprueba.
+
 W10 = np.full(30, 10.0)
 
 # 1. Caso base sin impuestos
@@ -254,7 +278,13 @@ nb.cells.append(
 # COMPARACIÓN NUMÉRICA: FOC (fsolve) vs OPTIMIZACIÓN DIRECTA (cvxpy)
 # ==============================================================================
 
-params_dist = FiscalPolicyParameters()
+# solve_distortionary_foc() resuelve las condiciones de primer orden con un
+# solver de sistemas no lineales. solve_distortionary_cvxpy() formula el
+# problema como optimización convexa y deja que el solver encuentre la
+# solución. Son DOS caminos hacia el mismo resultado: si coinciden (diff <
+# 1e-4), el modelo está bien implementado en ambos métodos.
+
+params_dist = FiscalPolicyParameters()  # valores por defecto
 W_dist = np.full(params_dist.T, 100.0)
 
 # 1. Resolver con FOC (fsolve)
@@ -308,6 +338,9 @@ np.testing.assert_allclose(res_foc["B"], res_cvxpy["B"], rtol=1e-4, atol=1e-6)
 print("OK (Dist 2/3): FOC y cvxpy equivalentes con return_transfers=False (rtol=1e-4).")
 
 # --- Distorsión laboral: mayor tauw => menor L media ---
+# La intuición: un impuesto al salario reduce el pago neto por hora
+# trabajada, así que el agente sustituye trabajo por ocio (efecto
+# sustitución). Comprobamos que L media baja al subir tauw de 0.10 a 0.40.
 res_tauw_low = solve_distortionary_foc(
     FiscalPolicyParameters(T=30, beta=0.97, gamma=0.40, R=0.05, tauw=0.10),
     W_dist, return_transfers=True
@@ -332,6 +365,12 @@ nb.cells.append(
         r"""# ==============================================================================
 # VERIFICACIÓN SECCIÓN 3: IMPUESTO AL CAPITAL (Apéndice J)
 # ==============================================================================
+
+# El impuesto al capital (taur) reduce el rendimiento neto del ahorro:
+# beta*(1+(1-taur)*R) baja, así que el consumo futuro es menos atractivo.
+# Predicciones: 1) Activos medios menores (se ahorra menos). 2) Pendiente
+# del consumo más plana (crece menos en el tiempo). Esta celda verifica
+# ambas direcciones comparando taur=0.0 contra taur=0.50.
 
 # tau_r=0.0 vs tau_r=0.50 SIN devolución
 res_taur0 = solve_distortionary_foc(
@@ -367,6 +406,11 @@ nb.cells.append(
 # SIMULACIÓN INTERACTIVA EN 3 PANELES: IMPUESTOS DISTORSIONADORES
 # ==============================================================================
 
+# Esta función grafica el impacto de tres impuestos a la vez (consumo,
+# trabajo, capital) comparando contra un caso base SIN impuestos (línea
+# negra discontinua). Al ejecutar veremos 3 paneles: Consumo, Oferta de
+# Trabajo y Activos. Moviendo los sliders se aprecia cómo cada impuesto
+# distorsiona una decisión distinta del agente.
 def plot_distortionary(tauc_val=0.15, tauw_val=0.35, taur_val=0.25, return_transfers=False):
     params = FiscalPolicyParameters(
         T=30, beta=0.97, gamma=0.40, R=0.05,
@@ -451,6 +495,12 @@ nb.cells.append(
 # SIMULACIÓN INTERACTIVA: SEGURIDAD SOCIAL Y ACTIVOS
 # ==============================================================================
 
+# Esta celda explora la SUSTITUCIÓN PERFECTA entre ahorro forzoso (Seguridad
+# Social) y ahorro voluntario. Con previsión perfecta, el agente descuenta
+# el fondo de pensiones futuro y ajusta su ahorro privado para mantener el
+# mismo consumo. Al ejecutar, el Panel 1 (Consumo) debería ser IDÉNTICO con
+# y sin SS; el Panel 2 (Ahorro privado B) caerá al introducir la SS porque
+# el agente sustituye ahorro voluntario por forzoso.
 def plot_social_security(tau_ss_val=0.36, t_star_val=26):
     params = FiscalPolicyParameters(T=30, beta=0.97, R=0.05, tau_ss=tau_ss_val, t_star=t_star_val)
     
@@ -520,6 +570,13 @@ nb.cells.append(
         r"""# ==============================================================================
 # VERIFICACIÓN SECCIÓN 4: SEGURIDAD SOCIAL (Apéndice J)
 # ==============================================================================
+
+# Verificamos la SUSTITUCIÓN PERFECTA de ahorro: con SS, el consumo debe
+# ser IDÉNTICO al caso sin SS (rtol=1e-6) porque el agente descuenta el
+# fondo de pensiones futuro y ajusta su ahorro privado. Pero el ahorro
+# privado B al inicio de la vida laboral se vuelve NEGATIVO (deuda): el
+# agente se endeuda contra el fondo de SS bloqueado para mantener su
+# senda óptima de consumo.
 
 # Calibración SS: tau_ss=0.36, t_star=26, salario creciente W=10+t
 t_star = 26

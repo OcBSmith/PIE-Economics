@@ -26,8 +26,11 @@ Al finalizar esta práctica, serás capaz de:
 
 # 2. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
-# Esta celda se ejecuta silenciosamente. Si estás en Google Colab, instalará las librerías necesarias.
-# En tu entorno local de desarrollo (venv), estas dependencias ya deberían estar instaladas.
+# "%%capture" es una "magia" de Jupyter: ejecuta la celda pero no imprime
+# nada en pantalla. Útil para celdas de instalación con mucho texto de
+# registro. La comprobación 'google.colab' in sys.modules mira si estamos en
+# Colab: solo será True en ese entorno. En tu entorno local (venv), esta
+# celda no hará nada porque las dependencias ya están instaladas.
 import sys
 if 'google.colab' in sys.modules:
     !pip install numpy scipy matplotlib ipywidgets cvxpy
@@ -36,20 +39,23 @@ if 'google.colab' in sys.modules:
 # 3. IMPORTACIONES
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
-# ==============================================================================
+        r"""# "import" trae a este cuaderno código escrito en otro sitio, para no tener
+# que reescribirlo. "import X as np" trae toda la librería X y le da un
+# alias corto (np). "from X import Y" es más selectivo: trae solo Y de X.
+# sys.path.append('../../src') añade la carpeta src/ del proyecto al PATH.
 
-import numpy as np
-import matplotlib.pyplot as plt
-import cvxpy as cp
-from ipywidgets import interact, FloatSlider, Dropdown
+# Librerías de terceros (instaladas en el entorno con pip)
+import numpy as np                      # cálculo numérico: vectores, álgebra lineal
+import matplotlib.pyplot as plt         # visualización gráfica: figuras, ejes, estilos
+import cvxpy as cp                      # optimización convexa (alternativa a fsolve)
+from ipywidgets import interact, FloatSlider, Dropdown  # widgets interactivos
 
-# Añadir el directorio src al PATH de Python para poder importar el módulo macroaicomp
+# Proyecto (requiere `pip install -e .` desde la raíz del repo).
+# La lógica del modelo consumo-ahorro vive en
+# src/macroaicomp/models/consumption_savings.py. El notebook solo llama
+# funciones ya probadas: no reimplementa ecuaciones de Euler ni el solver.
 import sys
 sys.path.append('../../src')
-
-# Importar funciones del modelo modularizado (Core de la biblioteca)
 from macroaicomp.models.consumption_savings import (
     ConsumptionSavingParameters,
     generate_income_profile,
@@ -108,7 +114,14 @@ Esta relación revela que:
 # 5. CALIBRACIÓN DE PARÁMETROS
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
+        r"""# Esta celda solo FIJA NÚMEROS (Capítulo 4 del libro): todavía no calcula
+# nada. ConsumptionSavingParameters() crea un dataclass (definido en
+# src/macroaicomp/models/consumption_savings.py) con valores por defecto:
+# T=30 periodos de vida, beta=0.97 (factor de descuento, implica una tasa de
+# impaciencia theta ≈ 3.09%), R=0.02 (tipo de interés real del 2%). Al
+# ejecutar veremos estos 3 valores impresos como comprobación visual.
+
+# ==============================================================================
 # CALIBRACIÓN DE REFERENCIA (Capítulo 4 - Libro original)
 # ==============================================================================
 
@@ -165,7 +178,19 @@ debería salir en cada celda siguiente con el que realmente sale."""
 )
 
 # 7. CÓDIGO DE EJECUCIÓN DE AMBOS SOLVERS
-nb.cells.append(nbf.v4.new_code_cell(r"""# Generar salario constante
+nb.cells.append(nbf.v4.new_code_cell(r"""# Esta celda RESUELVE el problema del consumidor por DOS métodos distintos
+# y compara los resultados. generate_income_profile("constant", T) crea un
+# array de T=30 periodos con salario W=10 en cada uno.
+# solve_foc_fsolve() plantea el sistema de T ecuaciones de Euler y la
+# condición terminal B=0, y lo resuelve con fsolve (Newton-Raphson).
+# solve_direct_cvxpy() maximiza directamente la suma de utilidades
+# descontadas sujeta a las restricciones presupuestarias usando cvxpy
+# (optimización convexa). Al ejecutar veremos que ambos métodos dan
+# resultados numéricamente idénticos (diferencia < 1e-5).
+# Las cadenas con "f" delante (f-strings) permiten meter valores dentro del
+# texto; el formato .6f muestra 6 decimales, .2e muestra notación científica.
+
+# Generar salario constante
 W_const = generate_income_profile("constant", params.T)
 
 # 1. Resolver usando FOC (fsolve)
@@ -256,7 +281,21 @@ Podrás interactuar con los deslizadores para modificar:
 # 10. CÓDIGO DE GRAFICACIÓN E INTERACTIVIDAD
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
+        r"""# "def nombre(args):" define una FUNCIÓN reutilizable: no se ejecuta al
+# escribirla, solo cuando interact() la llama más abajo.
+# plot_consumption_saving() resuelve el modelo de consumo-ahorro con los
+# valores de beta, R y perfil salarial que elijas en los widgets y dibuja 3
+# paneles: (1) consumo C_t e ingreso W_t, (2) activos financieros B_t con
+# áreas sombreadas para ahorro (azul) y deuda (naranja), (3) utilidad
+# descontada beta^t * ln(C_t) por periodo. Al mover los sliders verás en
+# vivo cómo cambia el perfil de consumo y ahorro.
+# interact() conecta la función a los widgets: cada vez que cambias uno,
+# ipywidgets vuelve a llamar a plot_consumption_saving() con los nuevos
+# valores y redibuja los 3 paneles. El Dropdown permite elegir entre 3
+# perfiles salariales: constant (salario fijo), increasing (creciente, como
+# ganando experiencia), retirement (jubilación: salario cae a 0 en t=20).
+
+# ==============================================================================
 # FUNCIÓN DE GRAFICACIÓN INTERACTIVA EN 3 PANELES
 # ==============================================================================
 

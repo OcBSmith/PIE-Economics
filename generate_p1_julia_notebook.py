@@ -17,23 +17,45 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell("""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae a este cuaderno todo el código público del paquete X, para
+# no tener que reescribirlo (es el equivalente Julia de "import X" en
+# Python, pero sin necesidad de poner un alias para usar sus funciones).
+# Pkg.activate("../..") le dice a Julia "usa el entorno (versiones de
+# librerías) definido en Project.toml/Manifest.toml de la raíz del repo, no
+# el entorno global de la máquina" — así todo el mundo ejecuta con las
+# mismas versiones. Pkg.instantiate() descarga/instala lo que falte de ese
+# entorno (la primera vez puede tardar; las siguientes es instantáneo).
+using Pkg
 Pkg.activate("../..")
 Pkg.instantiate()
 
+# La lógica del modelo (ecuaciones, simulación, estado estacionario) vive en
+# src/models/ISLM.jl dentro del paquete MacroAIComp. El notebook solo llama
+# funciones ya probadas, no reimplementa fórmulas.
 using MacroAIComp
 using Plots
+# "import Plots: mm" es más selectivo que "using Plots": solo trae el nombre
+# "mm" (una unidad de medida para márgenes) en vez de todo el paquete, que
+# ya importamos en la línea anterior.
 import Plots: mm
 default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
-using DifferentialEquations
-using Interact
-using BenchmarkTools
+using DifferentialEquations    # integración numérica de ODEs (equivalente a scipy.integrate)
+using Interact                 # widgets interactivos (sliders) para Jupyter
+using BenchmarkTools           # medición de rendimiento (Fase III)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""params = default_calibration(ISLMParams)
+nb.cells.append(nbf.v4.new_code_cell("""# Esta celda solo FIJA NÚMEROS (Apéndice D del libro): todavía no calcula
+# nada. default_calibration(ISLMParams) devuelve un ISLMParams, un struct
+# (definido en src/models/ISLM.jl): una "ficha" con 8 campos con nombre
+# (theta, psi, beta1, mi, ni, beta0, m0, ypot0), como el dataclass de
+# Python. Usar default_calibration() evita escribir los números a mano y
+# posibles errores de tecleo: los valores están centralizados en el código
+# fuente y testeados. Al ejecutar veremos los 8 valores impresos con su
+# descripción económica como comprobación visual.
+params = default_calibration(ISLMParams)
 
 # Glosario didáctico: descripción económica y símbolo de cada parámetro técnico
 descriptions = Dict(
@@ -62,7 +84,17 @@ println("="^75)
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""ss = steady_state(params)
+nb.cells.append(nbf.v4.new_code_cell("""# steady_state() es una FUNCIÓN: le pasamos los parámetros (params) y nos
+# devuelve un diccionario con los valores de equilibrio de largo plazo
+# (Y, P, i, Yd, dP, dY). Por dentro resuelve las condiciones dY/dt = 0,
+# dP/dt = 0 usando las fórmulas analíticas derivadas en la Sección 2 del
+# notebook: Y* = ypot0 (producción potencial), i* = (beta0 - Y*)/beta1,
+# P* = theta*i* + m0 - psi*Y*. No necesitamos saber CÓMO lo calcula para
+# usarla: solo qué entra y qué sale.
+# round(ss["i"], digits=2) redondea SOLO para imprimir más corto; el valor
+# real guardado en la variable no cambia. println() imprime texto en la
+# consola (como print() en Python).
+ss = steady_state(params)
 
 println("VALORES DE EQUILIBRIO DE LARGO PLAZO:")
 println("  Renta de pleno empleo (Y*) : ", ss["Y"])
@@ -76,18 +108,28 @@ md_4 = md_cells[4].replace("`scipy.integrate.solve_ivp`", "`DifferentialEquation
 nb.cells.append(nbf.v4.new_markdown_cell(md_4))
 
 # Mostramos el system_dynamics en Julia como se hacía en Python con def
-nb.cells.append(nbf.v4.new_code_cell("""# Así definimos el sistema dinámico en Julia (ver src/models/ISLM.jl)
+nb.cells.append(nbf.v4.new_code_cell("""# Esta celda DEFINE (no ejecuta) la función custom_system_dynamics!(), el
+# "motor" del modelo IS-LM: dado un punto (Y, P) y unos parámetros, calcula
+# [dY/dt, dP/dt] y los GUARDA en el vector du (la "!" en el nombre indica
+# que MODIFICA su primer argumento en vez de devolver un resultado nuevo,
+# por convención de Julia). El integrador de DifferentialEquations.jl
+# llamará a esta función miles de veces durante la simulación.
+# "function nombre(args) ... end" define una FUNCIÓN en Julia, igual que
+# "def" en Python pero terminada con "end" en vez de por indentación.
+# La definimos aquí desglosada para que veas las ecuaciones que hay dentro
+# de simulate_shock() — en el paquete esta lógica está en system_dynamics().
 function custom_system_dynamics!(du, u, p, t)
     Y = u[1]
     P = u[2]
-    
+
     params = p
-    # Curva LM
+    # Curva LM: tipo de interés nominal que equilibra el mercado de dinero
     i_rate = (P - params.m0 + params.psi * Y) / params.theta
-    # Curva IS
+    # Curva IS: demanda agregada en función del tipo de interés real (aquí pi=0)
     Y_d = params.beta0 - params.beta1 * (i_rate - 0.0) # pi=0
-    
-    # Phillips y Ajuste
+
+    # Phillips: inflación proporcional a la brecha de producción
+    # Ajuste: la producción se mueve hacia la demanda agregada
     du[1] = params.ni * (Y_d - Y)
     du[2] = params.mi * (Y - params.ypot0)
 end
@@ -95,7 +137,14 @@ end
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama de fases
+nb.cells.append(nbf.v4.new_code_cell("""# @manipulate es el equivalente en Julia de interact() de Python: crea
+# sliders y redibuja automáticamente cada vez que los mueves. La sintaxis
+# "for var in slider(...)" define una variable controlada por un slider.
+# El código dentro del bloque @manipulate se ejecuta completo cada vez que
+# cambias cualquier slider — produce 3 paneles: (1) evolución temporal de Y,
+# (2) evolución temporal de P, (3) diagrama de fases en el plano (Y, P).
+# simulate_shock() llama a DifferentialEquations.jl para integrar las ODEs.
+# Al mover los sliders verás en vivo cómo cambian las trayectorias.
 @manipulate for m0_val in slider(80.0:1.0:120.0; value=110.0, label="Oferta Monetaria (M0)"), beta0_val in slider(1800.0:10.0:2400.0; value=2100.0, label="Gasto Autónomo (B0)")
     
     params_sim = default_calibration(ISLMParams)
@@ -201,7 +250,12 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[8]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 8. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+nb.cells.append(nbf.v4.new_code_cell("""# @btime (BenchmarkTools.jl) ejecuta la función muchas veces y muestra el
+# tiempo mínimo/medio de ejecución y la memoria asignada. El $ delante de
+# las variables evita que BenchmarkTools las trate como globales, lo que
+# falsearía la medición de rendimiento (Fase III del proyecto). Al ejecutar
+# veremos cuántos microsegundos tarda Julia en simular 50 periodos del
+# modelo IS-LM.
 @btime simulate_shock($params, [2000.0, 81.0], (0.0, 50.0), collect(range(0.0, 50.0, length=500)))
 """))
 

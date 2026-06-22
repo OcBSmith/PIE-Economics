@@ -90,9 +90,11 @@ código: comentarios QUÉ hace / POR QUÉ / QUÉ VERÁS, incluida sintaxis
 básica (imports/`using`, structs/dataclasses, indexado 0-based vs.
 1-based, f-strings/interpolación, broadcasting, tuplas...) igual que P0.
 
-- [~] D1...D9 — **DIFERIDO** (~4-5 días estimados). Los notebooks ya tienen
-  texto explicativo sustancial en markdown. Los comentarios QUÉ/POR QUÉ/QUÉ
-  VERÁS al estilo P0 quedan como siguiente prioridad.
+- [x] D1...D9 — **COMPLETADO** (2026-06-22, Sesión 23-24). Comentarios QUÉ/POR
+  QUÉ/QUÉ VERÁS + sintaxis añadidos en los 18 notebooks (P1-P9 × Python/Julia)
+  siguiendo los patrones de P0: explicación de imports, dataclasses/structs,
+  indexado 0-based vs 1-based, f-strings/interpolación, broadcasting, funciones
+  de verificación, widgets y benchmarks. 3 agentes en paralelo + post-procesamiento.
 
 ## BLOQUE E — `GUION.md` por práctica
 
@@ -110,7 +112,7 @@ extensiones para ABP.
 Depende de E. Añadir las 2 líneas (bienvenida + conclusión) apuntando a
 `GUION.md`, igual que P0 — sin tocar ninguna celda de código.
 
-- [~] F1...F9 — PARCIAL: P1-P2 y P4-P6 con enlaces en `.ipynb`. P3, P7-P9 requieren editar generadores (los `GUION.md` existen en sus carpetas).
+- [x] F1...F9 — COMPLETADO. P1-P2 y P4-P6 con enlaces en `.ipynb`. P3, P7-P9 notebooks regenerados heredan enlaces vía md_extractor desde los Python. Los `GUION.md` existen en todas las carpetas.
 
 ## BLOQUE G — Verificación y cierre (continuo, no al final)
 

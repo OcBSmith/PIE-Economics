@@ -48,8 +48,11 @@ nb.cells.append(
 
 # 3. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
-# Esta celda se ejecuta silenciosamente. Si estás en Google Colab, instalará las librerías necesarias.
-# En tu entorno local de desarrollo (venv), estas dependencias ya deberían estar instaladas.
+# %%capture suprime la salida de la celda para no llenar el notebook de texto
+# de instalación. "import sys; 'google.colab' in sys.modules" detecta si
+# estamos en Google Colab (entorno en la nube) sin necesidad de paquetes extra.
+# Si es Colab, !pip install descarga las librerías. En local (venv) ya están
+# instaladas: la celda no hace nada.
 import sys
 if 'google.colab' in sys.modules:
     !pip install numpy scipy matplotlib ipywidgets cvxpy
@@ -62,16 +65,28 @@ nb.cells.append(
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
-import numpy as np
-import matplotlib.pyplot as plt
-import cvxpy as cp
-from ipywidgets import interact, FloatSlider
+# "import X as np" trae a este cuaderno código escrito en otro sitio y le da
+# un alias corto (np, plt, cp) para no teclear el nombre completo cada vez.
+# "from X import Y" es más selectivo: trae solo la función/clase Y del
+# módulo X. Así el notebook se limita a llamar funciones ya probadas en vez
+# de reimplementar fórmulas aquí (ver Sección 6, Buenas Prácticas).
 
-# Añadir el directorio src al PATH de Python para poder importar el módulo macroaicomp
+# Librerías de terceros (instaladas con pip)
+import numpy as np                      # cálculo numérico: vectores, matrices, álgebra lineal
+import matplotlib.pyplot as plt         # gráficos 2D con estilo MATLAB
+import cvxpy as cp                      # optimización convexa (resuelve el problema directamente)
+from ipywidgets import interact, FloatSlider  # widgets interactivos (sliders) para Jupyter
+
+# sys.path.append añade una carpeta al PATH de Python para que "import" la
+# encuentre. "../" sube dos niveles desde practicas/04-consumo-ocio/ hasta
+# la raíz del repo, donde está src/. Esto evita tener que instalar el
+# paquete con pip para usarlo en este cuaderno.
 import sys
 sys.path.append('../../src')
 
-# Importar funciones del modelo modularizado (Core de la biblioteca)
+# Proyecto (src/macroaicomp/): separa la lógica matemática del modelo de la
+# visualización. Cada nombre entre paréntesis es una función o clase que se
+# podrá usar como si estuviera definida en este mismo cuaderno.
 from macroaicomp.models.consumption_leisure import (
     ConsumptionLeisureParameters,
     solve_foc_fsolve,
@@ -122,6 +137,16 @@ nb.cells.append(
 # CALIBRACIÓN DE REFERENCIA (Capítulo 5 - Libro original)
 # ==============================================================================
 
+# Esta celda solo FIJA NÚMEROS: todavía no calcula nada.
+# ConsumptionLeisureParameters() es un dataclass (definido en
+# src/macroaicomp/models/consumption_leisure.py): una "ficha" con casillas
+# con nombre (T, beta, gamma, R). Al llamarlo sin argumentos, cada casilla
+# toma su VALOR POR DEFECTO definido en la clase. Esto es como rellenar un
+# formulario con los valores que ya vienen escritos.
+
+# f"texto {var}" (f-strings) mete el valor de una variable dentro del texto.
+# Las expresiones entre llaves se evalúan antes de imprimir: útil para ver
+# valores calculados derivados (como theta) sin guardarlos en variables aparte.
 params = ConsumptionLeisureParameters()
 
 print("CALIBRACIÓN BASE DE REFERENCIA:")
@@ -145,8 +170,18 @@ Para resolver este sistema, implementamos dos solvers:
 """))
 
 # 7. CÓDIGO DE EJECUCIÓN COMPARATIVA
-nb.cells.append(nbf.v4.new_code_cell(r"""# Salario constante exógeno de W = 30
+nb.cells.append(nbf.v4.new_code_cell(r"""# np.full(params.T, 30.0) crea un VECTOR de longitud params.T donde TODAS
+# las posiciones valen 30.0: un salario constante de W=30 en cada periodo.
+# Es más legible que un bucle "for t in range(T): W[t]=30".
 W_base = np.full(params.T, 30.0)
+
+# solve_foc_fsolve() y solve_direct_cvxpy() son dos FUNCIONES que resuelven
+# el mismo problema económico pero con métodos numéricos distintos. La
+# primera resuelve las condiciones de primer orden (sistema de ecuaciones no
+# lineales 2T x 2T) con un solver de sistemas (fsolve). La segunda plantea
+# el problema como optimización convexa y deja que cvxpy encuentre la
+# solución. Al ejecutar, ambas deberían dar el mismo resultado (salvo
+# diferencias ínfimas de redondeo): es una doble verificación del modelo.
 
 # Resolver mediante FOC (fsolve)
 res_fsolve = solve_foc_fsolve(params, W_base)
@@ -157,6 +192,8 @@ res_cvxpy = solve_direct_cvxpy(params, W_base)
 # Comparativa de resultados
 print("COMPARACIÓN DE TRAYECTORIAS (fsolve vs cvxpy):")
 print("-" * 75)
+# res_fsolve["C"][0] accede al PRIMER elemento (t=0) del array de consumo.
+# Los resultados son diccionarios: {"C": array, "L": array, "B": array, ...}
 print(f"  Consumo Inicial C(0) [fsolve]   : {res_fsolve['C'][0]:.6f}")
 print(f"  Consumo Inicial C(0) [cvxpy]    : {res_cvxpy['C'][0]:.6f}")
 print(f"  Trabajo Inicial L(0) [fsolve]   : {res_fsolve['L'][0]:.6f}")
@@ -165,7 +202,8 @@ print(f"  Activos Finales B(T-1) [fsolve] : {res_fsolve['B'][-1]:.6e}")
 print(f"  Activos Finales B(T-1) [cvxpy]  : {res_cvxpy['B'][-1]:.6e}")
 print("-" * 75)
 
-# Verificar máxima diferencia absoluta
+# np.max(np.abs(...)) calcula la diferencia máxima absoluta entre dos arrays
+# elemento a elemento: si es < 1e-4, los solvers coinciden hasta el 4º decimal.
 diff_C = np.max(np.abs(res_fsolve["C"] - res_cvxpy["C"]))
 diff_L = np.max(np.abs(res_fsolve["L"] - res_cvxpy["L"]))
 print(f"Máxima diferencia absoluta en Consumo : {diff_C:.2e}")
@@ -214,23 +252,41 @@ nb.cells.append(
 # VERIFICACIÓN NUMÉRICA FRENTE AL ORÁCULO (Apéndice I del libro)
 # ==============================================================================
 
-# 1. Condición terminal: B[T-1] debe ser 0 para ambos solvers
+# np.testing.assert_allclose(a, b, atol=..., rtol=...) compara dos valores
+# o dos arrays elemento a elemento. Si la diferencia es menor que la
+# tolerancia, no hace nada (PUNTO DE CONTROL silencioso). Si falla, lanza
+# AssertionError y detiene la ejecución aquí mismo, antes de seguir
+# construyendo gráficos sobre un resultado incorrecto.
+# No usamos "==" con decimales: el ordenador casi nunca da resultados
+# EXACTAMENTE iguales por errores de redondeo internos (ver P0, celda 10).
+
+# 1. Condición terminal: B[T-1] debe ser 0 para ambos solvers.
+#    La restricción del modelo dice que el agente no puede dejar activos ni
+#    deudas al final de la vida; comprobamos que ambos solvers la respetan.
 np.testing.assert_allclose(res_fsolve["B"][-1], 0.0, atol=1e-6)
 np.testing.assert_allclose(res_cvxpy["B"][-1], 0.0, atol=1e-6)
 print("OK (1/4): Condición terminal B[T-1]=0 para ambos solvers.")
 
-# 2. Equivalencia fsolve vs cvxpy: C, L, B idénticos elemento a elemento
+# 2. Equivalencia fsolve vs cvxpy: C, L, B idénticos elemento a elemento.
+#    Comparamos arrays ENTEROS (no solo el valor inicial): si los dos
+#    métodos numéricos producen las mismas trayectorias completas, el modelo
+#    está bien implementado en ambos.
 np.testing.assert_allclose(res_fsolve["C"], res_cvxpy["C"], rtol=1e-4)
 np.testing.assert_allclose(res_fsolve["L"], res_cvxpy["L"], rtol=1e-4)
 np.testing.assert_allclose(res_fsolve["B"], res_cvxpy["B"], rtol=1e-4, atol=1e-6)
 print("OK (2/4): fsolve y cvxpy producen trayectorias C, L, B equivalentes (rtol=1e-4).")
 
-# 3. Cotas de la oferta de trabajo: 0 <= L_t < 1 para todo t
+# 3. Cotas de la oferta de trabajo: 0 <= L_t < 1 para todo t.
+#    L_t es una FRACCIÓN del tiempo total (normalizado a 1): no puede ser
+#    negativo ni superar el 100% del tiempo disponible. np.all() devuelve
+#    True solo si TODOS los elementos del array cumplen la condición.
 assert np.all(res_fsolve["L"] >= 0.0), "L_t debe ser >= 0"
 assert np.all(res_fsolve["L"] < 1.0), "L_t debe ser < 1"
 print("OK (3/4): 0 <= L_t < 1.0 para todo t (ambos solvers).")
 
-# 4. Ocio positivo: O_t = 1 - L_t > 0 para todo t
+# 4. Ocio positivo: O_t = 1 - L_t > 0 para todo t.
+#    El ocio debe ser estrictamente positivo: el agente siempre descansa
+#    algo (nadie trabaja el 100% del tiempo con utilidad logarítmica).
 assert np.all(res_fsolve["O"] > 0.0), "O_t debe ser > 0"
 print("OK (4/4): Ocio O_t > 0 para todo t.")
 """
@@ -244,11 +300,21 @@ nb.cells.append(
 # VERIFICACIÓN DE SENSIBILIDAD: PREFERENCIAS (γ) Y TIPO DE INTERÉS (R)
 # ==============================================================================
 
+# Esta celda comprueba que el modelo responde cualitativamente como predice
+# la teoría económica ante cambios en gamma y R. No verificamos valores
+# exactos (no hay oráculo para todos los parámetros), sino DIRECCIONES:
+# ¿sube L al subir gamma? ¿sube C en el tiempo cuando R es alto?
+
 W30 = np.full(30, 30.0)
 
 # --- Sensibilidad a gamma: mayor gamma => mayor peso del consumo => más L ---
+# Creamos DOS calibraciones con argumentos CON NOMBRE (T=..., beta=..., ...).
+# Así queda claro qué parámetro cambia y cuál no. gamma=0.40 significa que
+# el agente valora más el ocio (1-gamma=0.60); gamma=0.60, más el consumo.
 res_g40 = solve_foc_fsolve(ConsumptionLeisureParameters(T=30, beta=0.97, gamma=0.40, R=0.02), W30)
 res_g60 = solve_foc_fsolve(ConsumptionLeisureParameters(T=30, beta=0.97, gamma=0.60, R=0.02), W30)
+# np.mean() calcula la MEDIA aritmética de todo el array: un solo número
+# resumen para comparar el nivel de trabajo entre las dos calibraciones.
 mean_L_g40 = np.mean(res_g40["L"])
 mean_L_g60 = np.mean(res_g60["L"])
 print(f"L media con gamma=0.40: {mean_L_g40:.6f}")
@@ -257,6 +323,9 @@ assert mean_L_g60 > mean_L_g40, "Con mayor gamma (mas peso del consumo), L medio
 print("OK (γ): L media mayor con γ=0.60 que con γ=0.40, coincide con el oráculo.")
 
 # --- Sensibilidad a R: con R=0.05, beta*(1+R)=1.0185>1 => C creciente ---
+# La ecuación de Euler (C_{t+1} = beta*(1+R)*C_t) dice que el consumo CRECE
+# si beta*(1+R) > 1. Con beta=0.97 y R=0.05: 0.97*1.05=1.0185>1, así que
+# C[T-1] debe ser mayor que C[0]. La pendiente C[-1]-C[0] lo mide.
 res_R5 = solve_foc_fsolve(ConsumptionLeisureParameters(T=30, beta=0.97, gamma=0.50, R=0.05), W30)
 slope_C = res_R5["C"][-1] - res_R5["C"][0]
 print(f"Consumo inicial C[0] (R=0.05): {res_R5['C'][0]:.6f}")
@@ -290,19 +359,26 @@ nb.cells.append(
 # FUNCIÓN DE GRAFICACIÓN INTERACTIVA EN 3 PANELES
 # ==============================================================================
 
-def plot_consumption_leisure(beta_val=0.97, gamma_val=0.40, R_val=0.02, W_val=30.0):
-    # Cargar parámetros configurados
+# "def nombre(argumentos):" define una FUNCIÓN reutilizable: el bloque de
+# código no se ejecuta al escribirlo, solo cuando alguien la "llama" más
+# abajo (interact() lo hará por nosotros cada vez que movamos un slider).
+# Los argumentos tienen valores por defecto (beta_val=0.97, ...): si se
+# llama a la función sin indicarlos, usará esos valores.
     params_int = ConsumptionLeisureParameters(T=30, beta=beta_val, gamma=gamma_val, R=R_val)
     W = np.full(params_int.T, W_val)
     
     # Resolver
     res = solve_foc_fsolve(params_int, W)
-    
-    # Crear la figura de 3 paneles
+
+    # plt.subplots(1, 3) crea UNA fila y TRES columnas de gráficos en una
+    # misma figura. axs es un array de 3 "ejes" (axs[0], axs[1], axs[2]),
+    # cada uno independiente: podemos dibujar cosas distintas en cada panel.
     fig, axs = plt.subplots(1, 3, figsize=(18, 5))
     t_axis = np.arange(params_int.T)
     
     # --- PANEL 1: CONSUMO E INGRESO SALARIAL ---
+    # Al ejecutar, veremos dos curvas: el consumo (morado) y el ingreso
+    # salarial W*L (verde). La diferencia entre ambas es el ahorro.
     axs[0].plot(t_axis, res["C"], color='#7A3E9F', linewidth=2.5, label='Consumo Óptimo (C)')
     axs[0].plot(t_axis, res["W_L"], color='#8EAD3A', linewidth=2.5, linestyle='--', label='Ingreso Salarial (W·L)')
     axs[0].set_title('Consumo e Ingreso Salarial', fontsize=11, fontweight='bold', pad=10)
@@ -312,6 +388,9 @@ def plot_consumption_leisure(beta_val=0.97, gamma_val=0.40, R_val=0.02, W_val=30
     axs[0].legend(loc='best', fontsize=8)
     
     # --- PANEL 2: OFERTA DE TRABAJO Y OCIO ---
+    # Veremos dos curvas complementarias: trabajo L (rojo) y ocio 1-L
+    # (verde). Como suman 1, cuando una sube la otra baja. La línea de ocio
+    # con linestyle=':' (punteado) es visualmente más ligera.
     axs[1].plot(t_axis, res["L"], color='#E05A47', linewidth=2.5, label='Oferta de Trabajo (L)')
     axs[1].plot(t_axis, res["O"], color='#3BB193', linewidth=2.5, linestyle=':', label='Ocio (O = 1-L)')
     axs[1].set_title('Asignación del Tiempo (Trabajo vs Ocio)', fontsize=11, fontweight='bold', pad=10)
@@ -322,6 +401,10 @@ def plot_consumption_leisure(beta_val=0.97, gamma_val=0.40, R_val=0.02, W_val=30
     axs[1].legend(loc='best', fontsize=8)
     
     # --- PANEL 3: ACTIVOS FINANCIEROS (AHORRO Y DEUDA) ---
+    # fill_between() colorea el área ENTRE la curva B y el eje horizontal
+    # (y=0). where=(B>=0) pinta en azul (ahorro), where=(B<0) en naranja
+    # (deuda). De un vistazo se ve cuándo el agente es acreedor y cuándo
+    # deudor sin tener que leer los números uno a uno.
     axs[2].plot(t_axis, res["B"], color='#004C97', linewidth=2.5, label='Activos Financieros (B)')
     axs[2].fill_between(t_axis, res["B"], 0, where=(res["B"] >= 0), color='#004C97', alpha=0.15, label='Posición Acreedora')
     axs[2].fill_between(t_axis, res["B"], 0, where=(res["B"] < 0), color='#D95319', alpha=0.15, label='Posición Deudora')
@@ -332,10 +415,13 @@ def plot_consumption_leisure(beta_val=0.97, gamma_val=0.40, R_val=0.02, W_val=30
     axs[2].grid(True, linestyle=':', alpha=0.6)
     axs[2].legend(loc='best', fontsize=8)
     
-    plt.tight_layout()
+    plt.tight_layout()  # ajusta el espaciado para que los títulos no se solapen
     plt.show()
 
-# Configurar controles interactivos
+# interact() conecta la función de arriba a los sliders: cada vez que mueves
+# uno, ipywidgets vuelve a llamar a plot_consumption_leisure() con los
+# nuevos valores y redibuja los 3 paneles completos. No hay que re-ejecutar
+# la celda. FloatSlider define el rango, paso y etiqueta de cada slider.
 interact(
     plot_consumption_leisure,
     beta_val=FloatSlider(value=0.97, min=0.90, max=0.999, step=0.01, description='Paciencia (β)'),

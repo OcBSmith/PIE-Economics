@@ -38,24 +38,29 @@ if 'google.colab' in sys.modules:
 # 3. IMPORTACIONES Y CONFIGURACIÓN
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
-# ==============================================================================
+        r"""# "import X as np" trae la librería X con alias np. "from X import Y" es selectivo.
+# "import sys; sys.path.append(...)" añade una carpeta al PATH para que Python
+# encuentre el código del proyecto aunque el notebook esté en un subdirectorio.
 
-import numpy as np
-import matplotlib.pyplot as plt
-from ipywidgets import interact, FloatSlider, Checkbox
+# Librerías de terceros (instaladas en el entorno con pip)
+import numpy as np                      # cálculo numérico: vectores, matrices, álgebra lineal
+import matplotlib.pyplot as plt         # gráficos científicos con estilo MATLAB
+from ipywidgets import interact, FloatSlider, Checkbox   # widgets interactivos (sliders) para Jupyter
 
 # Añadir el directorio src al PATH de Python para poder importar el módulo macroaicomp
 import sys
 sys.path.append('../../src')
 
-# Importar funciones del modelo modularizado (Core de la biblioteca)
+# Proyecto (requiere `pip install -e .` desde la raíz del repo).
+# Cada nombre entre paréntesis es una función o clase que se podrá usar más
+# abajo como si estuviera definida en este mismo cuaderno. El modelo DGE
+# vive en src/macroaicomp/models/dge.py, no en el notebook — así la lógica
+# está separada de la visualización (ver Sección 5, Buenas Prácticas).
 from macroaicomp.models.dge import (
-    DGEParameters,
-    compute_steady_state,
-    solve_blanchard_khan,
-    solve_nonlinear_simulation
+    DGEParameters,              # dataclass con los 5 parámetros del modelo (alpha, beta, delta, rho, A)
+    compute_steady_state,        # calcula K*, Y*, C*, I*, R* a partir de los parámetros
+    solve_blanchard_khan,        # resuelve el sistema linealizado (Blanchard-Khan, descomposición espectral)
+    solve_nonlinear_simulation   # resuelve el sistema no lineal exacto (fsolve periodo a periodo)
 )
 """
     )
@@ -117,18 +122,30 @@ Dado que la productividad aumenta, la economía experimenta un incremento inmedi
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# SIMULACIÓN INTERACTIVA EN 4 PANELES: SHOCK DE TFP
-# ==============================================================================
-
+        r"""# "def nombre(args):" define FUNCIÓN — no se ejecuta hasta que se llama.
+# QUÉ: simula un shock temporal de TFP (epsilon en t=1, decae con rho)
+# y grafica 4 paneles (Y, C, I, K) + líneas de SS inicial y momento del shock.
+# POR QUÉ (intuición económica): un shock de productividad positivo (epsilon>0)
+# aumenta la producción. Los consumidores, anticipando mayor renta futura,
+# elevan su consumo YA en t=1 (C es forward-looking, salta). La inversión
+# también sube para acumular capital, que alcanza su pico con retardo
+# (respuesta "jorobada" o hump-shape). Si rho es bajo, el shock se disipa
+# rápido y las variables vuelven antes al SS inicial.
+# QUÉ VERÁS: 4 gráficos de evolución temporal. Al mover los sliders verás
+# cómo cambian la magnitud del salto, la persistencia y la velocidad de
+# convergencia. El capital NUNCA salta en t=1 (es predeterminado).
 def plot_dge_simulation(epsilon=0.01, rho_val=0.80, alpha_val=0.35, beta_val=0.96, delta_val=0.06):
+    # DGEParameters(...) es un dataclass: "ficha" con parámetros del modelo.
+    # Argumentos CON NOMBRE evitan errores de orden.
     params = DGEParameters(alpha=alpha_val, beta=beta_val, delta=delta_val, rho=rho_val)
-    
-    # 1. Calcular el estado estacionario base
+
+    # compute_steady_state() es FUNCIÓN: recibe params, devuelve dict con K*, Y*, C*, I*, R*.
     ss = compute_steady_state(params)
     K0 = ss["K"]
-    
-    # 2. Generar la trayectoria del shock temporal de TFP
+
+    # np.zeros(T) crea un VECTOR de T ceros. a_hat[t] guarda la log-desviación
+    # de la TFP en cada periodo: shock en t=1, decaimiento AR(1) desde t=2.
+    # np.exp(a_hat) convierte log-desviaciones en niveles (A = 1 en SS).
     T = 60
     a_hat = np.zeros(T)
     a_hat[0] = 0.0
@@ -136,15 +153,22 @@ def plot_dge_simulation(epsilon=0.01, rho_val=0.80, alpha_val=0.35, beta_val=0.9
     for t in range(2, T):
         a_hat[t] = rho_val * a_hat[t - 1]
     A_path = np.exp(a_hat)
-    
-    # 3. Resolver simulación con el resolvedor numérico no lineal exacto
+
+    # solve_nonlinear_simulation() resuelve el sistema NO LINEAL exacto periodo
+    # a periodo con fsolve. No linealiza: es la solución "verdadera" contra
+    # la que compararemos Blanchard-Khan en la Sección 3.
     res = solve_nonlinear_simulation(params, K0, A_path, T=T)
-    
-    # 4. Graficar respuestas impulsivas en 4 paneles con estética premium
+
+    # plt.subplots(2,2) crea una cuadrícula de 2x2 gráficos (axes) en una
+    # sola figura. axs[fila, columna] accede a cada panel por su posición.
+    # np.full(T, valor) crea un array de T copias del mismo valor — útil para
+    # dibujar una línea horizontal recta en el nivel del estado estacionario.
+    # axvline dibuja una línea VERTICAL en x=1 para marcar el momento del shock.
+    # El ";" al final de interact() suprime el texto del objeto devuelto.
     fig, axs = plt.subplots(2, 2, figsize=(15, 10))
     t_axis = np.arange(T)
-    
-    # Panel 1: Producción (Y)
+
+    # Panel 1: Producción (Y) — salta al alza en t=1 por el shock productivo
     axs[0, 0].plot(t_axis, np.full(T, ss["Y"]), color='black', linestyle='--', alpha=0.5, label='SS')
     axs[0, 0].plot(t_axis, res["Y"], color='#004C97', linewidth=2.5, label='Producción ($Y_t$)')
     axs[0, 0].axvline(1.0, color='grey', linestyle=':', alpha=0.7)
@@ -153,8 +177,8 @@ def plot_dge_simulation(epsilon=0.01, rho_val=0.80, alpha_val=0.35, beta_val=0.9
     axs[0, 0].set_ylabel('Y', fontsize=9)
     axs[0, 0].grid(True, linestyle=':', alpha=0.6)
     axs[0, 0].legend(loc='best', fontsize=8)
-    
-    # Panel 2: Consumo (C)
+
+    # Panel 2: Consumo (C) — salta en t=1 (forward-looking), converge al SS
     axs[0, 1].plot(t_axis, np.full(T, ss["C"]), color='black', linestyle='--', alpha=0.5, label='SS')
     axs[0, 1].plot(t_axis, res["C"], color='#7A3E9F', linewidth=2.5, label='Consumo ($C_t$)')
     axs[0, 1].axvline(1.0, color='grey', linestyle=':', alpha=0.7)
@@ -163,8 +187,9 @@ def plot_dge_simulation(epsilon=0.01, rho_val=0.80, alpha_val=0.35, beta_val=0.9
     axs[0, 1].set_ylabel('C', fontsize=9)
     axs[0, 1].grid(True, linestyle=':', alpha=0.6)
     axs[0, 1].legend(loc='best', fontsize=8)
-    
-    # Panel 3: Inversión (I)
+
+    # Panel 3: Inversión (I) — sube en t=1 (forward-looking), cae por debajo del
+    # SS durante la convergencia (efecto "acelerador")
     axs[1, 0].plot(t_axis, np.full(T, ss["I"]), color='black', linestyle='--', alpha=0.5, label='SS')
     axs[1, 0].plot(t_axis, res["I"], color='#D95319', linewidth=2.5, label='Inversión ($I_t$)')
     axs[1, 0].axvline(1.0, color='grey', linestyle=':', alpha=0.7)
@@ -173,8 +198,9 @@ def plot_dge_simulation(epsilon=0.01, rho_val=0.80, alpha_val=0.35, beta_val=0.9
     axs[1, 0].set_ylabel('I', fontsize=9)
     axs[1, 0].grid(True, linestyle=':', alpha=0.6)
     axs[1, 0].legend(loc='best', fontsize=8)
-    
-    # Panel 4: Stock de Capital (K)
+
+    # Panel 4: Stock de Capital (K) — NO salta en t=1 (predeterminado), acumula
+    # con retardo (hump), alcanza el pico hacia t~5-10 y luego converge al SS
     axs[1, 1].plot(t_axis, np.full(T, K0), color='black', linestyle='--', alpha=0.5, label='SS')
     axs[1, 1].plot(t_axis, res["K"], color='#8EAD3A', linewidth=2.5, label='Stock de Capital ($K_t$)')
     axs[1, 1].axvline(1.0, color='grey', linestyle=':', alpha=0.7)
@@ -183,11 +209,13 @@ def plot_dge_simulation(epsilon=0.01, rho_val=0.80, alpha_val=0.35, beta_val=0.9
     axs[1, 1].set_ylabel('K', fontsize=9)
     axs[1, 1].grid(True, linestyle=':', alpha=0.6)
     axs[1, 1].legend(loc='best', fontsize=8)
-    
+
     plt.tight_layout()
     plt.show()
 
-# Controles interactivos
+# interact() conecta la función a sliders: cada vez que mueves uno, llama a
+# plot_dge_simulation() con los nuevos valores y redibuja — sin ejecutar la
+# celda de nuevo. FloatSlider define rango y paso de cada control.
 interact(
     plot_dge_simulation,
     epsilon=FloatSlider(value=0.01, min=-0.05, max=0.05, step=0.005, description='Shock (ε1)'),
@@ -246,10 +274,16 @@ debería salir en cada celda siguiente con el que realmente sale.
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# Verificación de los valores del estado estacionario contra el oráculo
-# (Tabla 8.2 del libro, reproducido en oraculo.md). La calibración por defecto
-# de DGEParameters es alpha=0.35, beta=0.96, delta=0.06, A=1.0, que coincide
-# con la calibración base del oráculo.
+        r"""# QUÉ: verifica que compute_steady_state() devuelve los valores exactos de
+# la Tabla 8.2 del libro (K*=6.698596, Y*=1.945783, C*=1.543867, I*=0.401916,
+# R*=0.101667). POR QUÉ: si el estado estacionario base está mal, TODAS las
+# simulaciones siguientes (shock, BK, no lineal) partirían de un punto
+# erróneo. QUÉ VERÁS: "OK: estado estacionario coincide con el oráculo" o un
+# AssertionError que detiene la ejecución antes de seguir.
+# np.testing.assert_allclose(a, b, atol=...) compara con tolerancia.
+# No usar "==" con decimales. Si pasa, no imprime nada (control silencioso).
+# DGEParameters() sin argumentos usa los defaults: alpha=0.35, beta=0.96,
+# delta=0.06, A=1.0 — que coinciden con la calibración del oráculo.
 
 params_orac = DGEParameters()
 ss_orac = compute_steady_state(params_orac)
@@ -282,15 +316,25 @@ A continuación, puedes simular shocks de diferente envergadura y evaluar visual
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# COMPARACIÓN DINÁMICA: BLANCHARD-KHAN VS NO LINEAL
-# ==============================================================================
-
+        r"""# QUÉ: compara la solución linealizada de Blanchard-Khan (BK) con la solución
+# no lineal exacta (fsolve) para un mismo shock de TFP. POR QUÉ: BK
+# aproxima el modelo con una tangente de primer orden alrededor del SS; esa
+# aproximación es muy buena para shocks pequeños (epsilon=0.01) pero acumula
+# error de truncamiento ante shocks grandes (epsilon=0.25). Esta celda
+# permite ver la discrepancia crecer con el slider.
+# QUÉ VERÁS: 2 gráficos (C y K) con dos líneas superpuestas (BK vs no
+# lineal), más el error relativo máximo impreso debajo. Para epsilon=0.01
+# las líneas son casi indistinguibles; para epsilon=0.25 se separan
+# visiblemente, sobre todo en Consumo (la variable de salto).
+# "def nombre(args):" define FUNCIÓN — no se ejecuta hasta que interact() la llama.
+# np.arange(T) crea array [0, 1, 2, ..., T-1] para el eje x de los gráficos.
+# np.max(np.abs(a - b)) / ss["C"] * 100 calcula el error relativo máximo en %.
+# f"texto {var:.4f}%" (f-string) interpola la variable con 4 decimales y añade "%".
 def plot_solver_comparison(epsilon_shock=0.01, use_matlab_timing=False):
     params = DGEParameters()
     ss = compute_steady_state(params)
     K0 = ss["K"]
-    
+
     T = 60
     a_hat = np.zeros(T)
     a_hat[0] = 0.0
@@ -298,18 +342,22 @@ def plot_solver_comparison(epsilon_shock=0.01, use_matlab_timing=False):
     for t in range(2, T):
         a_hat[t] = params.rho * a_hat[t - 1]
     A_path = np.exp(a_hat)
-    
-    # 1. Solución Blanchard-Khan
+
+    # solve_blanchard_khan() resuelve el sistema LINEALIZADO usando
+    # descomposición de autovalores de la matriz J (Apéndice N).
     res_bk = solve_blanchard_khan(params, K0, A_path, T=T)
 
-    # 2. Solución No Lineal Exacta
+    # solve_nonlinear_simulation() resuelve el sistema NO LINEAL exacto
+    # resolviendo las ecuaciones de Euler y acumulación simultáneamente.
     res_nonlin = solve_nonlinear_simulation(params, K0, A_path, T=T)
-    
-    # Graficar comparación de Consumo y Capital
+
+    # plt.subplots(1,2) crea 2 paneles uno al lado del otro.
+    # linestyle='--' (discontinua) para BK, continua para no lineal — así se
+    # distingue cuál es cuál aunque los colores sean iguales.
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     t_axis = np.arange(T)
-    
-    # Consumo
+
+    # Consumo — variable forward-looking, el error de linealización se concentra aquí
     axs[0].plot(t_axis, res_bk["C"], color='#7A3E9F', linestyle='--', linewidth=2.0, label='Blanchard-Khan (Linealizado)')
     axs[0].plot(t_axis, res_nonlin["C"], color='#7A3E9F', linewidth=2.0, label='Exacto No Lineal')
     axs[0].set_title('Consumo ($C_t$): Comparación de resolvedores', fontsize=11, fontweight='bold')
@@ -317,8 +365,8 @@ def plot_solver_comparison(epsilon_shock=0.01, use_matlab_timing=False):
     axs[0].set_ylabel('C')
     axs[0].grid(True, linestyle=':', alpha=0.6)
     axs[0].legend()
-    
-    # Capital
+
+    # Capital — variable predeterminada, menor error de linealización
     axs[1].plot(t_axis, res_bk["K"], color='#8EAD3A', linestyle='--', linewidth=2.0, label='Blanchard-Khan (Linealizado)')
     axs[1].plot(t_axis, res_nonlin["K"], color='#8EAD3A', linewidth=2.0, label='Exacto No Lineal')
     axs[1].set_title('Capital ($K_t$): Comparación de resolvedores', fontsize=11, fontweight='bold')
@@ -326,17 +374,20 @@ def plot_solver_comparison(epsilon_shock=0.01, use_matlab_timing=False):
     axs[1].set_ylabel('K')
     axs[1].grid(True, linestyle=':', alpha=0.6)
     axs[1].legend()
-    
+
     plt.tight_layout()
     plt.show()
-    
-    # Imprimir discrepancia relativa
+
+    # diff_C = error relativo máximo en Consumo como % del SS.
+    # Para shocks pequeños (~1%) debe ser < 0.1%; para shocks grandes
+    # (~25%) puede superar el 1%, indicando que BK pierde precisión.
     diff_C = np.max(np.abs(res_bk["C"] - res_nonlin["C"])) / ss["C"] * 100
     diff_K = np.max(np.abs(res_bk["K"] - res_nonlin["K"])) / ss["K"] * 100
     print(f"Error relativo máximo en Consumo : {diff_C:.4f}%")
     print(f"Error relativo máximo en Capital  : {diff_K:.4f}%")
 
-# Slider de comparación
+# Slider de comparación. Checkbox "use_matlab_timing" permite al alumno
+# verificar la equivalencia con el código del libro.
 interact(
     plot_solver_comparison,
     epsilon_shock=FloatSlider(value=0.01, min=-0.30, max=0.30, step=0.02, description='Shock TFP'),
@@ -349,12 +400,23 @@ interact(
 # 6a. BK EIGENVALUES AND LINEAR VS NONLINEAR CONSISTENCY ASSERT
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# Verificación de los autovalores de Blanchard-Khan y la consistencia
-# entre la solución linealizada y la no lineal (oraculo.md, Apéndice N).
+        r"""# QUÉ: verifica TRES propiedades del oráculo (Apéndice N) en orden:
+# 1) autovalores de la matriz J del sistema linealizado (estable mu_s≈0.904,
+#    inestable mu_u≈1.152) — confirman que el sistema es un PUNTO DE SILLA;
+# 2) consistencia BK vs no lineal para shock pequeño (rtol=1e-2);
+# 3) convergencia de largo plazo al SS inicial (shock transitorio se disipa).
+# POR QUÉ: un sistema DGE DEBE ser punto de silla (tantas raíces
+# inestables como variables forward-looking) para tener solución única y
+# determinada; si no lo fuera, la economía no tendría una senda de equilibrio
+# bien definida. QUÉ VERÁS: tres líneas "OK: ..." o AssertionError si el
+# port de Python tuviera un bug numérico.
+# np.linalg.inv() calcula la matriz INVERSA (A^{-1}).
+# np.linalg.eigvals() devuelve los autovalores de una matriz.
+# np.real() toma solo la parte real (los autovalores de J en este modelo son reales).
+# np.sort(np.abs(mu)) ordena por valor absoluto: el primero es el estable.
+# x[-1] = último elemento (indexado negativo). res_nl["K"][-1] es K en t=T-1.
 
 # --- Autovalores BK ---
-# Replicamos el cálculo de la matriz J del sistema linealizado para obtener
-# los autovalores que el resolvedor usa internamente.
 alpha_v = params_orac.alpha
 beta_v = params_orac.beta
 delta_v = params_orac.delta
@@ -375,17 +437,16 @@ J = inv_term @ (G_mat + H_mat @ invA @ B_mat)
 
 mu = np.real(np.linalg.eigvals(J))
 mu_sorted = np.sort(np.abs(mu))
-mu_s = mu_sorted[0]  # estable
-mu_u = mu_sorted[1]  # inestable
+mu_s = mu_sorted[0]  # estable (|mu| < 1)
+mu_u = mu_sorted[1]  # inestable (|mu| > 1)
 
 np.testing.assert_allclose(mu_s, 0.90399, atol=1e-5)
 np.testing.assert_allclose(mu_u, 1.15229, atol=1e-5)
 print("OK: autovalores BK coinciden con el oráculo (Apéndice N).")
 
 # --- Consistencia lineal vs. no lineal (shock +1% con rho=0.8) ---
-# Simulamos ambas soluciones y verificamos que difieren poco,
-# validando que la aproximación de primer orden es precisa para
-# perturbaciones pequeñas (rtol 1e-2 según oraculo.md).
+# Si BK y el modelo no lineal difieren mucho para un shock pequeño,
+# hay un error en la implementación de uno de los dos resolvedores.
 T_check = 60
 a_hat_check = np.zeros(T_check)
 a_hat_check[1] = 0.01
@@ -401,8 +462,9 @@ np.testing.assert_allclose(res_bk["C"], res_nl["C"], rtol=1e-2)
 print("OK: soluciones BK y no lineal coinciden con rtol=1e-2 (oráculo).")
 
 # --- Convergencia de largo plazo al SS inicial ---
-# Tras un shock transitorio, K y C deben volver al estado estacionario
-# (tol 1e-3 según oraculo.md).
+# Un shock transitorio (epsilon que decae con rho<1) debe devolver la
+# economía al MISMO SS inicial, no a uno nuevo. K[-1] y C[-1] son
+# los valores en el último periodo simulado (t=59).
 np.testing.assert_allclose(res_nl["K"][-1], ss_orac["K"], atol=1e-3)
 np.testing.assert_allclose(res_nl["C"][-1], ss_orac["C"], atol=1e-3)
 print("OK: convergencia de largo plazo al SS inicial (tol 1e-3, oráculo).")

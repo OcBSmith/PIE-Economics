@@ -39,19 +39,25 @@ if 'google.colab' in sys.modules:
 # 3. IMPORTACIONES Y CONFIGURACIÓN
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
-# ==============================================================================
+        r"""# "import X as np" trae la librería X con alias np. "from X import Y" es selectivo.
+# "import sys; sys.path.append(...)" añade una carpeta al PATH para que Python
+# encuentre el código del proyecto aunque el notebook esté en un subdirectorio.
 
-import numpy as np
-import matplotlib.pyplot as plt
-from ipywidgets import interact, FloatSlider
+# Librerías de terceros (instaladas en el entorno con pip)
+import numpy as np                      # cálculo numérico: vectores, matrices, álgebra lineal
+import matplotlib.pyplot as plt         # gráficos científicos con estilo MATLAB
+from ipywidgets import interact, FloatSlider   # widgets interactivos (sliders) para Jupyter
 
 # Añadir el directorio src al PATH de Python para poder importar el módulo macroaicomp
 import sys
 sys.path.append('../../src')
 
-# Importar funciones del modelo modularizado (Core de la biblioteca)
+# Proyecto. El modelo de Ramsey vive en src/macroaicomp/models/ramsey.py.
+# RamseyParameters: dataclass con 5 parámetros (alpha, beta, delta, n, A).
+# compute_ramsey_steady_state: estado estacionario (k*, y*, c*, i*, R*).
+# compute_ramsey_transition_matrix: matriz J, autovalores y pendiente theta.
+# solve_ramsey_linearized: simulación con Blanchard-Khan (linealizado).
+# solve_ramsey_nonlinear: simulación no lineal exacta (fsolve/shooting).
 from macroaicomp.models.ramsey import (
     RamseyParameters,
     compute_ramsey_steady_state,
@@ -128,18 +134,27 @@ Puedes mover el control interactivo para simular un shock de productividad ($A_1
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# SIMULACIÓN INTERACTIVA DEL SHOCK EN RAMSEY
-# ==============================================================================
-
+        r"""# "def nombre(args):" define FUNCIÓN — no se ejecuta hasta que interact() la llama.
+# QUÉ: simula un shock PERMANENTE de TFP (A) o de paciencia (beta) en t=5
+# en el modelo de Ramsey, usando Blanchard-Khan (linealizado), y grafica 4
+# paneles: y, k, c, i. POR QUÉ (intuición económica): a diferencia de Solow,
+# aquí el ahorro es ENDÓGENO (los hogares optimizan). Un aumento de A eleva
+# la productividad del capital, incentivando más inversión hoy. Como los
+# hogares son forward-looking, el consumo SALTA en t=5 (C es variable de salto
+# en el punto de silla) hacia la senda estable. K no salta (predeterminado).
+# Un aumento de beta (más paciencia) reduce C en el impacto para ahorrar más.
+# QUÉ VERÁS: 4 gráficos con SS inicial (--), SS final (:), y línea en t=5.
+# solve_ramsey_linearized() aplica Blanchard-Khan: calcula la senda estable
+# usando los autovalores de la matriz J y la pendiente de salto theta.
 def plot_ramsey_simulation(A_final=1.05, beta_final=0.97):
     params = RamseyParameters()
     ss_init = compute_ramsey_steady_state(params)
-    
+
     T = 80
     t_shock = 5
-    
-    # Resolver la trayectoria linealizada
+
+    # solve_ramsey_linearized() resuelve el sistema linealizado con BK.
+    # A_final y beta_final son los nuevos valores tras el shock en t=5.
     res = solve_ramsey_linearized(
         params,
         ss_init["k"],
@@ -149,15 +164,15 @@ def plot_ramsey_simulation(A_final=1.05, beta_final=0.97):
         T=T,
         t_shock=t_shock
     )
-    
-    # Calcular el nuevo steady state esperado
+
+    # Estado estacionario final con los nuevos parámetros.
     params_new = RamseyParameters(alpha=params.alpha, beta=beta_final, delta=params.delta, n=params.n, A=A_final)
     ss_final = compute_ramsey_steady_state(params_new)
-    
+
     fig, axs = plt.subplots(2, 2, figsize=(15, 10))
     t_axis = np.arange(T)
-    
-    # Panel 1: Producción per cápita (y_t)
+
+    # Panel 1: Producción (y) — salta en t=5 por el shock de TFP, converge al nuevo SS
     axs[0, 0].plot(t_axis, res["y"], color='#004C97', linewidth=2.5, label='Trayectoria (y_t)')
     axs[0, 0].axhline(ss_init["y"], color='black', linestyle='--', alpha=0.5, label='SS Inicial')
     axs[0, 0].axhline(ss_final["y"], color='red', linestyle=':', alpha=0.7, label='SS Final')
@@ -167,8 +182,8 @@ def plot_ramsey_simulation(A_final=1.05, beta_final=0.97):
     axs[0, 0].set_ylabel('y')
     axs[0, 0].grid(True, linestyle=':', alpha=0.6)
     axs[0, 0].legend()
-    
-    # Panel 2: Stock de Capital per cápita (k_t)
+
+    # Panel 2: Capital (k) — NO salta en t=5 (predeterminado), acumula gradualmente
     axs[0, 1].plot(t_axis, res["k"], color='#8EAD3A', linewidth=2.5, label='Trayectoria (k_t)')
     axs[0, 1].axhline(ss_init["k"], color='black', linestyle='--', alpha=0.5, label='SS Inicial')
     axs[0, 1].axhline(ss_final["k"], color='red', linestyle=':', alpha=0.7, label='SS Final')
@@ -178,8 +193,10 @@ def plot_ramsey_simulation(A_final=1.05, beta_final=0.97):
     axs[0, 1].set_ylabel('k')
     axs[0, 1].grid(True, linestyle=':', alpha=0.6)
     axs[0, 1].legend()
-    
-    # Panel 3: Consumo per cápita (c_t)
+
+    # Panel 3: Consumo (c) — SALTA en t=5 (forward-looking). Con A>1, salta al
+    # ALZA (anticipa mayor renta futura). Con beta mayor, cae en el impacto
+    # (los hogares ahorran más hoy para consumir más mañana).
     axs[1, 0].plot(t_axis, res["c"], color='#7A3E9F', linewidth=2.5, label='Trayectoria (c_t)')
     axs[1, 0].axhline(ss_init["c"], color='black', linestyle='--', alpha=0.5, label='SS Inicial')
     axs[1, 0].axhline(ss_final["c"], color='red', linestyle=':', alpha=0.7, label='SS Final')
@@ -189,8 +206,8 @@ def plot_ramsey_simulation(A_final=1.05, beta_final=0.97):
     axs[1, 0].set_ylabel('c')
     axs[1, 0].grid(True, linestyle=':', alpha=0.6)
     axs[1, 0].legend()
-    
-    # Panel 4: Inversión per cápita (i_t)
+
+    # Panel 4: Inversión (i) — también salta. Con A>1, sube para acumular más K.
     axs[1, 1].plot(t_axis, res["i"], color='#D95319', linewidth=2.5, label='Trayectoria (i_t)')
     axs[1, 1].axhline(ss_init["i"], color='black', linestyle='--', alpha=0.5, label='SS Inicial')
     axs[1, 1].axhline(ss_final["i"], color='red', linestyle=':', alpha=0.7, label='SS Final')
@@ -200,11 +217,12 @@ def plot_ramsey_simulation(A_final=1.05, beta_final=0.97):
     axs[1, 1].set_ylabel('i')
     axs[1, 1].grid(True, linestyle=':', alpha=0.6)
     axs[1, 1].legend()
-    
+
     plt.tight_layout()
     plt.show()
 
-# Controles interactivos
+# interact() conecta la función a sliders. FloatSlider define rango y paso.
+# A_final controla TFP, beta_final controla factor de descuento (paciencia).
 interact(
     plot_ramsey_simulation,
     A_final=FloatSlider(value=1.05, min=0.90, max=1.20, step=0.01, description='TFP (A)'),
@@ -256,10 +274,16 @@ debería salir en cada celda siguiente con el que realmente sale.
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# Verificación del estado estacionario y los autovalores contra el oráculo
-# (Tabla 10.2 del libro, reproducido en oraculo.md). La calibración por defecto
-# de RamseyParameters (alpha=0.35, beta=0.97, delta=0.06, n=0.02, A=1.0)
-# coincide con la calibración base del oráculo.
+        r"""# QUÉ: verifica el estado estacionario y los autovalores del modelo de Ramsey
+# contra el oráculo (Tabla 10.2, Apéndice P): k*=7.9537, y*=2.0663,
+# c*=1.4300, i*=0.6363, R*=0.0909, lambda_1=-0.0907, lambda_2=0.1115,
+# theta=0.5751. POR QUÉ: el SS y los autovalores determinan TODA la dinámica
+# posterior. lambda_1 < 0 y lambda_2 > 0 confirman PUNTO DE SILLA (tantas
+# raíces estables como variables predeterminadas: 1, K). theta = pendiente
+# de la senda estable: relaciona ĉ con k̂ (ĉ = θ·k̂ sobre la senda).
+# QUÉ VERÁS: dos "OK: ..." o AssertionError.
+# compute_ramsey_transition_matrix() devuelve 4 valores: J, lambda_1,
+# lambda_2, theta. "_" descarta el primer valor (J) que no usamos aquí.
 
 params_orac = RamseyParameters()
 ss_orac = compute_ramsey_steady_state(params_orac)
@@ -273,6 +297,9 @@ np.testing.assert_allclose(ss_orac["R"], 0.0909, atol=1e-4)
 print("OK: estado estacionario coincide con el oráculo (Apéndice P).")
 
 # --- Autovalores y theta (atol=1e-4 según oraculo.md) ---
+# lambda_1 = autovalor ESTABLE (|mu| < 1 en el plano de log-desviaciones).
+# lambda_2 = autovalor INESTABLE.
+# theta = pendiente de salto ĉ/k̂ sobre la senda estable.
 _, lambda_1, lambda_2, theta = compute_ramsey_transition_matrix(params_orac)
 
 np.testing.assert_allclose(lambda_1, -0.0907, atol=1e-4)
@@ -297,22 +324,29 @@ A continuación, compara las trayectorias calculadas mediante **Blanchard-Khan (
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# COMPARACIÓN DINÁMICA: BLANCHARD-KHAN VS NO LINEAL
-# ==============================================================================
-
+        r"""# QUÉ: compara la solución linealizada de Blanchard-Khan (solve_ramsey_linearized)
+# con la solución no lineal exacta (solve_ramsey_nonlinear, método shooting)
+# para un shock permanente de TFP. POR QUÉ: BK aproxima el modelo con una
+# tangente de primer orden; es muy precisa para shocks pequeños (A=1.05, ~5%)
+# pero acumula error de truncamiento para shocks grandes (A=1.30, ~30%).
+# QUÉ VERÁS: 2 gráficos (c y k) con BK (--) y no lineal (--) superpuestos,
+# más errores relativos máximos. Para A=1.05 las líneas son casi idénticas;
+# para A=1.30 se separan visiblemente.
+# solve_ramsey_nonlinear() usa el método de shooting: resuelve el sistema no
+# lineal completo con fsolve, usando la solución BK como punto de partida.
 def plot_ramsey_comparison(A_shock=1.05):
     params = RamseyParameters()
     ss_init = compute_ramsey_steady_state(params)
-    
+
     T = 80
     t_shock = 5
-    
+
+    # A_path es el path COMPLETO de TFP: 1.00 hasta t_shock, A_shock después.
     A_path = np.full(T, 1.00)
     A_path[t_shock:] = A_shock
     n_path = np.full(T, 0.02)
-    
-    # 1. Solución linealizada de BK
+
+    # Solución linealizada: rápido, aproximación de primer orden.
     res_lin = solve_ramsey_linearized(
         params,
         ss_init["k"],
@@ -322,8 +356,8 @@ def plot_ramsey_comparison(A_shock=1.05):
         T=T,
         t_shock=t_shock
     )
-    
-    # 2. Solución exacta no lineal de fsolve
+
+    # Solución no lineal: exacta, más lenta, referencia "verdadera".
     res_nonlin = solve_ramsey_nonlinear(
         params,
         ss_init["k"],
@@ -332,12 +366,11 @@ def plot_ramsey_comparison(A_shock=1.05):
         T=T,
         t_shock=t_shock
     )
-    
-    # Graficar
+
     fig, axs = plt.subplots(1, 2, figsize=(15, 5))
     t_axis = np.arange(T)
-    
-    # Consumo
+
+    # Consumo — variable forward-looking, concentra el error de linealización
     axs[0].plot(t_axis, res_lin["c"], color='#7A3E9F', linestyle='--', linewidth=2.0, label='Blanchard-Khan (Lineal)')
     axs[0].plot(t_axis, res_nonlin["c"], color='#7A3E9F', linewidth=2.0, label='Exacto No Lineal')
     axs[0].axvline(t_shock, color='grey', linestyle=':', alpha=0.5)
@@ -346,8 +379,8 @@ def plot_ramsey_comparison(A_shock=1.05):
     axs[0].set_ylabel('c')
     axs[0].grid(True, linestyle=':', alpha=0.6)
     axs[0].legend()
-    
-    # Capital
+
+    # Capital — variable predeterminada, menor error de linealización
     axs[1].plot(t_axis, res_lin["k"], color='#8EAD3A', linestyle='--', linewidth=2.0, label='Blanchard-Khan (Lineal)')
     axs[1].plot(t_axis, res_nonlin["k"], color='#8EAD3A', linewidth=2.0, label='Exacto No Lineal')
     axs[1].axvline(t_shock, color='grey', linestyle=':', alpha=0.5)
@@ -356,17 +389,18 @@ def plot_ramsey_comparison(A_shock=1.05):
     axs[1].set_ylabel('k')
     axs[1].grid(True, linestyle=':', alpha=0.6)
     axs[1].legend()
-    
+
     plt.tight_layout()
     plt.show()
-    
-    # Error relativo máximo
+
+    # Error relativo máximo en % del SS. Para A=1.05 debe ser < 0.2%;
+    # para A=1.30 puede superar el 2%, mostrando los límites de BK.
     err_c = np.max(np.abs(res_lin["c"] - res_nonlin["c"])) / ss_init["c"] * 100
     err_k = np.max(np.abs(res_lin["k"] - res_nonlin["k"])) / ss_init["k"] * 100
     print(f"Error relativo máximo en Consumo : {err_c:.4f}%")
     print(f"Error relativo máximo en Capital  : {err_k:.4f}%")
 
-# Slider
+# Slider: permite variar la magnitud del shock de TFP hasta A=1.30
 interact(
     plot_ramsey_comparison,
     A_shock=FloatSlider(value=1.05, min=0.70, max=1.30, step=0.02, description='TFP final')
@@ -378,12 +412,20 @@ interact(
 # 7a. LINEAR VS NONLINEAR CONSISTENCY AND SADDLE PATH ASSERT
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# Verificación de la consistencia lineal vs no lineal y de la senda estable
-# (oraculo.md, Apéndice P).
+        r"""# QUÉ: verifica TRES propiedades del oráculo (Apéndice P): 1) consistencia
+# BK vs no lineal (atol=5e-2, rtol=1e-2); 2) k en t_shock es predeterminado
+# (= k* inicial); 3) ĉ en t_shock sigue la senda estable (ĉ ≈ θ·k̂, tol 1e-3).
+# POR QUÉ: la relación ĉ = θ·k̂ es la CONDICIÓN DE SALTO que garantiza que la
+# economía converge al SS. Si no se cumpliera, la trayectoria divergería.
+# QUÉ VERÁS: tres "OK: ..." o AssertionError.
+# np.log(x / x_bar) calcula la log-desviación: k̂ = ln(k/k*).
+# theta es la pendiente de la senda estable del punto de silla (Sección 2).
+# res_nl["k"][t_shock] = k en el periodo del shock (índice 5).
+# NOTA: ĉ = θ·k̂ es exacta para la solución LINEALIZADA (por construcción de
+# BK). Para la solución NO LINEAL es una aproximación que se verifica con
+# tolerancia 1e-3 — el error crece con la magnitud del shock.
 
 # --- Consistencia lineal vs. no lineal (atol=5e-2, rtol=1e-2) ---
-# Simulamos un shock permanente de TFP A: 1.00 -> 1.05 en t=5 y comparamos
-# la solución linealizada de BK con la solución no lineal exacta.
 T_check = 80
 t_shock = 5
 A_path_check = np.full(T_check, 1.00)
@@ -400,15 +442,21 @@ res_nl = solve_ramsey_nonlinear(
     A_path_check, n_path_check, T=T_check, t_shock=t_shock
 )
 
+# rtol=1e-2 significa que la diferencia relativa no supera el 1%.
 np.testing.assert_allclose(res_lin["k"], res_nl["k"], atol=5e-2, rtol=1e-2)
 np.testing.assert_allclose(res_lin["c"], res_nl["c"], atol=5e-2, rtol=1e-2)
 print("OK: soluciones BK y no lineal coinciden (atol=5e-2, rtol=1e-2; oráculo).")
 
 # --- k en t_shock es predeterminado (= k* inicial) ---
+# El capital es una variable de ESTADO: no puede saltar, su valor en t=5
+# es exactamente el del SS inicial (7.9537).
 np.testing.assert_allclose(res_nl["k"][t_shock], ss_orac["k"], atol=1e-6)
 print(f"OK: k en t_shock = {res_nl['k'][t_shock]:.4f} = k* inicial (predeterminado).")
 
 # --- ĉ en t_shock sigue la senda estable (c_hat ≈ k_hat * theta, tol 1e-3) ---
+# θ = pendiente de salto: por cada 1% de desviación de k, c se desvía θ%.
+# Como k en t_shock k* (predeterminado), k̂≈0 y ĉ≈0 (pero no exactamente 0
+# en la solución no lineal porque el shock de A altera la senda completa).
 _, _, _, theta_orac = compute_ramsey_transition_matrix(params_orac)
 k_hat_shock = np.log(res_nl["k"][t_shock] / ss_orac["k"])
 c_hat_shock = np.log(res_nl["c"][t_shock] / ss_orac["c"])

@@ -17,22 +17,36 @@ nb.cells.append(nbf.v4.new_code_cell("""# Este cuaderno depende del paquete `Mac
 # para la versión Julia de esta práctica usa MyBinder.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell("""using Pkg
+nb.cells.append(nbf.v4.new_code_cell("""# "using X" trae el paquete X. Pkg.activate("../..") usa el entorno del repo
+# (Project.toml) en vez del global. Pkg.instantiate() instala lo que falte.
+# "import Plots: mm" trae solo mm (unidad de margen) sin exportar el resto.
+# default() fija estilo de grid consistente con los notebooks Python.
+# QUÉ VERÁS: información de precompilación de paquetes (lento la primera vez).
+using Pkg
 Pkg.activate("../..")
 Pkg.instantiate()
 
+# MacroAIComp contiene el modelo de Solow-Swan en src/models/Growth.jl.
+# El notebook solo llama funciones ya probadas, no reimplementa fórmulas.
 using MacroAIComp
 using Plots
 import Plots: mm
 default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
-using Interact
-using BenchmarkTools
+using Interact            # @manipulate para sliders interactivos
+using BenchmarkTools      # @btime para medir rendimiento (Fase III)
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 
-nb.cells.append(nbf.v4.new_code_cell("""params_base = default_calibration(SolowSwanParameters)
+nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: calcula el estado estacionario del modelo de Solow-Swan (k*, y*, c*,
+# i*) usando la calibración base (alpha=0.35, s=0.20, A=1.0). POR QUÉ: el SS
+# es el punto fijo de la dinámica de acumulación; si está mal, todas las
+# simulaciones siguientes errarían. QUÉ VERÁS: 4 valores impresos que deben
+# coincidir con la Tabla 9.3: k*=4.0946, y*=1.6378, c*=1.3103, i*=0.3276.
+# default_calibration(SolowSwanParameters) devuelve struct con defaults.
+# round.(x, digits=4) redondea para mostrar; el "." es broadcasting.
+params_base = default_calibration(SolowSwanParameters)
 ss = compute_solow_steady_state(params_base)
 
 println("VALORES DE ESTADO ESTACIONARIO:")
@@ -43,11 +57,13 @@ println("  Inversión por trabajador (i*) : ", round(ss["i"], digits=4))
 """))
 
 # SS assert against oracle
-nb.cells.append(nbf.v4.new_code_cell("""# Verificacion de los valores del estado estacionario contra el oraculo
-# (Tabla 9.3 del libro, reproducido en oraculo.md).
-# Nota: La calibracion por defecto de SolowSwanParameters usa delta=0.08, n=0.0,
-# lo que da delta+n=0.08, igual que el oraculo (delta=0.06, n=0.02).
-# Los valores numericos son identicos en ambos casos.
+nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica que compute_solow_steady_state() devuelve los valores del
+# oráculo (Tabla 9.3). POR QUÉ: si el SS base está mal, todas las simulaciones
+# siguientes errarían. QUÉ VERÁS: "OK: ..." o AssertionError.
+# isapprox(a, b; atol=...) compara con tolerancia. @assert es control
+# silencioso. La calibración por defecto usa delta=0.08, n=0.0, que da
+# delta+n=0.08, igual que el oráculo (delta=0.06, n=0.02).
+# Los valores numéricos son idénticos en ambos casos.
 
 @assert isapprox(ss["k"], 4.0946; atol=1e-4)
 @assert isapprox(ss["y"], 1.6378; atol=1e-4)
@@ -58,32 +74,47 @@ println("OK: estado estacionario coincide con el oraculo (Apendice O).")
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición Dinámica de Solow
+nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: simula un shock estructural PERMANENTE en t=5 (ahorro s, demografía n
+# o TFP A) en Solow-Swan y grafica 4 paneles: k, y, c, gy. POR QUÉ: el modelo
+# de Solow predice que un aumento de s sacrifica consumo hoy (cae en t=5)
+# pero eleva k, y y c a largo plazo. La tasa de crecimiento gy salta en el
+# impacto pero vuelve a CERO (sin progreso técnico, no hay crecimiento
+# per cápita en estado estacionario). QUÉ VERÁS: 4 gráficos que se actualizan
+# al mover los sliders de @manipulate.
+# NOTA: índices en Julia empiezan en 1, por eso s_path[6:end] aplica el
+# shock desde t=5 (sexto elemento = periodo 5 con t_axis empezando en 0).
+# fill(valor, N) crea un Vector de N copias del mismo valor.
+# "." en .= es broadcasting de asignación: cambia cada elemento del rango.
+# plot() crea gráfico NUEVO; hline!/vline! AÑADEN líneas.
 @manipulate for s_final in slider(0.10:0.01:0.50; value=0.25, label="Ahorro (s)"), n_final in slider(0.00:0.005:0.05; value=0.02, label="Pob. (n)"), A_final in slider(0.5:0.1:2.0; value=1.00, label="TFP (A)")
-    
+
     params_init = default_calibration(SolowSwanParameters)
     ss_init = compute_solow_steady_state(params_init)
     k0 = ss_init["k"]
     T_sim = 100
-    
-    # Send shocks at t=5
+
+    # Shock PERMANENTE desde t=5 (índice 6 en Julia 1-based). fill() llena
+    # con el valor inicial; .= sobrescribe desde t_shock+1 hasta el final.
     s_path = fill(params_init.s, T_sim)
     s_path[6:end] .= s_final
-    
+
     n_path = fill(params_init.n, T_sim)
     n_path[6:end] .= n_final
-    
+
     A_path = fill(params_init.A, T_sim)
     A_path[6:end] .= A_final
-    
+
+    # simulate_solow_swan() reproduce la ecuación de acumulación k[t+1] = f(k[t]).
     res = simulate_solow_swan(params_init, k0, s_path, n_path, A_path, T_sim)
-    
+
+    # Estado estacionario final hacia el que converge la economía.
     params_fin = SolowSwanParameters(params_init.alpha, params_init.delta, s_final, n_final, A_final)
     ss_fin = compute_solow_steady_state(params_fin)
-    
+
     t_shock = 5
     t_axis = 0:(T_sim - 1)
-    
+
+    # Panel 1: Capital (k) — NO salta, acumula gradualmente hacia nuevo SS
     p1 = plot(t_axis, res["k"], color="#8EAD3A", lw=2.5, label="Capital (k)")
     hline!([ss_init["k"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_fin["k"]], color=:red, ls=:dash, label="SS Final")
@@ -92,6 +123,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición D
     xlabel!("Períodos")
     ylabel!("k")
 
+    # Panel 2: Producción (y) — misma dinámica gradual que k
     p2 = plot(t_axis, res["y"], color="#004C97", lw=2.5, label="Renta (y)")
     hline!([ss_init["y"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_fin["y"]], color=:red, ls=:dash, label="SS Final")
@@ -100,6 +132,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición D
     xlabel!("Períodos")
     ylabel!("y")
 
+    # Panel 3: Consumo (c) — CAE en t=5 (sacrificio), supera SS inicial a largo plazo
     p3 = plot(t_axis, res["c"], color="#7A3E9F", lw=2.5, label="Consumo (c)")
     hline!([ss_init["c"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_fin["c"]], color=:red, ls=:dash, label="SS Final")
@@ -108,13 +141,14 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición D
     xlabel!("Períodos")
     ylabel!("c")
 
+    # Panel 4: Crecimiento (gy) — salta en impacto, vuelve a 0% en SS
     p4 = plot(t_axis, res["gy"], color="#D95319", lw=2.5, label="Crecimiento (gy)")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Tasa de Crecimiento de la Producción per cápita (%)")
     xlabel!("Períodos")
     ylabel!("% de crecimiento")
-    
-    plot(p1, p2, p3, p4, layout=(2,2), size=(900, 600), 
+
+    plot(p1, p2, p3, p4, layout=(2,2), size=(900, 600),
          plot_title="Ajuste hacia el Nuevo Estado Estacionario", top_margin=10mm)
 end
 """))
@@ -155,36 +189,49 @@ codigo MATLAB del Apendice O, recogidos en `oraculo.md`:
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Oro: Consumo de Estado Estacionario vs Tasa de Ahorro
+nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: dibuja la curva c_bar(s) — consumo de estado estacionario en función
+# de la tasa de ahorro — marca el punto actual y el máximo (Regla de Oro
+# en s_gold = alpha = 0.35). POR QUÉ: muestra que existe una tasa de ahorro
+# óptima que maximiza el consumo de largo plazo. A la izquierda (s < alpha,
+# infra-acumulación), ahorrar más eleva c futuro. A la derecha (s > alpha,
+# sobre-acumulación), la economía es dinámicamente INEFICIENTE: podría
+# consumir más hoy Y en el futuro reduciendo s. QUÉ VERÁS: curva en U
+# invertida, punto rojo (ahorro actual), estrella verde (Regla de Oro),
+# regiones sombreadas azul/rosa.
+# range(inicio, fin, length=N) crea N puntos equiespaciados.
+# [f(s_val) for s_val in s_grid] es una COMPREHENSIÓN DE ARRAY: evalúa f
+# para cada elemento y devuelve un Vector con los resultados.
+# plot!() AÑADE al gráfico existente. scatter!() añade puntos.
+# "$(expr)" interpola el resultado de expr en cadenas.
 @manipulate for s_current in slider(0.05:0.01:0.60; value=0.20, label="Tasa Ahorro")
 
     params = default_calibration(SolowSwanParameters)
     alpha_val = params.alpha
 
-    # 1. Generar una malla de tasas de ahorro entre 0.01 y 0.95
+    # Malla de 100 tasas de ahorro para dibujar la curva suave.
     s_grid = range(0.01, 0.95, length=100)
     c_ss_grid = [compute_solow_steady_state(params, s_val)["c"] for s_val in s_grid]
 
-    # Consumo actual y de la Regla de Oro (s_gold = alpha)
+    # Consumo en el ahorro actual y en la Regla de Oro (s = alpha).
     c_current = compute_solow_steady_state(params, s_current)["c"]
     c_gold = compute_solow_steady_state(params, alpha_val)["c"]
 
-    # 2. Gráfica
     p1 = plot(s_grid, c_ss_grid, color="#7A3E9F", lw=3, label="Consumo de Estado Estacionario (c̄)")
 
-    # Regiones de (in)eficiencia dinámica
+    # fillrange sombrea desde la línea hasta el valor dado; aquí crea las
+    # regiones de infra y sobre-acumulación.
     plot!([0.01, alpha_val], [0.0, 0.0], fillrange=maximum(c_ss_grid) * 1.1, fillalpha=0.5,
           color="#E6F2FF", lw=0, label="Bajo-acumulación (Eficiente)")
     plot!([alpha_val, 0.95], [0.0, 0.0], fillrange=maximum(c_ss_grid) * 1.1, fillalpha=0.5,
           color="#FFE6E6", lw=0, label="Sobre-acumulación (Ineficiente)")
 
-    # Punto actual
+    # Punto rojo: dónde está la economía ahora con la s elegida.
     scatter!([s_current], [c_current], color=:red, markersize=6,
              label="Ahorro actual (s=$(round(s_current, digits=2)), c=$(round(c_current, digits=3)))")
     vline!([s_current], color=:red, ls=:dot, alpha=0.5, label="")
     hline!([c_current], color=:red, ls=:dot, alpha=0.5, label="")
 
-    # Regla de Oro
+    # Estrella verde: máximo de la curva = Regla de Oro (s = alpha).
     scatter!([alpha_val], [c_gold], color="#8EAD3A", markersize=10, marker=:star,
              label="Regla de Oro (s_gold=α=$(round(alpha_val, digits=2)), c_gold=$(round(c_gold, digits=3)))")
     vline!([alpha_val], color="#8EAD3A", ls=:dash, alpha=0.7, label="")
@@ -200,9 +247,13 @@ end
 """))
 
 # Golden Rule assert
-nb.cells.append(nbf.v4.new_code_cell("""# Verificacion de la Regla de Oro contra el oraculo (oraculo.md, Apendice O).
-# s_gold = alpha = 0.35, y c* en la Regla de Oro es mayor que en s=0.20
-# (infra-acumulacion) y que en s=0.50 (sobre-acumulacion, ineficiencia dinamica).
+nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: verifica analíticamente la Regla de Oro: s_gold = alpha = 0.35, y c*
+# en s_gold > c* en s=0.20 (infra-acumulación) y > c* en s=0.50 (sobre-
+# acumulación). POR QUÉ: la Regla de Oro es un resultado analítico exacto
+# (PMgK = delta + n); si no se cumpliera, habría un bug en el modelo.
+# QUÉ VERÁS: dos "OK: ..." o AssertionError con mensaje explicativo.
+# @assert condicion "mensaje": si la condición es false, lanza AssertionError
+# con el mensaje. "$(expr)" interpola el resultado de expr en el mensaje.
 
 alpha_gold = params_base.alpha
 ss_gold = compute_solow_steady_state(params_base, alpha_gold)
@@ -224,7 +275,13 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 nb.cells.append(nbf.v4.new_markdown_cell("""## 6. Benchmark de Rendimiento (Fase III)
 Evaluamos la velocidad de simulación usando `BenchmarkTools.jl`."""))
 
-nb.cells.append(nbf.v4.new_code_cell("""# Benchmark simulation
+nb.cells.append(nbf.v4.new_code_cell("""# QUÉ: mide el tiempo de ejecución y la memoria asignada de simulate_solow_swan
+# usando BenchmarkTools.@btime. POR QUÉ: Fase III del proyecto — cuantifica
+# la velocidad de Julia en la simulación de Solow-Swan. QUÉ VERÁS: tiempo
+# mínimo en micro/milisegundos y bytes asignados para 100 periodos.
+# @btime ejecuta la función repetidamente y reporta el tiempo mínimo.
+# El "$" delante de variables evita que BenchmarkTools las trate como globales.
+# fill(valor, N) crea Vector{Float64} de N copias de valor.
 T_bench = 100
 s_path = fill(0.20, T_bench); n_path = fill(0.02, T_bench); A_path = fill(1.0, T_bench)
 @btime simulate_solow_swan($params_base, $ss["k"], $s_path, $n_path, $A_path, $T_bench)

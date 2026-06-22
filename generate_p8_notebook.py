@@ -38,19 +38,23 @@ if 'google.colab' in sys.modules:
 # 3. IMPORTACIONES Y CONFIGURACIÓN
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
-# ==============================================================================
+        r"""# "import X as np" trae la librería X con alias np. "from X import Y" es selectivo.
+# "import sys; sys.path.append(...)" añade una carpeta al PATH para que Python
+# encuentre el código del proyecto aunque el notebook esté en un subdirectorio.
 
-import numpy as np
-import matplotlib.pyplot as plt
-from ipywidgets import interact, FloatSlider
+# Librerías de terceros (instaladas en el entorno con pip)
+import numpy as np                      # cálculo numérico: vectores, arrays, operaciones vectorizadas
+import matplotlib.pyplot as plt         # gráficos científicos con estilo MATLAB
+from ipywidgets import interact, FloatSlider   # widgets interactivos (sliders) para Jupyter
 
 # Añadir el directorio src al PATH de Python para poder importar el módulo macroaicomp
 import sys
 sys.path.append('../../src')
 
-# Importar funciones del modelo modularizado (Core de la biblioteca)
+# Proyecto. El modelo de Solow-Swan vive en src/macroaicomp/models/growth.py.
+# SolowSwanParameters: dataclass con parámetros (alpha, delta, s, n, A).
+# compute_solow_steady_state: calcula k*, y*, c*, i* a partir de los parámetros.
+# simulate_solow_swan: simula la dinámica de acumulación periodo a periodo.
 from macroaicomp.models.growth import (
     SolowSwanParameters,
     compute_solow_steady_state,
@@ -108,39 +112,54 @@ Con el siguiente panel interactivo, puedes mover la tasa de ahorro final ($s_1$)
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# SIMULACIÓN DINÁMICA DE SHOCKS ESTRUCTURALES
-# ==============================================================================
-
+        r"""# "def nombre(args):" define FUNCIÓN — no se ejecuta hasta que interact() la llama.
+# QUÉ: simula un shock estructural PERMANENTE en t=5 (ahorro s, demografía n
+# o TFP A) en el modelo de Solow-Swan y grafica 4 paneles: k, y, c, gy.
+# POR QUÉ (intuición económica): un aumento de s implica MÁS inversión hoy
+# pero MENOS consumo hoy (cae en t=5). A largo plazo, la mayor acumulación
+# de capital eleva la producción y el consumo por encima del nivel inicial.
+# La tasa de crecimiento gy salta en el impacto pero vuelve a CERO en el
+# largo plazo (sin progreso técnico, el crecimiento se agota al llegar al
+# nuevo SS). QUÉ VERÁS: 4 gráficos con SS inicial (--), SS final (:), y
+# línea vertical en t=5 (momento del shock). Al mover sliders, cambian las
+# trayectorias y los niveles finales.
+# np.full(T, valor) crea un array de T copias del mismo valor.
+# s_path[t_shock:] = s_final cambia todos los elementos desde t_shock hasta
+# el final en una sola línea (slicing vectorizado).
 def plot_solow_simulation(s_final=0.25, n_final=0.02, A_final=1.00):
     params = SolowSwanParameters()
-    
-    # 1. Calcular el estado estacionario inicial (s_0 = 0.20, n_0 = 0.02, A_0 = 1.00)
+
+    # Estado estacionario inicial con la calibración base del libro.
     ss_init = compute_solow_steady_state(params)
-    
-    # 2. Generar las trayectorias de las variables exógenas (el shock ocurre en t=5)
+
+    # Shock PERMANENTE en t=5: s, n y/o A cambian a su valor final.
+    # np.full(T, valor) llena el array entero con el valor inicial, luego
+    # sobrescribimos desde t_shock en adelante con el valor final.
     T = 100
     t_shock = 5
-    
+
     s_path = np.full(T, params.s)
     n_path = np.full(T, params.n)
     A_path = np.full(T, params.A)
-    
+
     s_path[t_shock:] = s_final
     n_path[t_shock:] = n_final
     A_path[t_shock:] = A_final
-    
-    # 3. Simular la acumulación de capital
+
+    # simulate_solow_swan() reproduce la ecuación de acumulación periodo a
+    # periodo k[t+1] = ((1-delta)*k[t] + s[t]*A[t]*k[t]**alpha) / (1+n[t]).
     res = simulate_solow_swan(params, ss_init["k"], s_path, n_path, A_path, T=T)
-    
-    # Calcular el estado estacionario final esperado
+
+    # Estado estacionario final con los nuevos parámetros — hacia él converge
+    # la economía asintóticamente.
     ss_final = compute_solow_steady_state(params, s=s_final, n=n_final, A=A_final)
-    
-    # 4. Graficar en 4 paneles de alta calidad
+
+    # plt.subplots(2,2) crea cuadrícula 2x2. axhline = línea horizontal en
+    # el nivel del SS. axvline = línea vertical en t_shock.
     fig, axs = plt.subplots(2, 2, figsize=(15, 10))
     t_axis = np.arange(T)
-    
-    # Panel 1: Capital per cápita (k_t)
+
+    # Panel 1: Capital per cápita (k_t) — NO salta, acumula gradualmente
     axs[0, 0].plot(t_axis, res["k"], color='#8EAD3A', linewidth=2.5, label='Trayectoria ($k_t$)')
     axs[0, 0].axhline(ss_init["k"], color='black', linestyle='--', alpha=0.5, label='SS Inicial')
     axs[0, 0].axhline(ss_final["k"], color='red', linestyle=':', alpha=0.7, label='SS Final')
@@ -150,8 +169,8 @@ def plot_solow_simulation(s_final=0.25, n_final=0.02, A_final=1.00):
     axs[0, 0].set_ylabel('k')
     axs[0, 0].grid(True, linestyle=':', alpha=0.6)
     axs[0, 0].legend()
-    
-    # Panel 2: Producción per cápita (y_t)
+
+    # Panel 2: Producción per cápita (y_t) — ligada a k, misma dinámica gradual
     axs[0, 1].plot(t_axis, res["y"], color='#004C97', linewidth=2.5, label='Trayectoria ($y_t$)')
     axs[0, 1].axhline(ss_init["y"], color='black', linestyle='--', alpha=0.5, label='SS Inicial')
     axs[0, 1].axhline(ss_final["y"], color='red', linestyle=':', alpha=0.7, label='SS Final')
@@ -161,8 +180,10 @@ def plot_solow_simulation(s_final=0.25, n_final=0.02, A_final=1.00):
     axs[0, 1].set_ylabel('y')
     axs[0, 1].grid(True, linestyle=':', alpha=0.6)
     axs[0, 1].legend()
-    
-    # Panel 3: Consumo per cápita (c_t)
+
+    # Panel 3: Consumo per cápita (c_t) — CAE en t=5 (sacrificio: más ahorro
+    # implica menos consumo hoy) pero a largo plazo SUPERA el nivel inicial
+    # (la mayor producción compensa el sacrificio)
     axs[1, 0].plot(t_axis, res["c"], color='#7A3E9F', linewidth=2.5, label='Trayectoria ($c_t$)')
     axs[1, 0].axhline(ss_init["c"], color='black', linestyle='--', alpha=0.5, label='SS Inicial')
     axs[1, 0].axhline(ss_final["c"], color='red', linestyle=':', alpha=0.7, label='SS Final')
@@ -172,8 +193,10 @@ def plot_solow_simulation(s_final=0.25, n_final=0.02, A_final=1.00):
     axs[1, 0].set_ylabel('c')
     axs[1, 0].grid(True, linestyle=':', alpha=0.6)
     axs[1, 0].legend()
-    
-    # Panel 4: Tasa de Crecimiento del PIB p.c. (gy_t)
+
+    # Panel 4: Tasa de Crecimiento de y (gy_t) — salta en el impacto pero
+    # vuelve a 0% en el largo plazo. Sin progreso técnico, el crecimiento
+    # per cápita es CERO en estado estacionario.
     axs[1, 1].plot(t_axis, res["gy"], color='#D95319', linewidth=2.5, label='Tasa de Crecimiento ($g_{y,t}$)')
     axs[1, 1].axvline(t_shock, color='grey', linestyle=':', alpha=0.5)
     axs[1, 1].set_title('Tasa de Crecimiento de la Producción per cápita (%)', fontsize=11, fontweight='bold')
@@ -181,11 +204,12 @@ def plot_solow_simulation(s_final=0.25, n_final=0.02, A_final=1.00):
     axs[1, 1].set_ylabel('% de crecimiento')
     axs[1, 1].grid(True, linestyle=':', alpha=0.6)
     axs[1, 1].legend()
-    
+
     plt.tight_layout()
     plt.show()
 
-# Controles interactivos
+# interact() conecta la función a sliders: al moverlos, redibuja la figura.
+# El ";" al final suprime la representación de texto del objeto devuelto.
 interact(
     plot_solow_simulation,
     s_final=FloatSlider(value=0.25, min=0.05, max=0.60, step=0.05, description='Ahorro (s)'),
@@ -239,11 +263,16 @@ debería salir en cada celda siguiente con el que realmente sale.
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# Verificación de los valores del estado estacionario contra el oráculo
-# (Tabla 9.3 del libro, reproducido en oraculo.md).
-# Usamos la calibración exacta del oráculo: delta=0.06, n=0.02.
-# Nota: delta+n = 0.08 coincide con los defaults del código (delta=0.08, n=0.0),
-# por lo que los valores numéricos son idénticos en ambos casos.
+        r"""# QUÉ: verifica que compute_solow_steady_state() devuelve los valores de la
+# Tabla 9.3 del libro (k*=4.0946, y*=1.6378, c*=1.3103, i*=0.3276). POR
+# QUÉ: si el SS base está mal, TODAS las simulaciones de shock y la Regla
+# de Oro partirían de un punto erróneo. QUÉ VERÁS: "OK: estado estacionario
+# coincide con el oráculo" o un AssertionError.
+# SolowSwanParameters(...) crea un dataclass con argumentos CON NOMBRE.
+# La calibración exacta del oráculo usa delta=0.06, n=0.02 (defaults del
+# código usan delta=0.08, n=0.0; ambos dan delta+n=0.08, la depreciación
+# efectiva es la misma y por tanto los valores numéricos coinciden).
+# np.testing.assert_allclose(a, b, atol=...) compara con tolerancia.
 
 params_orac = SolowSwanParameters(alpha=0.35, delta=0.06, s=0.20, n=0.02, A=1.0)
 ss_orac = compute_solow_steady_state(params_orac)
@@ -285,59 +314,68 @@ $$s^{gold} = \alpha$$
 
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# ==============================================================================
-# DEMOSTRACIÓN VISUAL DE LA REGLA DE ORO
-# ==============================================================================
-
+        r"""# "def nombre(args):" define FUNCIÓN — no se ejecuta hasta que interact() la llama.
+# QUÉ: dibuja la curva de consumo de estado estacionario c_bar(s) en función
+# de la tasa de ahorro s, marca el punto actual y el máximo (Regla de Oro).
+# POR QUÉ (intuición económica): existe una tasa de ahorro óptima s_gold=α
+# que maximiza el consumo de largo plazo. Si s < α (infra-acumulación),
+# aumentar s eleva c futuro. Si s > α (sobre-acumulación), la economía es
+# DINÁMICAMENTE INEFICIENTE: podría consumir MÁS hoy y en el futuro
+# reduciendo s. QUÉ VERÁS: curva en forma de U invertida con punto rojo
+# (ahorro actual), estrella verde (Regla de Oro), y regiones sombreadas
+# (azul=infra-acumulación, rosa=sobre-acumulación).
+# np.linspace(inicio, fin, N) crea N puntos equiespaciados — aquí 100 tasas
+# de ahorro entre 0.01 y 0.95 para dibujar la curva suave.
+# np.zeros_like(s_grid) crea un array del mismo tamaño lleno de ceros.
 def plot_golden_rule(s_current=0.20):
     params = SolowSwanParameters()
     alpha = params.alpha
-    
-    # 1. Generar un grid de tasas de ahorro entre 0.01 y 0.95
+
+    # Para cada s en el grid, calculamos el consumo de SS y lo guardamos.
     s_grid = np.linspace(0.01, 0.95, 100)
     c_ss_grid = np.zeros_like(s_grid)
     k_ss_grid = np.zeros_like(s_grid)
-    
+
     for idx, s_val in enumerate(s_grid):
         ss = compute_solow_steady_state(params, s=s_val)
         c_ss_grid[idx] = ss["c"]
         k_ss_grid[idx] = ss["k"]
-        
-    # Calcular el consumo actual
+
+    # Consumo actual con el s que elijas en el slider.
     ss_current = compute_solow_steady_state(params, s=s_current)
     c_current = ss_current["c"]
-    
-    # Calcular la regla de oro
+
+    # Consumo de Regla de Oro: s = alpha = 0.35 en esta calibración.
     ss_gold = compute_solow_steady_state(params, s=alpha)
     c_gold = ss_gold["c"]
-    
-    # 2. Graficar
+
     plt.figure(figsize=(10, 6))
-    plt.plot(s_grid, c_ss_grid, color='#7A3E9F', linewidth=3, label='Consumo de Estado Estacionario ($\overline{c}$)')
-    
-    # Marcar el punto actual
+    plt.plot(s_grid, c_ss_grid, color='#7A3E9F', linewidth=3, label='Consumo de Estado Estacionario ($\\overline{c}$)')
+
+    # plt.scatter dibuja un PUNTO. s=100 controla el tamaño del marcador.
+    # zorder controla qué se dibuja encima (mayor = más arriba).
     plt.scatter(s_current, c_current, color='red', s=100, zorder=5, label=f'Ahorro actual (s = {s_current:.2f}, c = {c_current:.3f})')
     plt.axvline(s_current, color='red', linestyle=':', alpha=0.5)
     plt.axhline(c_current, color='red', linestyle=':', alpha=0.5)
-    
-    # Marcar el máximo (Regla de Oro)
+
+    # marker='*' dibuja una estrella en el máximo.
     plt.scatter(alpha, c_gold, color='#8EAD3A', s=120, marker='*', zorder=6, label=f'Regla de Oro ($s^{{gold}} = \\alpha = {alpha:.2f}$, $c^{{gold}} = {c_gold:.3f}$)')
     plt.axvline(alpha, color='#8EAD3A', linestyle='--', alpha=0.7)
     plt.axhline(c_gold, color='#8EAD3A', linestyle='--', alpha=0.7)
-    
-    # Regiones
+
+    # axvspan sombrea una región vertical entre dos valores de x.
     plt.axvspan(0.01, alpha, color='#E6F2FF', alpha=0.5, label='Bajo-acumulación (Eficiente)')
     plt.axvspan(alpha, 0.95, color='#FFE6E6', alpha=0.5, label='Sobre-acumulación (Ineficiente)')
-    
+
     plt.title('La Regla de Oro: Consumo Estacionario vs. Tasa de Ahorro', fontsize=12, fontweight='bold', pad=15)
     plt.xlabel('Tasa de Ahorro ($s$)', fontsize=10)
-    plt.ylabel('Consumo Estacionario ($\overline{c}$)', fontsize=10)
+    plt.ylabel('Consumo Estacionario ($\\overline{c}$)', fontsize=10)
     plt.xlim(0.01, 0.95)
     plt.grid(True, linestyle=':', alpha=0.6)
     plt.legend(loc='lower center', fontsize=9)
     plt.show()
 
-# Slider interactivo
+# Slider para mover el punto de "ahorro actual" sobre la curva.
 interact(
     plot_golden_rule,
     s_current=FloatSlider(value=0.20, min=0.02, max=0.90, step=0.02, description='Tasa Ahorro')
@@ -349,20 +387,28 @@ interact(
 # 6a. GOLDEN RULE ASSERT
 nb.cells.append(
     nbf.v4.new_code_cell(
-        r"""# Verificación de la Regla de Oro contra el oráculo (oraculo.md, Apéndice O).
-# s_gold = alpha = 0.35, y c* en la Regla de Oro es mayor que en s=0.20
-# (infra-acumulación) y que en s=0.50 (sobre-acumulación, ineficiencia dinámica).
+        r"""# QUÉ: verifica analíticamente la Regla de Oro contra el oráculo
+# (Apéndice O): s_gold = α = 0.35, y c* en s_gold es MAYOR que en s=0.20
+# (infra-acumulación) y que en s=0.50 (sobre-acumulación). POR QUÉ: la
+# Regla de Oro es un resultado analítico exacto (derivado igualando la
+# productividad marginal del capital a delta+n); si no se cumpliera, habría
+# un bug en compute_solow_steady_state(). QUÉ VERÁS: dos "OK: ..." o un
+# AssertionError.
+# assert condicion, mensaje: si la condición es False, lanza AssertionError
+# con el mensaje (a diferencia de np.testing, aquí usamos "assert" puro de
+# Python para comparaciones de desigualdad >, que assert_allclose no soporta).
 
 alpha_gold = params_orac.alpha
 ss_gold = compute_solow_steady_state(params_orac, s=alpha_gold)
 ss_low = compute_solow_steady_state(params_orac, s=0.20)
 ss_high = compute_solow_steady_state(params_orac, s=0.50)
 
-# s_gold debe ser exactamente alpha
+# s_gold debe ser exactamente alpha (propiedad analítica de la Cobb-Douglas)
 np.testing.assert_allclose(alpha_gold, 0.35, atol=1e-6)
 print(f"OK: s_gold = alpha = {alpha_gold:.2f}")
 
-# El consumo en la Regla de Oro debe ser mayor que en s=0.20 y s=0.50
+# Tanto infra-acumulación (s=0.20 < alpha) como sobre-acumulación (s=0.50 > alpha)
+# dan un consumo de SS MENOR que el de la Regla de Oro.
 assert ss_gold["c"] > ss_low["c"], (
     f"c_gold={ss_gold['c']:.4f} debería ser > c_s020={ss_low['c']:.4f}"
 )

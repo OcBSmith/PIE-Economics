@@ -54,8 +54,8 @@ nb.cells.append(
 
 # 3. INSTALACIÓN DE DEPENDENCIAS (GOOGLE COLAB)
 nb.cells.append(nbf.v4.new_code_cell(r"""%%capture
-# Esta celda se ejecuta silenciosamente. Si estás en Google Colab, instalará las librerías necesarias.
-# En tu entorno local de desarrollo (venv), estas dependencias ya deberían estar instaladas.
+# %%capture suprime la salida. "google.colab" in sys.modules detecta si
+# estamos en Colab. Si es Colab, !pip instala; en local no hace nada.
 import sys
 if 'google.colab' in sys.modules:
     !pip install numpy scipy matplotlib ipywidgets
@@ -68,15 +68,22 @@ nb.cells.append(
 # IMPORTACIÓN DE MÓDULOS Y CONFIGURACIÓN DE RUTAS
 # ==============================================================================
 
-import numpy as np
-import matplotlib.pyplot as plt
-from ipywidgets import interact, FloatSlider
+# "import X as np" trae la librería X con alias corto. "from X import Y"
+# trae solo la función/clase Y. El notebook llama funciones ya probadas en
+# src/macroaicomp/models/tobin_q.py en vez de reimplementar fórmulas aquí.
 
-# Añadir el directorio src al PATH de Python para poder importar el módulo macroaicomp
+# Librerías de terceros (instaladas con pip)
+import numpy as np                      # cálculo numérico: vectores, matrices, álgebra lineal
+import matplotlib.pyplot as plt         # gráficos 2D con estilo MATLAB
+from ipywidgets import interact, FloatSlider  # widgets interactivos (sliders) para Jupyter
+
+# sys.path.append añade la carpeta src/ al PATH para que "import" la
+# encuentre sin instalar el paquete con pip.
 import sys
 sys.path.append('../../src')
 
-# Importar funciones del modelo modularizado (Core de la biblioteca)
+# Proyecto: las funciones del modelo Q de Tobin viven en
+# src/macroaicomp/models/tobin_q.py, separadas de la visualización.
 from macroaicomp.models.tobin_q import (
     TobinQParameters,
     compute_steady_state,
@@ -129,6 +136,14 @@ nb.cells.append(
 # CÁLCULO DEL ESTADO ESTACIONARIO, AUTOVALORES Y FÓRMULA DE SALTO
 # ==============================================================================
 
+# compute_steady_state() calcula el punto fijo del sistema (q*=1, K*
+# determinado por R y delta). compute_linearized_system() obtiene la matriz
+# A del sistema linealizado, sus autovalores y theta (pendiente del saddle
+# path). Al ejecutar veremos: SS, clasificación de estabilidad y la fórmula
+# de salto theta = phi*lambda1 (simplificada) comparada con theta_book
+# (fórmula del libro, ec. 7.41) — ambas deben ser IDÉNTICAS (diferencia
+# < 1e-12). Un autovalor estable (|1+lambda|<1) + uno inestable = punto de
+# silla, exactamente como en el modelo de Richardson de P0.
 params_ss = TobinQParameters()  # α=0.35, β=0.97, δ=0.06, φ=10.0, R=0.04
 ss = compute_steady_state(params_ss, R=0.04)
 lin_sys = compute_linearized_system(params_ss, R=0.04)
@@ -208,6 +223,13 @@ nb.cells.append(
 # VERIFICACION: SS, AUTOVALORES Y FORMULA DE SALTO (Apéndice K del libro)
 # ==============================================================================
 
+# np.testing.assert_allclose compara con tolerancia (PUNTO DE CONTROL
+# silencioso). Verificamos: 1) q*=1, K*~6.87, I*=delta*K* (estado
+# estacionario). 2) Autovalores: lambda1~-0.0607 (estable, |1+lambda1|<1),
+# lambda2~0.1072 (inestable, |1+lambda2|>1) => punto de silla. 3) theta =
+# theta_book para varias calibraciones (R, phi): la fórmula simplificada y
+# la del libro son algebraicamente equivalentes.
+
 # 1. Estado estacionario
 np.testing.assert_allclose(q_star, 1.0, atol=1e-6)
 np.testing.assert_allclose(K_star, 6.8711236, rtol=1e-6)
@@ -249,6 +271,12 @@ nb.cells.append(
 # GRAFICACIÓN INTERACTIVA EN 3 PANELES: SHOCK DE TASA DE INTERÉS
 # ==============================================================================
 
+# Al bajar R (de 4% a 3%), el coste de financiación de la empresa cae y el
+# valor presente de los beneficios futuros sube: q (valor de sombra del
+# capital) SALTA instantáneamente por encima de 1.0 en t=1. Como K es una
+# variable predeterminada (no puede saltar), su ajuste es gradual: la
+# inversión neta positiva (q>1 => conviene instalar capital) lo eleva hasta
+# el nuevo SS. Veremos 3 paneles: Q de Tobin, Capital K, e Inversión I.
 def plot_tobin_simulation(R_init=0.04, R_final=0.03, phi_val=10.0, delta_val=0.06, alpha_val=0.35):
     params = TobinQParameters(alpha=alpha_val, delta=delta_val, phi=phi_val, R=R_init)
     
@@ -365,6 +393,13 @@ nb.cells.append(
 # COMPARACIÓN GRÁFICA DE SOLUCIONADORES (LINEALIZADO VS NO LINEAL)
 # ==============================================================================
 
+# solve_linearized_simulation() resuelve el sistema linealizado con la
+# fórmula de salto theta (aproximación de Uhlig, 1999). solve_nonlinear_
+# simulation() resuelve el sistema no lineal exacto periodo a periodo con
+# fsolve. Al ejecutar, ambas trayectorias deberían ser casi indistinguibles
+# (discrepancia máxima < 0.01): la aproximación lineal es muy precisa para
+# shocks pequeños como esta caída de R de 4% a 3%.
+
 params = TobinQParameters()
 ss_init = compute_steady_state(params, R=0.04)
 K0 = ss_init["K"]
@@ -417,6 +452,14 @@ nb.cells.append(
         r"""# ==============================================================================
 # VERIFICACIÓN DEL SHOCK: SALTO DE q, CONVERGENCIA Y CONSISTENCIA (Apéndice K)
 # ==============================================================================
+
+# Cuatro verificaciones del shock de política monetaria (R baja del 4% al
+# 3%): 1) K0 = K*(R=4%), el capital NO salta (es predeterminado). 2) q0
+# SALTA a ~1.1033 (>1.0) porque es forward-looking: descuenta menores
+# costes de financiación futuros. 3) En el largo plazo, q vuelve a 1.0 y
+# K converge al nuevo SS (mayor, porque con R más bajo el coste de uso del
+# capital es menor). 4) Las trayectorias lineal y no lineal coinciden
+# (rtol=1e-2): la aproximación es válida para este shock moderado.
 
 ss_R04 = compute_steady_state(params_ss, R=0.04)
 ss_R03 = compute_steady_state(params_ss, R=0.03)
@@ -472,6 +515,14 @@ nb.cells.append(
 # DIAGRAMA DE FASES INTERACTIVO Y CAMPO DE VECTORES
 # ==============================================================================
 
+# El diagrama de fases en el espacio (k_hat, q_hat) muestra: 1) Líneas de
+# demarcación: Delta k_hat=0 (horizontal azul) y Delta q_hat=0 (diagonal
+# morada). 2) Saddle path (negra gruesa): única trayectoria convergente al
+# origen. 3) Punto rojo = SS inicial (pre-shock). 4) Punto naranja = salto
+# inmediato de q sobre el saddle path. 5) Estrella verde = nuevo SS en el
+# origen. El campo vectorial (streamplot) muestra que cualquier punto fuera
+# del saddle path diverge: solo el salto exacto a q_hat_0 = theta * k_hat_0
+# garantiza la convergencia al nuevo equilibrio.
 def plot_phase_diagram(R_init=0.04, R_final=0.03, phi_val=10.0, delta_val=0.06, alpha_val=0.35):
     params = TobinQParameters(alpha=alpha_val, delta=delta_val, phi=phi_val, R=R_final)
     
