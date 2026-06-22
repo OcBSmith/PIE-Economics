@@ -31,6 +31,7 @@ nb.cells.append(
 > *   **¿Nunca has usado Jupyter?** No te preocupes. Este cuaderno es interactivo. Haz clic en cualquier celda de código y pulsa **`Shift + Enter`** para ejecutarla. Ve de arriba a abajo en orden.
 > *   **¿Se ha congelado o sale un asterisco `[*]` eterno?** Ve al menú superior y dale a `Kernel` ➔ `Restart`.
 > *   **El objetivo** de esta práctica es que juegues con la economía. Cambia los números del código que representan impuestos, dinero o tecnología, vuelve a ejecutar y mira los gráficos. ¡No puedes romper nada!
+> *   **📋 Antes de empezar**, consulta `GUION.md` (en esta misma carpeta): objetivos, tiempo estimado y conocimientos previos de esta práctica.
 >
 
 ### 🕹️ GUÍA RÁPIDA DE INICIO - Sistemas Dinámicos
@@ -499,6 +500,10 @@ en el resto de prácticas (IS-LM dinámico, Dornbusch, DGE) cuando los
 sistemas dejen de ser ejemplos genéricos y representen economías reales.
 Los resultados numéricos coinciden exactamente con el oráculo MATLAB del
 Apéndice B, lo que valida el port a Julia.
+
+**📋 Para terminar**, responde el cuestionario de bitácora de `GUION.md`
+(en esta misma carpeta) y, si quieres ir más allá, prueba alguna de sus
+extensiones para ABP.
 """))
 
 # 7. BENCHMARK

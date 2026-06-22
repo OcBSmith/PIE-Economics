@@ -281,7 +281,7 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 
 | # | Capítulo del libro (Bongers/Gómez/Torres 2019) | Modelo | Excel original | Apéndice MATLAB/DYNARE de verificación | Versión Python/Colab | Versión Julia | Bitácora plantilla | Prompts curados | Estado |
 |---|---|---|---|---|---|---|---|---|---|
-| P0 | Cap. 1 — Introduction to computational dynamic systems | Sistema 2 ecuaciones genérico | [ ] localizar `.xlsx` del libro | App. B (MATLAB) + App. C (DYNARE) | [x] `practicas/00/python.ipynb` | [x] `practicas/00/julia.ipynb` | [ ] | [ ] | [~] Python y Julia listos y verificados; falta Excel, bitácora y prompts |
+| P0 | Cap. 1 — Introduction to computational dynamic systems | Sistema 2 ecuaciones genérico | [ ] localizar `.xlsx` del libro | App. B (MATLAB) + App. C (DYNARE) | [x] `practicas/00/python.ipynb` | [x] `practicas/00/julia.ipynb` | [x] `practicas/00/GUION.md` | [ ] | [~] Python y Julia listos, verificados y con GUION.md; falta Excel y prompts |
 | P1 | Cap. 2 — The dynamic IS-LM model | IS-LM dinámico + Phillips | [ ] | App. D (MATLAB) + App. E (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
 | P2 | Cap. 3 — Exchange rate overshooting | Dornbusch overshooting | [ ] | App. F (DYNARE) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
 | P3 | Cap. 4 — Consumption-saving optimal decision | Hogar consumo-ahorro | [ ] | App. G (MATLAB) + App. H (Newton) | [x] | [ ] | [ ] | [ ] | [x] Python listo (pedagógico) |
@@ -390,20 +390,20 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 
 #### 3.2.1. Plantilla maestra de guion de laboratorio
 
-- [ ] Crear `practicas/_plantilla/GUION.md` con secciones obligatorias:
-  - [ ] **Título y código** (ej. `LAB-P1: Respuesta dinámica del modelo IS-LM ante shock monetario`)
-  - [ ] **Objetivos didácticos** (3 máximo, verbos de Bloom)
-  - [ ] **Conocimientos previos requeridos** (con enlaces a otras prácticas)
-  - [ ] **Tiempo estimado** y nivel (Grado / Posgrado)
-  - [ ] **"Reactivos" digitales** (librerías, versiones, dataset)
-  - [ ] **Procedimiento paso a paso** (numerado, una acción por paso)
-  - [ ] **Reacciones esperadas** (valores numéricos, formas de las curvas, comportamientos límite)
-  - [ ] **Posibles "accidentes de laboratorio"** (errores típicos del alumno y cómo identificarlos)
-  - [ ] **Cuestionario de bitácora** (preguntas que el alumno responde en su cuaderno)
-  - [ ] **Variantes / extensiones para ABP**
-  - [ ] **Referencias** (capítulo del libro, lecturas adicionales)
-- [ ] Validar la plantilla con un guion de Química Orgánica real (AR) para confirmar paralelismo
-- [ ] Aplicar la plantilla a P0, P1, P8 como prueba piloto
+- [x] Crear `practicas/_plantilla/GUION.md` con secciones obligatorias (2026-06-22):
+  - [x] **Título y código** (ej. `LAB-P1: Respuesta dinámica del modelo IS-LM ante shock monetario`)
+  - [x] **Objetivos didácticos** (3 máximo, verbos de Bloom)
+  - [x] **Conocimientos previos requeridos** (con enlaces a otras prácticas)
+  - [x] **Tiempo estimado** y nivel (Grado / Posgrado)
+  - [x] **"Reactivos" digitales** (librerías, versiones, dataset)
+  - [x] **Procedimiento paso a paso** (numerado, una acción por paso)
+  - [x] **Reacciones esperadas** (valores numéricos, formas de las curvas, comportamientos límite)
+  - [x] **Posibles "accidentes de laboratorio"** (errores típicos del alumno y cómo identificarlos)
+  - [x] **Cuestionario de bitácora** (preguntas que el alumno responde en su cuaderno)
+  - [x] **Variantes / extensiones para ABP**
+  - [x] **Referencias** (capítulo del libro, lecturas adicionales)
+- [ ] Validar la plantilla con un guion de Química Orgánica real (AR) para confirmar paralelismo — **pendiente manual, requiere comparación humana con un guion real, no se puede hacer por código**
+- [~] Aplicar la plantilla a P0, P1, P8 como prueba piloto — P0 hecho (2026-06-22, `practicas/00-introduccion-sistemas-dinamicos/GUION.md`); P1 y P8 pendientes
 - [ ] Iterar y aplicar al resto
 
 #### 3.2.2. Sistema de identificación y trazabilidad

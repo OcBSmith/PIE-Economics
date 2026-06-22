@@ -26,7 +26,8 @@ no está bien reflejado en el plan maestro, añádelo a **Hallazgos**.
 | 4 | Entorno reproducible local: `venv` (`.venv/`) + `pip install -e ".[dev]"` | 2026-06-17 | Más simple que Conda/devcontainer para una sola máquina de desarrollo; se revisará cuando haya que dar el entorno a Torres/Cabello o a alumnos |
 | 5 | Notebooks se ejecutan con `jupyter nbconvert --execute` antes de comitear, y los outputs se limpian con `nbstripout` | 2026-06-17 | Cumple la regla del plan (§0.3): "Restart & Run All" sin error es el test mínimo; outputs no van al repo |
 | 6 | En P0 se usa un **gráfico estático multi-escenario** en vez de un slider interactivo (`@manipulate`/`Interact.jl`) en Julia | 2026-06-22 | `WebIO.jl` (la base de `Interact.jl`) depende de la extensión `webio-jupyterlab-provider`, que solo soporta JupyterLab 3.x (`@jupyterlab/application >=3.0.0 <4.0.0` declarado en su propio manifiesto) — incompatibilidad estructural confirmada con JupyterLab 4.5.9, el que usa este proyecto. La única alternativa sería bajar JupyterLab a 3.x en las 10 prácticas, que se descarta por ahora. El gráfico estático (4 escenarios fijos en la misma figura) da la misma información pedagógica y funciona siempre (local, Binder, Colab) |
-| 7 | **P0 se va a usar como práctica de referencia pedagógica**: se revisará a fondo (Python y Julia) para maximizar su calidad didáctica, y esa revisión servirá de plantilla/ejemplo para mejorar la pedagogía del resto de prácticas (P1-P9) | 2026-06-22 | Decisión del usuario tras cerrar el plan de homogeneización Julia↔Python. **Alcance ya concretado y aplicado a P0** en dos ejes: económico (tablas del oráculo visibles en el propio notebook, junto a cada cálculo) y de programación (comentarios QUÉ/POR QUÉ/QUÉ VERÁS en cada celda de código). P1-P9 siguen sin tocar — esta revisión es la plantilla a replicar, no el trabajo en sí |
+| 7 | **P0 se va a usar como práctica de referencia pedagógica**: se revisará a fondo (Python y Julia) para maximizar su calidad didáctica, y esa revisión servirá de plantilla/ejemplo para mejorar la pedagogía del resto de prácticas (P1-P9) | 2026-06-22 | Decisión del usuario tras cerrar el plan de homogeneización Julia↔Python. **Alcance ya concretado y aplicado a P0** en dos ejes: económico (tablas del oráculo visibles en el propio notebook, junto a cada cálculo) y de programación (comentarios QUÉ/POR QUÉ/QUÉ VERÁS en cada celda de código, incluida la sintaxis básica para alumnos sin experiencia previa). P1-P9 siguen sin tocar — esta revisión es la plantilla a replicar, no el trabajo en sí |
+| 8 | **Hito 2 del plan maestro (guion de laboratorio) se adelanta para P0** como piloto: se crea `practicas/_plantilla/GUION.md` (plantilla maestra) y `practicas/00-introduccion-sistemas-dinamicos/GUION.md` (relleno para P0) | 2026-06-22 | Al pedir una nota de calidad de P0 (8/10), el usuario decidió cerrar las 3 carencias señaladas. De las 3, solo esta era corregible con trabajo de implementación: la asimetría de interactividad Julia/Python se mantiene tal cual (decisión #6, ya tomada), y el `.xlsx` original sigue pendiente de Anelí (no es un problema de código). La validación de la plantilla contra un guion real de Química Orgánica (que el plan maestro pide) queda pendiente de revisión manual del usuario |
 
 ## Hallazgos sobre el libro / la fuente
 
@@ -394,3 +395,39 @@ Pendiente del monorepo objetivo (plan §1.2): `prompts/`, `bitacora/`,
 - P1-P9 quedan fuera de esta sesión — esta revisión de P0 es la plantilla a
   replicar más adelante, no el trabajo en sí (ver Decisión técnica #7).
 
+### 2026-06-22 (Sesión 22, continuación — comentarios más profundos + Hito 2 piloto en P0)
+
+- El usuario pidió una nota de calidad de P0 del 1 al 10: se dio **8/10**,
+  señalando 3 carencias. Pidió arreglarlas, lo que se resolvió en dos
+  rondas:
+- **Ronda 1 — más explicación de programación + retirar "dummies"**: las
+  celdas de código de `python.ipynb` y `generate_p0_julia_notebook.py`
+  ganaron comentarios sobre la SINTAXIS (qué es un `import`/`using`, un
+  dataclass/struct, una f-string/interpolación de cadenas, el indexado
+  0-based de Python vs. 1-based de Julia, broadcasting, tuplas que se
+  reparten en variables...), no solo la economía. Se retiró la palabra
+  "dummies" del título de la guía rápida de inicio (no pegaba con el tono
+  del resto) en ambos notebooks — pasa a "GUÍA RÁPIDA DE INICIO". Commit
+  `faee75b`.
+- **Ronda 2 — Hito 2 (guion de laboratorio) adelantado como piloto en P0**:
+  de las 3 carencias señaladas en la nota de calidad, solo la de
+  "faltan objetivos/bitácora/accidentes de laboratorio/extensiones ABP" era
+  corregible con código (las otras dos —asimetría WebIO y `.xlsx`
+  pendiente— ya estaban resueltas/fuera de alcance, ver Decisión técnica
+  #8). Se creó `practicas/_plantilla/GUION.md` (plantilla maestra del
+  Hito 2, §3.2.1 del plan maestro) y
+  `practicas/00-introduccion-sistemas-dinamicos/GUION.md` (relleno completo
+  para P0: objetivos didácticos con verbos de Bloom, prerrequisitos, tiempo
+  estimado, "reactivos" digitales, procedimiento paso a paso, accidentes de
+  laboratorio específicos de este modelo, cuestionario de bitácora de 5
+  preguntas y 3 extensiones para ABP). Ambos notebooks enlazan al GUION
+  desde la celda de bienvenida (objetivos/tiempo) y desde la conclusión
+  (bitácora/ABP), sin tocar ninguna celda de código.
+- Checkboxes actualizados en `PLAN_MAESTRO_MACRO_AI_COMP.md` (§3.2.1 y
+  columna "Bitácora plantilla" de P0 en §2). La validación de la plantilla
+  contra un guion real de Química Orgánica que pide el plan maestro queda
+  marcada como pendiente manual (no se puede hacer por código).
+- Verificado con `nbconvert --execute` en ambos notebooks tras enlazar el
+  GUION: sin errores.
+- P1 y P8 (los otros dos pilotos previstos en el plan maestro) y el resto
+  de prácticas quedan sin GUION.md — pendientes de iterar más adelante.
