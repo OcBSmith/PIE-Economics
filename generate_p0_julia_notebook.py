@@ -300,11 +300,11 @@ falta. Este enfoque es equivalente pedagógicamente y funciona en cualquier ento
 nb.cells.append(nbf.v4.new_code_cell(r"""# Análisis de sensibilidad: 4 escenarios de shock sobre z1
 # (equivalente al slider interactivo de Python, sin necesitar WebIO)
 z1_scenarios = [-1.0, 0.5, 2.0, 3.5]
-colors = [:steelblue, :darkorange, :purple, :crimson]
+colors = ["#D95319", "#8EAD3A", "#004C97", "#7A3E9F"]  # paleta UMA, consistente con el resto del cuaderno
 t_ax = 0:29
 
-p_a = plot(title="Variable x1", xlabel="Periodos", ylabel="Stock de armamento", legend=:bottomright)
-p_b = plot(title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento", legend=:topright)
+p_a = plot(title="Variable x1", xlabel="Periodos", ylabel="Stock de armamento", legend=:bottomright, legendfontsize=7)
+p_b = plot(title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento", legend=:topright, legendfontsize=7)
 
 for (z1_val, col) in zip(z1_scenarios, colors)
     x1_p, x2_p = simulate(params_global, z_initial, [z1_val, 1.0], 30, 2)
