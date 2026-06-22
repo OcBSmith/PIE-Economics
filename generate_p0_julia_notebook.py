@@ -23,7 +23,7 @@ macroeconómicos concretos (IS-LM, Dornbusch, DGE...). Versión en Julia.
     )
 )
 
-# 1.5. BIENVENIDA Y GUÍA RÁPIDA PARA DUMMIES
+# 1.5. BIENVENIDA Y GUÍA RÁPIDA DE INICIO
 nb.cells.append(
     nbf.v4.new_markdown_cell(
         r"""> **👋 BIENVENIDA A LA PRÁCTICA - LEER ANTES DE EMPEZAR**
@@ -33,7 +33,7 @@ nb.cells.append(
 > *   **El objetivo** de esta práctica es que juegues con la economía. Cambia los números del código que representan impuestos, dinero o tecnología, vuelve a ejecutar y mira los gráficos. ¡No puedes romper nada!
 >
 
-### 🕹️ GUÍA RÁPIDA PARA DUMMIES - Sistemas Dinámicos
+### 🕹️ GUÍA RÁPIDA DE INICIO - Sistemas Dinámicos
 *   **¿Qué estamos haciendo aquí?** Estamos estudiando cómo una variable cambia a lo largo del tiempo usando reglas matemáticas sencillas. Imagina que es el crecimiento de una población o el saldo de tu cuenta bancaria.
 *   **Puntos de Equilibrio (Estado Estacionario):** Es el valor donde la variable se queda quieta (no sube ni baja).
 *   **Estabilidad:** Si perturbas el sistema (le das un empujón), ¿vuelve al equilibrio (estable) o se dispara al infinito (inestable)?
@@ -54,7 +54,15 @@ nb.cells.append(
 )
 
 # 3. IMPORTACIONES Y CONFIGURACIÓN
-nb.cells.append(nbf.v4.new_code_cell(r"""using Pkg
+nb.cells.append(nbf.v4.new_code_cell(r"""# "using X" trae a este cuaderno todo el código público del paquete X, para
+# no tener que reescribirlo (es el equivalente Julia de "import X" en
+# Python, pero sin necesidad de poner un alias para usar sus funciones).
+# Pkg.activate("../..") le dice a Julia "usa el entorno (versiones de
+# librerías) definido en Project.toml/Manifest.toml de la raíz del repo, no
+# el entorno global de la máquina" — así todo el mundo ejecuta con las
+# mismas versiones. Pkg.instantiate() descarga/instala lo que falte de ese
+# entorno (la primera vez puede tardar; las siguientes es instantáneo).
+using Pkg
 Pkg.activate("../..")
 Pkg.instantiate()
 
@@ -64,6 +72,10 @@ Pkg.instantiate()
 # llama funciones ya probadas, no reimplementa fórmulas (ver Sección 10).
 using MacroAIComp
 using Plots
+# "import Plots: mm" es más selectivo que "using Plots": solo trae el
+# nombre "mm" (una unidad de medida para márgenes) en vez de todo el
+# paquete, que ya importamos en la línea anterior — aquí se hace así porque
+# `mm` no se exporta por defecto con "using Plots".
 import Plots: mm          # Para usar unidades de margen (p.ej. top_margin=10mm)
 default(gridalpha=0.6, gridstyle=:dot)  # estilo de grid consistente con la versión Python
 using LinearAlgebra
@@ -101,10 +113,14 @@ nb.cells.append(
 )
 
 nb.cells.append(nbf.v4.new_code_cell(r"""# Esta celda solo FIJA NÚMEROS (Tabla 1.1 y 1.2 del libro): todavía no
-# calcula nada. ArmsRaceParams es un struct de src/models/ArmsRace.jl que
-# agrupa los 6 coeficientes en orden posicional (alpha, beta, gamma, delta,
-# theta, eta) — por eso comentamos cada posición, ya que aquí (a diferencia
-# de Python) no hay argumentos con nombre.
+# calcula nada. ArmsRaceParams es un struct (definido en
+# src/models/ArmsRace.jl): una "ficha" con 6 casillas con nombre, igual que
+# el dataclass de Python, pero en Julia los structs normales se construyen
+# con argumentos POSICIONALES (sin nombre): el primer número va a la
+# primera casilla del struct (alpha), el segundo a la segunda (beta), etc.
+# Por eso aquí SÍ es importante mantener el orden exacto y comentamos cada
+# posición — si dos números se intercambiasen, Julia no avisaría de nada
+# porque para ella son solo números en el orden correcto de argumentos.
 params_global = ArmsRaceParams(
     0.50,  # alpha: sensibilidad de Delta x1 a su propio nivel x1
     0.25,  # beta: reacción de Delta x1 al stock de armamento x2
@@ -113,11 +129,16 @@ params_global = ArmsRaceParams(
     1.00,  # theta: impacto de la variable exógena z1 sobre Delta x1
     1.00   # eta: impacto de la variable exógena z2 sobre Delta x2
 )
+# [1.0, 1.0] crea un Vector{Float64} (un array de números en Julia, similar
+# al np.array de Python): z1 y z2, las dos variables exógenas.
 z_initial = [1.0, 1.0]
 
 # Equivalente al asdict(params_global) de Python: muestra cada campo con su
-# nombre. Al ejecutar esta celda solo veremos esos 6 valores impresos como
-# NamedTuple — comprobación visual de que no hay errores de tecleo.
+# nombre. La sintaxis (alpha=..., beta=..., ...) crea aquí una NamedTuple
+# -- una tupla normal pero donde cada posición además tiene un nombre--
+# SOLO para que se imprima de forma legible; no cambia los datos guardados
+# en params_global. Al ejecutar esta celda veremos esos 6 valores impresos:
+# es una comprobación visual de que no hay errores de tecleo.
 (alpha=params_global.alpha, beta=params_global.beta, gamma=params_global.gamma,
  delta=params_global.delta, theta=params_global.theta, eta=params_global.eta)
 """))
@@ -128,9 +149,12 @@ nb.cells.append(
 """)
 )
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# steady_state() resuelve x_bar = -A^{-1} B z (ec. 1.14): el punto donde
-# Delta x1 = Delta x2 = 0, es decir, donde ninguno de los dos países cambia
-# ya su stock de armamento.
+nb.cells.append(nbf.v4.new_code_cell(r"""# steady_state() es una FUNCIÓN: le pasamos dos argumentos entre paréntesis
+# y nos devuelve un resultado que guardamos con "=" en x_bar. Por dentro
+# resuelve x_bar = -A^{-1} B z (ec. 1.14): el punto donde Delta x1 = Delta
+# x2 = 0, es decir, donde ninguno de los dos países cambia ya su stock de
+# armamento. No necesitamos saber CÓMO lo calcula para usarla, solo qué
+# entra y qué sale.
 x_bar = steady_state(params_global, z_initial)
 # eigenvalues() da los autovalores de A. Lo que importa para la estabilidad
 # no es su signo sino el módulo |lambda + 1| (Apéndice A): si es < 1 para
@@ -139,7 +163,14 @@ x_bar = steady_state(params_global, z_initial)
 # condición, es un punto de silla (lo veremos en la Sección 8).
 lambdas = eigenvalues(params_global)
 
+# El "." antes de un paréntesis o un operador (round.(...), .+ 1.0) es
+# BROADCASTING: aplica esa operación a CADA elemento del array por
+# separado, en vez de a todo el array de golpe. round.(x_bar, digits=2)
+# redondea cada componente de x_bar a 2 decimales SOLO para que se imprima
+# más corto; el valor real guardado en la variable no cambia.
 println("Estado estacionario (x1_bar, x2_bar) = ", round.(x_bar, digits=2))
+# sort() ordena los dos autovalores de menor a mayor, para que siempre se
+# impriman en el mismo orden sin importar en qué orden los devuelva Julia.
 println("Autovalores (lambda1, lambda2)        = ", round.(sort(lambdas), digits=2))
 println("Moduli |lambda + 1|                   = ", round.(abs.(sort(lambdas) .+ 1.0), digits=2))
 println("Punto de silla                        = ", is_saddle_path(params_global))
@@ -167,9 +198,15 @@ Así puedes comparar a simple vista, sin abrir `oraculo.md`, el número que
 debería salir en cada celda siguiente con el que realmente sale.
 """))
 
-nb.cells.append(nbf.v4.new_code_cell(r"""# @assert no devuelve nada si la condición se cumple: es un PUNTO DE CONTROL
-# silencioso. Si el port a Julia tuviera un error, esta celda lanzaría
-# AssertionError y detendría la ejecución aquí mismo, antes de seguir
+nb.cells.append(nbf.v4.new_code_cell(r"""# isapprox(a, b; atol=...) compara dos valores (o dos arrays, elemento a
+# elemento) y da `true` solo si la diferencia es menor que la tolerancia
+# atol. No usamos "==" porque el ordenador casi nunca da resultados
+# EXACTAMENTE iguales en aritmética con decimales (errores de redondeo
+# internos), aunque la fórmula esté bien aplicada — comparar con un margen
+# pequeño es la forma correcta de verificar números reales.
+# @assert condicion no hace NADA si la condición es true: es un PUNTO DE
+# CONTROL silencioso. Si el port a Julia tuviera un error, @assert lanzaría
+# un AssertionError y detendría la ejecución aquí mismo, antes de seguir
 # construyendo gráficos sobre un resultado incorrecto.
 @assert isapprox(x_bar, [4.0, 4.0]; atol=1e-6)
 @assert isapprox(sort(lambdas), [-0.75, -0.25]; atol=1e-6)
@@ -188,10 +225,15 @@ nb.cells.append(nbf.v4.new_code_cell(r"""# A partir de aquí cambiamos la variab
 # periodo a periodo x[t+1] = x[t] + (A*x[t] + B*z_t), empezando en el SS
 # anterior y usando z_final desde el periodo 2 (el 4º argumento, shock_period,
 # en convención 1-based de Julia) — no resuelve el nuevo SS de golpe, lo
-# alcanza simulando.
+# alcanza simulando. simulate() devuelve DOS resultados a la vez; escribir
+# dos nombres separados por coma a la izquierda del "=" hace que Julia
+# reparta esa tupla: x1_path recibe el primero, x2_path el segundo.
 z_final_shock = [2.0, 1.0]
 x1_path, x2_path = simulate(params_global, z_initial, z_final_shock, 30, 2)
 
+# x1_path[end] usa la palabra clave "end": significa "el último elemento
+# del array" (en vez de tener que saber cuántos hay, como con x1_path[30]).
+# Es el equivalente Julia del x1_path[-1] de Python.
 println("Nuevo estado estacionario (x1_bar, x2_bar) = (",
         round(x1_path[end], digits=2), ", ", round(x2_path[end], digits=2),
         ")  (esperado: 6.67, 5.33)")
@@ -234,13 +276,21 @@ a, b = coefficient_matrices(params_global)
 x1_vals = range(0, 10, length=11)
 x2_vals = range(0, 10, length=11)
 
+# Float64[] crea un array VACÍO de números de punto flotante; lo iremos
+# rellenando con push! dentro del bucle. En Julia, una función que termina
+# en "!" (push!, plot!, scatter!) MODIFICA su primer argumento en el sitio
+# en vez de devolver una copia nueva — es una convención del lenguaje, no
+# una obligación, pero se respeta casi siempre.
 x = Float64[]
 y = Float64[]
 u = Float64[]
 v = Float64[]
 
-# Para cada punto de la malla calculamos hacia dónde "empuja" el sistema
-# (dx1, dx2) y lo guardamos como una flecha (u, v) que saldrá de ese punto.
+# "for xi in x1_vals, yi in x2_vals" son DOS bucles anidados en una sola
+# línea: recorre todas las combinaciones (xi, yi) de las dos listas, igual
+# que un doble "for" normal. Para cada punto de la malla calculamos hacia
+# dónde "empuja" el sistema (dx1, dx2) y lo guardamos como una flecha
+# (u, v) que saldrá de ese punto.
 for xi in x1_vals, yi in x2_vals
     dx = a * [xi, yi] + b * z_initial
     push!(x, xi)
@@ -286,6 +336,11 @@ nb.cells.append(
 # lo que reduce SU estado estacionario y, por la interacción del sistema,
 # también el del país 2 (que ya no necesita responder a tanto armamento).
 # Como ya no es alpha=delta, además se rompe la simetría x1_bar=x2_bar del Caso 1.
+# Creamos un ArmsRaceParams NUEVO en vez de modificar params_global (de
+# hecho, en Julia los structs definidos como en este proyecto son
+# inmutables por defecto: ni se podría modificar un campo después de
+# crearlo). El nombre de la variable (params_sensitivity) deja claro que es
+# una calibración distinta, no una corrección de la anterior.
 params_sensitivity = ArmsRaceParams(0.70, 0.25, 0.25, 0.50, 1.00, 1.00)
 x_bar_sensitivity = steady_state(params_sensitivity, z_initial)
 lambdas_sensitivity = eigenvalues(params_sensitivity)
@@ -343,6 +398,10 @@ x1_saddle, x2_saddle = simulate_saddle_path(
     params_saddle, z_initial_saddle, z_final_saddle, 30, 2, 1
 )
 
+# x1_saddle[2] es el SEGUNDO elemento del array: en Julia los índices
+# empiezan en 1 (no en 0 como en Python), así que el primer elemento es
+# x1_saddle[1] (el estado estacionario inicial) y x1_saddle[2] es el
+# periodo del shock — el equivalente exacto del x1_saddle[1] de Python.
 println("Salto instantáneo de x1 en el periodo del shock = ", round(x1_saddle[2], digits=2), " (esperado: 2.00)")
 println("Nuevo estado estacionario (x1, x2) = (",
         round(x1_saddle[end], digits=2), ", ", round(x2_saddle[end], digits=2),
@@ -396,8 +455,11 @@ p_a = plot(title="Variable x1", xlabel="Periodos", ylabel="Stock de armamento", 
 p_b = plot(title="Variable x2", xlabel="Periodos", ylabel="Stock de armamento", legend=:topright, legendfontsize=7)
 
 # zip empareja cada escenario de z1 con su color de la paleta UMA; plot!
-# (con !) añade una línea más al gráfico existente en vez de crear uno nuevo,
-# por eso las 4 trayectorias terminan superpuestas en el mismo par de ejes.
+# (con !, ver celda del diagrama de fases) añade una línea más al gráfico
+# existente en vez de crear uno nuevo, por eso las 4 trayectorias terminan
+# superpuestas en el mismo par de ejes. "$(z1_val)" dentro de las comillas
+# es INTERPOLACIÓN DE CADENAS: mete el valor de z1_val dentro del texto del
+# label — el equivalente Julia de los f-strings de Python.
 for (z1_val, col) in zip(z1_scenarios, colors)
     x1_p, x2_p = simulate(params_global, z_initial, [z1_val, 1.0], 30, 2)
     plot!(p_a, t_ax, x1_p, label="z1 → $(z1_val)", color=col, linewidth=2.0)
@@ -452,6 +514,10 @@ A_bench = [0.5 0.2; 0.1 0.8]
 x0_bench = [1.0, 1.0]
 T_bench = 50
 
+# "function nombre(argumentos) ... end" define una FUNCIÓN reutilizable,
+# igual que "def" en Python pero terminada con la palabra "end" en vez de
+# por indentación. x[:, t] selecciona TODAS las filas (":") de la columna t
+# -- aquí cada columna es un periodo de tiempo y cada fila una variable.
 function simular_sistema(A_mat, init, T)
     n = length(init)
     x = zeros(n, T)
