@@ -26,7 +26,7 @@ no está bien reflejado en el plan maestro, añádelo a **Hallazgos**.
 | 4 | Entorno reproducible local: `venv` (`.venv/`) + `pip install -e ".[dev]"` | 2026-06-17 | Más simple que Conda/devcontainer para una sola máquina de desarrollo; se revisará cuando haya que dar el entorno a Torres/Cabello o a alumnos |
 | 5 | Notebooks se ejecutan con `jupyter nbconvert --execute` antes de comitear, y los outputs se limpian con `nbstripout` | 2026-06-17 | Cumple la regla del plan (§0.3): "Restart & Run All" sin error es el test mínimo; outputs no van al repo |
 | 6 | En P0 se usa un **gráfico estático multi-escenario** en vez de un slider interactivo (`@manipulate`/`Interact.jl`) en Julia | 2026-06-22 | `WebIO.jl` (la base de `Interact.jl`) depende de la extensión `webio-jupyterlab-provider`, que solo soporta JupyterLab 3.x (`@jupyterlab/application >=3.0.0 <4.0.0` declarado en su propio manifiesto) — incompatibilidad estructural confirmada con JupyterLab 4.5.9, el que usa este proyecto. La única alternativa sería bajar JupyterLab a 3.x en las 10 prácticas, que se descarta por ahora. El gráfico estático (4 escenarios fijos en la misma figura) da la misma información pedagógica y funciona siempre (local, Binder, Colab) |
-| 7 | **P0 se va a usar como práctica de referencia pedagógica**: se revisará a fondo (Python y Julia) para maximizar su calidad didáctica, y esa revisión servirá de plantilla/ejemplo para mejorar la pedagogía del resto de prácticas (P1-P9) | 2026-06-22 | Decisión del usuario tras cerrar el plan de homogeneización Julia↔Python; pendiente de definir el alcance concreto de "aumentar la pedagogía" en una próxima sesión |
+| 7 | **P0 se va a usar como práctica de referencia pedagógica**: se revisará a fondo (Python y Julia) para maximizar su calidad didáctica, y esa revisión servirá de plantilla/ejemplo para mejorar la pedagogía del resto de prácticas (P1-P9) | 2026-06-22 | Decisión del usuario tras cerrar el plan de homogeneización Julia↔Python. **Alcance ya concretado y aplicado a P0** en dos ejes: económico (tablas del oráculo visibles en el propio notebook, junto a cada cálculo) y de programación (comentarios QUÉ/POR QUÉ/QUÉ VERÁS en cada celda de código). P1-P9 siguen sin tocar — esta revisión es la plantilla a replicar, no el trabajo en sí |
 
 ## Hallazgos sobre el libro / la fuente
 
@@ -366,4 +366,31 @@ Pendiente del monorepo objetivo (plan §1.2): `prompts/`, `bitacora/`,
   para P0 (¿más derivaciones paso a paso?, ¿más preguntas de bitácora?,
   ¿mejor guía para dummies?, ¿comparación lado a lado Python/Julia?) antes
   de empezar a implementarlo.
+
+### 2026-06-22 (Sesión 22, continuación — alcance de "aumentar la pedagogía" de P0)
+
+- El usuario concretó el alcance pendiente de la Decisión técnica #7 en dos
+  ejes explícitos: **económico** (usar `oraculo.md` no solo como assert
+  oculto, sino visible en el propio notebook) y **de programación**
+  (comentar las celdas de código: qué hace cada una, por qué, y qué pasa al
+  ejecutarla).
+- Implementado en `python.ipynb` y `generate_p0_julia_notebook.py` (fuente
+  de `julia.ipynb`), sin tocar `src/macroaicomp/models/arms_race.py` ni
+  `phase_diagram.py` (ya tienen docstrings NumPy a nivel de librería; lo que
+  faltaba era el comentario en la celda concreta que los llama):
+  - Cada celda de código relevante recibió 2-4 líneas de comentario nuevas
+    siguiendo el patrón QUÉ hace / POR QUÉ (incluida la interpretación
+    económica, p.ej. por qué subir α reduce el SS de ambos países) / QUÉ
+    VERÁS al ejecutarla.
+  - Las celdas markdown "Verificación frente al oráculo" (Caso 1) y "Punto
+    de silla" (Caso 2) se extendieron con la tabla completa de valores
+    esperados de `oraculo.md`, para que el alumno no tenga que abrir ese
+    archivo aparte.
+  - Cambios puramente additivos: ningún assert, fórmula ni resultado
+    numérico se modificó.
+- Verificado con `nbconvert --to notebook --execute --inplace` en ambos
+  notebooks (log completo leído, no solo el exit code): los dos ejecutan
+  sin errores y todos los `assert`/`@assert` siguen pasando.
+- P1-P9 quedan fuera de esta sesión — esta revisión de P0 es la plantilla a
+  replicar más adelante, no el trabajo en sí (ver Decisión técnica #7).
 
