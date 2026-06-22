@@ -88,7 +88,7 @@ nb.cells.append(
 # Librerías de terceros (instaladas con pip)
 import numpy as np                      # cálculo numérico: vectores, matrices, álgebra lineal
 import matplotlib.pyplot as plt         # gráficos 2D con estilo MATLAB
-import cvxpy as cp                      # optimización convexa
+import cvxpy as cp  # noqa: F401 (usado en celdas posteriores)                      # optimización convexa
 from ipywidgets import interact, FloatSlider, IntSlider, Checkbox  # widgets interactivos
 
 # sys.path.append añade una carpeta al PATH para que "import" la encuentre.

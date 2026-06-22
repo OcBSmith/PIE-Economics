@@ -90,7 +90,7 @@ nb.cells.append(
 # Librerías de terceros (instaladas con pip)
 import numpy as np                      # cálculo numérico: vectores, matrices, álgebra lineal
 import matplotlib.pyplot as plt         # gráficos 2D con estilo MATLAB
-import cvxpy as cp                      # optimización convexa (resuelve el problema directamente)
+import cvxpy as cp  # noqa: F401 (usado en celdas posteriores)                      # optimización convexa (resuelve el problema directamente)
 from ipywidgets import interact, FloatSlider  # widgets interactivos (sliders) para Jupyter
 
 # sys.path.append añade una carpeta al PATH de Python para que "import" la
@@ -380,6 +380,7 @@ nb.cells.append(
 # abajo (interact() lo hará por nosotros cada vez que movamos un slider).
 # Los argumentos tienen valores por defecto (beta_val=0.97, ...): si se
 # llama a la función sin indicarlos, usará esos valores.
+def plot_consumption_leisure(beta_val=0.97, gamma_val=0.50, R_val=0.02, W_val=30.0):
     params_int = ConsumptionLeisureParameters(T=30, beta=beta_val, gamma=gamma_val, R=R_val)
     W = np.full(params_int.T, W_val)
     

@@ -1,6 +1,5 @@
 import nbformat as nbf
 import os
-import json
 import md_extractor
 
 md_cells = md_extractor.get_markdown_cells(r"practicas\08-solow-swan\python.ipynb")

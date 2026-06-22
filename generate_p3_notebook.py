@@ -47,7 +47,7 @@ nb.cells.append(
 # Librerías de terceros (instaladas en el entorno con pip)
 import numpy as np                      # cálculo numérico: vectores, álgebra lineal
 import matplotlib.pyplot as plt         # visualización gráfica: figuras, ejes, estilos
-import cvxpy as cp                      # optimización convexa (alternativa a fsolve)
+import cvxpy as cp  # noqa: F401 (usado en celdas posteriores)                      # optimización convexa (alternativa a fsolve)
 from ipywidgets import interact, FloatSlider, Dropdown  # widgets interactivos
 
 # Proyecto (requiere `pip install -e .` desde la raíz del repo).
