@@ -105,12 +105,12 @@ Bloque C+D, Bloque G+H completos.
 
 - [x] F1. P0: Implementar @manipulate con slider en vez de función estática
 - [x] F2. P1: Implementar @manipulate con ambos sliders (m0 + beta0)
-- [ ] F3. Añadir descripciones en español a sliders en P3, P4, P5, P6, P7, P8, P9
+- [x] F3. Añadir descripciones en español a sliders en P3, P4, P5, P6, P7, P8, P9 — vía `slider(rango; value=..., label="...")` de Interact.jl, con el mismo texto que el `description=` de Python; aplicado también a P0/P1/P2 donde aplicaba
 
 ## TIPO G — Rangos de sliders diferentes
 
 - [x] G1. P0: Unificar z1_final default a 2.0, rango -2.0:0.25:4.0 — vía `slider(-2.0:0.25:4.0; value=2.0)`
-- [ ] G2. P1: Unificar m0_shock default a 110.0, rango 80:2:120 — sin tocar; el rango actual (`80.0:1.0:120.0`) no coincide en step (1.0 vs 2) ni en centrado del default
+- [x] G2. P1: Unificar m0_shock default a 110.0, rango 80:2:120 — el rango real de Python es `80.0:1.0:120.0` (el "2" del checklist era impreciso); fijado el default explícito a 110.0 vía `slider(...; value=110.0)`
 - [x] G3. P3: Extender β max a 0.999 (desde 0.99) — vía `slider([0.90:0.01:0.99; 0.999]; value=0.97)`
 - [x] G4. P4: Extender β max a 0.999 (desde 0.99) — mismo fix que G3
 - [x] G5. P5: Unificar τss max a 0.60, τr max a 0.80
@@ -146,9 +146,9 @@ la Sección 1 imprime una diferencia de consumo de `0.0` exacto.
 
 ## TIPO J — Verificación más pobre
 
-- [ ] J1. P2: Igualar tolerancias @assert con las del texto markdown
-- [ ] J2. P3: Añadir valores C(0), C(T-1), B(T-1) ambos solvers + ✅/❌
-- [ ] J3. P4: Añadir valores C(0), L(0), B(T-1) ambos solvers + ✅/❌
+- [x] J1. P2: Igualar tolerancias @assert con las del texto markdown — la tabla decía "tolerancia < 1e-6" pero el código usaba 1e-5/1e-3; ajustado a 1e-6 (Python no tiene assert real, solo la tabla, así que se verificó que el valor computado en Julia sí alcanza esa precisión)
+- [x] J2. P3: Añadir valores C(0), C(T-1), B(T-1) ambos solvers + ✅/❌
+- [x] J3. P4: Añadir valores C(0), L(0), B(T-1) ambos solvers + ✅/❌
 - [x] J4. P7: Añadir cálculo e impresión de error relativo máximo (C y K) — corregido de paso al unificar colores (E34): la celda solo comparaba K con un "error absoluto" en un panel separado; ahora compara C y K igual que Python, con el error relativo máximo de ambos impreso
 - [x] J5. P9: Añadir cálculo e impresión de error relativo máximo
 
@@ -167,8 +167,8 @@ la Sección 1 imprime una diferencia de consumo de `0.0` exacto.
 
 - [ ] M1. P5: Añadir simulación interactiva de lump-sum (Sección 1)
 - [ ] M2. P5: Añadir verificación FOC vs optimización directa
-- [ ] M3. P7: Añadir checkbox use_matlab_timing
-- [ ] M4. P7: Añadir slider de δ (actualmente hardcodeado)
+- [!] M3. P7: Añadir checkbox use_matlab_timing — **BLOQUEADO, bug real en Python**: `generate_p7_notebook.py` llama a `solve_blanchard_khan(..., use_matlab_timing=...)` y `solve_nonlinear_simulation(..., use_matlab_timing=...)`, pero esas funciones en `src/macroaicomp/models/dge.py` NO aceptan ese parámetro (confirmado: lanza `TypeError` si se ejecuta). No hay comportamiento de referencia que copiar a Julia sin antes diseñar e implementar `use_matlab_timing` en ambos lenguajes — eso es trabajo nuevo, no homogeneización. Pendiente de decisión del usuario.
+- [x] M4. P7: Añadir slider de δ (actualmente hardcodeado) — `delta_val` estaba fijo a 0.05 en `DGEParams(alpha_val, beta_val, 0.05, rho_val, 1.0)`; añadido como slider interactivo igual que en Python
 
 ---
 

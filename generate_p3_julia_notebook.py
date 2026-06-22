@@ -51,14 +51,29 @@ println("W constante: ", W_const[1:5], "...")
 res_foc = solve_foc_fsolve(params, W_const)
 res_opt = solve_direct_optim(params, W_const)
 
-println("Diferencia media entre FOC y Optim: ", sum(abs.(res_foc["C"] .- res_opt["C"])) / params.T)
+println("-"^75)
+println("  Consumo Inicial C(0) [fsolve]   : ", round(res_foc["C"][1], digits=6))
+println("  Consumo Inicial C(0) [optim]    : ", round(res_opt["C"][1], digits=6))
+println("  Consumo Final C(T-1) [fsolve]   : ", round(res_foc["C"][end], digits=6))
+println("  Consumo Final C(T-1) [optim]    : ", round(res_opt["C"][end], digits=6))
+println("  Activos Finales B(T-1) [fsolve] : ", res_foc["B"][end])
+println("  Activos Finales B(T-1) [optim]  : ", res_opt["B"][end])
+println("-"^75)
+
+diferencia_max = maximum(abs.(res_foc["C"] .- res_opt["C"]))
+println("Máxima diferencia absoluta en el consumo: ", diferencia_max)
+if diferencia_max < 1e-5
+    println("✅ ¡Los solucionadores son equivalentes numéricamente!")
+else
+    println("❌ Hay diferencias entre solucionadores.")
+end
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl
-@manipulate for beta_val in slider([0.90:0.01:0.99; 0.999]; value=0.97), R_val in -0.05:0.01:0.15, profile in ["constant", "increasing", "retirement"]
+@manipulate for beta_val in slider([0.90:0.01:0.99; 0.999]; value=0.97, label="Paciencia (β)"), R_val in slider(-0.05:0.01:0.15; value=0.02, label="Interés (R)"), profile in Widgets.dropdown(["constant", "increasing", "retirement"]; value="constant", label="Perfil Salarial")
     
     params_interactive = ConsumptionSavingParameters(30, beta_val, R_val, 0.0)
     W = generate_income_profile(profile, params_interactive.T)

@@ -35,7 +35,7 @@ nb.cells.append(nbf.v4.new_markdown_cell(md_cells[2]))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa Interés
-@manipulate for R_init in 0.01:0.005:0.08, R_final in 0.01:0.005:0.08, phi_val in 1.0:1.0:30.0, delta_val in 0.01:0.01:0.15, alpha_val in 0.20:0.05:0.50
+@manipulate for R_init in slider(0.01:0.005:0.08; value=0.04, label="R inicial"), R_final in slider(0.01:0.005:0.08; value=0.03, label="R final"), phi_val in slider(1.0:1.0:30.0; value=10.0, label="Costos Aj. (φ)"), delta_val in slider(0.01:0.01:0.15; value=0.06, label="Deprec. (δ)"), alpha_val in slider(0.20:0.05:0.50; value=0.35, label="Elasticidad (α)")
     
     params_base = TobinQParams(alpha_val, delta_val, phi_val, R_init)
     ss_init = compute_steady_state(params_base)
@@ -124,7 +124,7 @@ plot(p1, p2, layout=(1,2), size=(800, 350))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Diagrama de Fases en espacio de desviaciones logarítmicas
-@manipulate for R_init in 0.01:0.005:0.08, R_final in 0.01:0.005:0.08, phi_val in 1.0:1.0:30.0, delta_val in 0.01:0.01:0.15, alpha_val in 0.20:0.05:0.50
+@manipulate for R_init in slider(0.01:0.005:0.08; value=0.04, label="R inicial"), R_final in slider(0.01:0.005:0.08; value=0.03, label="R final"), phi_val in slider(1.0:1.0:30.0; value=10.0, label="Costos Aj. (φ)"), delta_val in slider(0.01:0.01:0.15; value=0.06, label="Deprec. (δ)"), alpha_val in slider(0.20:0.05:0.50; value=0.35, label="Elasticidad (α)")
     params = TobinQParams(alpha_val, delta_val, phi_val, R_final)
     
     ss_init = compute_steady_state(params, R_init)

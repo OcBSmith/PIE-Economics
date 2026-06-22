@@ -53,7 +53,7 @@ println(eigvals(J))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock permanente Ramsey
-@manipulate for A_final in slider(0.90:0.01:1.20; value=1.05), beta_final in slider(0.92:0.01:0.99; value=0.97)
+@manipulate for A_final in slider(0.90:0.01:1.20; value=1.05, label="TFP (A)"), beta_final in slider(0.92:0.01:0.99; value=0.97, label="Descuento (β)")
     
     params_init = default_calibration(RamseyParams)
     ss_init = compute_ramsey_steady_state(params_init)
@@ -108,7 +108,7 @@ end
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) vs No Lineal (Shooting)
-@manipulate for A_shock in 0.70:0.02:1.30
+@manipulate for A_shock in slider(0.70:0.02:1.30; value=1.05, label="TFP final")
     
     params = default_calibration(RamseyParams)
     ss_comp = compute_ramsey_steady_state(params)

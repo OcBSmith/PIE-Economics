@@ -46,9 +46,9 @@ println("  Inversión (I*) : ", round(ss["I"], digits=4))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tecnológico Transitorio
-@manipulate for epsilon in slider(-0.05:0.005:0.05; value=0.01), rho_val in slider(0.0:0.05:0.99; value=0.80), alpha_val in 0.2:0.05:0.5, beta_val in 0.90:0.01:0.99
-    
-    params = DGEParams(alpha_val, beta_val, 0.05, rho_val, 1.0)
+@manipulate for epsilon in slider(-0.05:0.005:0.05; value=0.01, label="Shock (ε1)"), rho_val in slider(0.0:0.05:0.99; value=0.80, label="Persist. (ρ)"), alpha_val in slider(0.2:0.05:0.5; value=0.35, label="Elasticidad (α)"), beta_val in slider(0.90:0.01:0.99; value=0.96, label="Descuento (β)"), delta_val in slider(0.01:0.01:0.15; value=0.06, label="Deprec. (δ)")
+
+    params = DGEParams(alpha_val, beta_val, delta_val, rho_val, 1.0)
     ss_sim = compute_steady_state(params)
     K0 = ss_sim["K"]
     T_sim = 50

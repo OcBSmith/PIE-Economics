@@ -45,7 +45,7 @@ println("  Inversión por trabajador (i*) : ", round(ss["i"], digits=4))
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Transición Dinámica de Solow
-@manipulate for s_final in 0.10:0.01:0.50, n_final in 0.00:0.005:0.05, A_final in 0.5:0.1:2.0
+@manipulate for s_final in slider(0.10:0.01:0.50; value=0.25, label="Ahorro (s)"), n_final in slider(0.00:0.005:0.05; value=0.02, label="Pob. (n)"), A_final in slider(0.5:0.1:2.0; value=1.00, label="TFP (A)")
     
     params_init = default_calibration(SolowSwanParameters)
     ss_init = compute_solow_steady_state(params_init)
@@ -108,7 +108,7 @@ end
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Demostración Visual de la Regla de Oro: Consumo de Estado Estacionario vs Tasa de Ahorro
-@manipulate for s_current in 0.05:0.01:0.60
+@manipulate for s_current in slider(0.05:0.01:0.60; value=0.20, label="Tasa Ahorro")
 
     params = default_calibration(SolowSwanParameters)
     alpha_val = params.alpha

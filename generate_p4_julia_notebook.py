@@ -52,14 +52,31 @@ W_base = fill(30.0, params.T)
 res_foc = solve_foc_fsolve(params, W_base)
 res_opt = solve_direct_optim(params, W_base)
 
-println("Diferencia media en Consumo (FOC vs Optim): ", sum(abs.(res_foc["C"] .- res_opt["C"])) / params.T)
-println("Diferencia media en Trabajo (FOC vs Optim): ", sum(abs.(res_foc["L"] .- res_opt["L"])) / params.T)
+println("COMPARACIÓN DE TRAYECTORIAS (fsolve vs optim):")
+println("-"^75)
+println("  Consumo Inicial C(0) [fsolve]   : ", round(res_foc["C"][1], digits=6))
+println("  Consumo Inicial C(0) [optim]    : ", round(res_opt["C"][1], digits=6))
+println("  Trabajo Inicial L(0) [fsolve]   : ", round(res_foc["L"][1], digits=6))
+println("  Trabajo Inicial L(0) [optim]    : ", round(res_opt["L"][1], digits=6))
+println("  Activos Finales B(T-1) [fsolve] : ", res_foc["B"][end])
+println("  Activos Finales B(T-1) [optim]  : ", res_opt["B"][end])
+println("-"^75)
+
+diff_C = maximum(abs.(res_foc["C"] .- res_opt["C"]))
+diff_L = maximum(abs.(res_foc["L"] .- res_opt["L"]))
+println("Máxima diferencia absoluta en Consumo : ", diff_C)
+println("Máxima diferencia absoluta en Trabajo : ", diff_L)
+if diff_C < 1e-4 && diff_L < 1e-4
+    println("✅ ¡Los resolvedores numéricos son perfectamente equivalentes!")
+else
+    println("❌ Hay diferencias entre solucionadores.")
+end
 """))
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl
-@manipulate for beta_val in slider([0.90:0.01:0.99; 0.999]; value=0.97), gamma_val in 0.10:0.05:0.90, R_val in -0.05:0.01:0.15, W_val in 10.0:5.0:100.0
+@manipulate for beta_val in slider([0.90:0.01:0.99; 0.999]; value=0.97, label="Paciencia (β)"), gamma_val in slider(0.10:0.05:0.90; value=0.40, label="Consumo (γ)"), R_val in slider(-0.05:0.01:0.15; value=0.02, label="Interés (R)"), W_val in slider(10.0:5.0:100.0; value=30.0, label="Salario (W)")
     
     params_int = ConsumptionLeisureParameters(30, beta_val, gamma_val, R_val, 0.0)
     W = fill(W_val, params_int.T)

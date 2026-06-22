@@ -82,7 +82,7 @@ println("Diferencia media en Consumo (Equivalencia Ricardiana): ", sum(abs.(res_
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[3]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Impuestos Distorsionadores)
-@manipulate for tauc_val in 0.0:0.05:0.50, tauw_val in 0.0:0.05:0.50, taur_val in 0.0:0.05:0.80, ret_opt in ["lump_sum", "government_spending"]
+@manipulate for tauc_val in slider(0.0:0.05:0.50; value=0.15, label="Consumo (τc)"), tauw_val in slider(0.0:0.05:0.50; value=0.35, label="Trabajo (τw)"), taur_val in slider(0.0:0.05:0.80; value=0.25, label="Capital (τr)"), ret_opt in Widgets.dropdown(["lump_sum", "government_spending"]; value="lump_sum", label="Devolución de Recaudación")
 
     is_lump_sum_return = (ret_opt == "lump_sum")
     params = FiscalPolicyParameters(30, 0.97, 0.05, 0.40, 0.0, tauw_val, tauc_val, taur_val, 0.0, 0)
@@ -123,7 +123,7 @@ end
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[4]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.jl (Seguridad Social)
-@manipulate for tau_ss_val in 0.0:0.05:0.60, t_star_val in 15:1:29
+@manipulate for tau_ss_val in slider(0.0:0.05:0.60; value=0.36, label="Cotización (τss)"), t_star_val in slider(15:1:29; value=26, label="Jubilación (t*)")
 
     params_ss = FiscalPolicyParameters(30, 0.97, 0.05, 0.5, 0.0, 0.0, 0.0, 0.0, tau_ss_val, t_star_val)
     # Perfil salarial creciente: W_t = 10 + t durante la vida activa, 0 después

@@ -96,7 +96,7 @@ end
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama de fases
-@manipulate for m0_val in 80.0:1.0:120.0, beta0_val in 1800.0:10.0:2400.0
+@manipulate for m0_val in slider(80.0:1.0:120.0; value=110.0, label="Oferta Monetaria (M0)"), beta0_val in slider(1800.0:10.0:2400.0; value=2100.0, label="Gasto Autónomo (B0)")
     
     params_sim = default_calibration(ISLMParams)
     ss_init = steady_state(params_sim)

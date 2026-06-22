@@ -152,7 +152,7 @@ println("Autovalor estable: ", stable_lambda)
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[5]))
 
 nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama de fases
-@manipulate for m0_val in 98.0:0.5:104.0, beta0_val in 450.0:10.0:550.0
+@manipulate for m0_val in slider(98.0:0.5:104.0; value=101.0, label="Dinero (M)"), beta0_val in slider(450.0:10.0:550.0; value=500.0, label="Gasto (B0)")
     
     z_initial = [500.0, 100.0, 2000.0, 3.0, 0.0]
     z_final = [beta0_val, m0_val, 2000.0, 3.0, 0.0]
@@ -252,8 +252,8 @@ end
 
 nb.cells.append(nbf.v4.new_markdown_cell(md_cells[6]))
 
-nb.cells.append(nbf.v4.new_code_cell("""@assert isapprox(ss_init["p"], 1.5; atol=1e-5)
-@assert isapprox(ss_init["s"], 76.5150; atol=1e-3)
+nb.cells.append(nbf.v4.new_code_cell("""@assert isapprox(ss_init["p"], 1.5; atol=1e-6)
+@assert isapprox(ss_init["s"], 76.5150; atol=1e-6)
 println("OK: coincide con el oráculo.")
 """))
 
