@@ -11,9 +11,9 @@
 
 ## ESTADO — EMPEZAR AQUÍ
 
-**P0 completo** (referencia, no tocar salvo bugs reales). **P1-P9: nada
-empezado todavía.** Empezar por el Bloque C (rápido e independiente) y el
-Bloque A (fundamento de todo lo demás).
+**P0 completo** (referencia, no tocar salvo bugs reales). **Sesión 23 (2026-06-22):
+Bloques A, B, C, E, G completos. Bloque F parcial. Bloque D diferido.**
+Ver commit `b5926e0` para el detalle completo.
 
 ---
 
@@ -55,15 +55,15 @@ Bloque A (fundamento de todo lo demás).
 
 ## BLOQUE A — Oráculo + verificación real (fundamento, hacer primero)
 
-- [ ] A1. P2 (Dornbusch): crear `practicas/02-overshooting-dornbusch/oraculo.md` a partir de `test_dornbusch.py` (SS, autovalores, shock monetario con overshooting) + Apéndice F (DYNARE); añadir celdas `assert`/`@assert` en `python.ipynb` y `julia.ipynb`
-- [ ] A2. P3 (consumo-ahorro): `oraculo.md` desde `test_consumption_savings.py` + Apéndices G/H; asserts en ambos notebooks
-- [ ] A3. P4 (consumo-ocio): `oraculo.md` desde `test_consumption_leisure.py` + Apéndice I; asserts
-- [ ] A4. P5 (gobierno fiscal): `oraculo.md` desde `test_fiscal_policy.py` + Apéndice J; asserts (cuidado: P5 tiene 3 sub-escenarios — lump-sum, distorsionador, Seguridad Social — el oráculo debe cubrir los 3)
-- [ ] A5. P6 (Tobin Q): `oraculo.md` desde `test_tobin_q.py` + Apéndice K (DYNARE); asserts
-- [ ] A6. P7 (DGE básico): `oraculo.md` desde `test_dge.py` + Apéndices L/M/N; asserts (cubrir tanto Blanchard-Khan como la simulación no lineal, ya que el notebook compara ambas)
-- [ ] A7. P8 (Solow-Swan): `oraculo.md` desde `test_growth.py` + Apéndice O; asserts
-- [ ] A8. P9 (Ramsey): `oraculo.md` desde `test_ramsey.py` + Apéndice P (DYNARE); asserts
-- [ ] A9. P1 (IS-LM): comprobar si `python.ipynb`/`julia.ipynb` ya verifican contra el `oraculo.md` existente con un `assert` real; si no, añadirlo (no asumir que por tener `oraculo.md` ya está verificado en código)
+- [x] A1. P2 (Dornbusch): crear `practicas/02-overshooting-dornbusch/oraculo.md` a partir de `test_dornbusch.py` (SS, autovalores, shock monetario con overshooting) + Apéndice F (DYNARE); añadir celdas `assert`/`@assert` en `python.ipynb` y `julia.ipynb`
+- [x] A2. P3 (consumo-ahorro): `oraculo.md` desde `test_consumption_savings.py` + Apéndices G/H; asserts en ambos notebooks
+- [x] A3. P4 (consumo-ocio): `oraculo.md` desde `test_consumption_leisure.py` + Apéndice I; asserts
+- [x] A4. P5 (gobierno fiscal): `oraculo.md` desde `test_fiscal_policy.py` + Apéndice J; asserts (cuidado: P5 tiene 3 sub-escenarios — lump-sum, distorsionador, Seguridad Social — el oráculo debe cubrir los 3)
+- [x] A5. P6 (Tobin Q): `oraculo.md` desde `test_tobin_q.py` + Apéndice K (DYNARE); asserts
+- [x] A6. P7 (DGE básico): `oraculo.md` desde `test_dge.py` + Apéndices L/M/N; asserts (cubrir tanto Blanchard-Khan como la simulación no lineal, ya que el notebook compara ambas)
+- [x] A7. P8 (Solow-Swan): `oraculo.md` desde `test_growth.py` + Apéndice O; asserts
+- [x] A8. P9 (Ramsey): `oraculo.md` desde `test_ramsey.py` + Apéndice P (DYNARE); asserts
+- [x] A9. P1 (IS-LM): comprobar si `python.ipynb`/`julia.ipynb` ya verifican contra el `oraculo.md` existente con un `assert` real; si no, añadirlo (no asumir que por tener `oraculo.md` ya está verificado en código)
 
 ## BLOQUE B — Tablas de oráculo visibles en el notebook
 
@@ -71,14 +71,14 @@ Depende de A. Para P1-P9: extender (o crear) la celda markdown de
 verificación con la tabla completa de `oraculo.md`, igual que las
 Secciones 4 y 8 de P0 (que son el modelo a seguir literalmente).
 
-- [ ] B1...B9 — una por práctica (P1 a P9)
+- [x] B1...B9 — una por práctica (P1 a P9)
 
 ## BLOQUE C — Wording: quitar "dummies"
 
 Independiente del resto, se puede hacer ya, en paralelo a todo. Cambiar
 "GUÍA RÁPIDA PARA DUMMIES" → "GUÍA RÁPIDA DE INICIO" (mismo texto que P0).
 
-- [ ] C1...C9 — `python.ipynb` y `julia.ipynb` de cada práctica (18
+- [x] C1...C9 — `python.ipynb` y `julia.ipynb` de cada práctica (18
   archivos). En P3-P9 (Python) y P1-P9 (Julia) editar el **generador**, no
   solo el `.ipynb`; en P1-P2 (Python) editar el `.ipynb` directamente.
 
@@ -90,9 +90,9 @@ código: comentarios QUÉ hace / POR QUÉ / QUÉ VERÁS, incluida sintaxis
 básica (imports/`using`, structs/dataclasses, indexado 0-based vs.
 1-based, f-strings/interpolación, broadcasting, tuplas...) igual que P0.
 
-- [ ] D1...D9 — una entrada por práctica, cubriendo Python y Julia. Este
-  bloque es el más largo (18 notebooks); ir práctica por práctica, no
-  intentar las 9 de golpe.
+- [~] D1...D9 — **DIFERIDO** (~4-5 días estimados). Los notebooks ya tienen
+  texto explicativo sustancial en markdown. Los comentarios QUÉ/POR QUÉ/QUÉ
+  VERÁS al estilo P0 quedan como siguiente prioridad.
 
 ## BLOQUE E — `GUION.md` por práctica
 
@@ -103,26 +103,26 @@ objetivos con verbos de Bloom, prerrequisitos, accidentes de laboratorio
 propios de ESE modelo (no genéricos), 5-6 preguntas de bitácora y 2-3
 extensiones para ABP.
 
-- [ ] E1...E9
+- [x] E1...E9
 
 ## BLOQUE F — Enlazar el GUION desde cada notebook
 
 Depende de E. Añadir las 2 líneas (bienvenida + conclusión) apuntando a
 `GUION.md`, igual que P0 — sin tocar ninguna celda de código.
 
-- [ ] F1...F9
+- [~] F1...F9 — PARCIAL: P1-P2 y P4-P6 con enlaces en `.ipynb`. P3, P7-P9 requieren editar generadores (los `GUION.md` existen en sus carpetas).
 
 ## BLOQUE G — Verificación y cierre (continuo, no al final)
 
-- [ ] G1. `nbconvert --to notebook --execute --inplace` en cada notebook
+- [x] G1. `nbconvert --to notebook --execute --inplace` en cada notebook
   tras completarlo (leer el log completo, no solo el exit code) —
   verificar práctica por práctica, no esperar a las 9
-- [ ] G2. Actualizar `PLAN_MAESTRO_MACRO_AI_COMP.md`: columna "Bitácora
+- [x] G2. Actualizar `PLAN_MAESTRO_MACRO_AI_COMP.md`: columna "Bitácora
   plantilla" de P1-P9 en la tabla §2 a medida que cada `GUION.md` se cree;
   marcar "Aplicar la plantilla a P1, P8" en §3.2.1 cuando les toque
-- [ ] G3. Actualizar `docs/WIKI.md` con una entrada por práctica o por
+- [x] G3. Actualizar `docs/WIKI.md` con una entrada por práctica o por
   bloque completado (no esperar al final)
-- [ ] G4. Commits por práctica o por bloque — igual que en la
+- [x] G4. Commits por práctica o por bloque — igual que en la
   homogeneización Julia (14 commits en su momento), no todo de golpe
 
 ---
