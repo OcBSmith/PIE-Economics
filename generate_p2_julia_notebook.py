@@ -175,9 +175,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     hline!([ss_init["p"]], color="#8EAD3A", ls=:dot, label="p Inicial")
     hline!([ss_final["p"]], color="#8EAD3A", ls=:dash, label="p Final")
     vline!([1], color=:red, ls=:dash, label="Shock (t=1)")
-    title!("Trayectorias (s y p)")
+    title!("Trayectorias Temporales (s y p)")
     xlabel!("Tiempo (t)")
-    ylabel!("Escala Log")
+    ylabel!("Escala Logarítmica")
     
     # Panel 2: Interés y Demanda Agregada
     p2 = plot(t_axis, res["i"], color="#004C97", lw=2.0, label="Interés (i)")
@@ -185,7 +185,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     hline!([z_final[4]], color="#004C97", ls=:dash, label="i*")
     hline!([z_final[3]], color="#D95319", ls=:dash, label="ypot")
     vline!([1], color=:red, ls=:dash, label="")
-    title!("Tipos y Demanda")
+    title!("Tipos de Interés y Demanda Agregada")
     xlabel!("Tiempo (t)")
     
     # Panel 3: Diagrama de Fases
@@ -243,7 +243,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
 
     title!("Plano de Fases (p, s)")
     xlabel!("Precios (p)")
-    ylabel!("Tipo cambio (s)")
+    ylabel!("Tipo de cambio (s)")
     
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
          plot_title="Respuesta del modelo Dornbusch", top_margin=10mm)

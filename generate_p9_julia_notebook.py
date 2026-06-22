@@ -72,33 +72,33 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock permane
     hline!([ss_init["Y"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_fin["Y"]], color=:red, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
-    title!("Producción per cápita")
-    xlabel!("Periodos")
-    ylabel!("Y")
-    
+    title!("Evolución de la Producción per cápita")
+    xlabel!("Períodos")
+    ylabel!("y")
+
     p2 = plot(t_axis, res["C"], color="#7A3E9F", lw=2.5, label="Consumo (C)")
     hline!([ss_init["C"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_fin["C"]], color=:red, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
-    title!("Consumo per cápita")
-    xlabel!("Periodos")
-    ylabel!("C")
-    
+    title!("Respuesta de Consumo per cápita (Salto)")
+    xlabel!("Períodos")
+    ylabel!("c")
+
     p3 = plot(t_axis, res["I"], color="#D95319", lw=2.5, label="Inversión (I)")
     hline!([ss_init["I"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_fin["I"]], color=:red, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
-    title!("Inversión per cápita")
-    xlabel!("Periodos")
-    ylabel!("I")
-    
+    title!("Evolución de la Inversión per cápita")
+    xlabel!("Períodos")
+    ylabel!("i")
+
     p4 = plot(t_axis, res["K"], color="#8EAD3A", lw=2.5, label="Capital (K)")
     hline!([ss_init["K"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_fin["K"]], color=:red, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
-    title!("Capital per cápita")
-    xlabel!("Periodos")
-    ylabel!("K")
+    title!("Trayectoria de Capital per cápita")
+    xlabel!("Períodos")
+    ylabel!("k")
     
     plot(p1, p2, p3, p4, layout=(2,2), size=(900, 600), 
          plot_title="Ajuste Dinámico frente a Shock Permanente (Ramsey)", top_margin=10mm)
@@ -136,16 +136,16 @@ nb.cells.append(nbf.v4.new_code_cell("""# Comparación Lineal (Blanchard-Kahn) v
     p1 = plot(t_axis, res_nonlin["C"], color="#7A3E9F", lw=3, label="Exacto No Lineal")
     plot!(t_axis, res_lin["C"], color="#7A3E9F", ls=:dash, lw=2, label="Blanchard-Khan (Lineal)")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
-    title!("Consumo (C_t)")
-    xlabel!("Periodos")
-    ylabel!("C")
-    
+    title!("Consumo per cápita (c_t)")
+    xlabel!("Períodos")
+    ylabel!("c")
+
     p2 = plot(t_axis, res_nonlin["K"], color="#8EAD3A", lw=3, label="Exacto No Lineal")
     plot!(t_axis, res_lin["K"], color="#8EAD3A", ls=:dash, lw=2, label="Blanchard-Khan (Lineal)")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
-    title!("Capital (K_t)")
-    xlabel!("Periodos")
-    ylabel!("K")
+    title!("Capital per cápita (k_t)")
+    xlabel!("Períodos")
+    ylabel!("k")
     
     plot(p1, p2, layout=(1,2), size=(800, 350), 
          plot_title="Comparación Lineal vs No Lineal (Shock A=$(A_shock))", top_margin=10mm)

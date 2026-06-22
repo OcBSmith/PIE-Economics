@@ -116,17 +116,17 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     # Panel 1: Renta
     p1 = plot(t_eval, Y_path, color="#004C97", lw=2.5, label="Producción (Y)")
     hline!([params_sim.ypot0], color=:red, ls=:dash, label="Renta Potencial")
-    title!("Evolución de la Renta")
+    title!("Evolución Temporal de la Renta (Y)")
     xlabel!("Tiempo (t)")
-    ylabel!("Y")
-    
+    ylabel!("Producción (Y)")
+
     # Panel 2: Precios
     p2 = plot(t_eval, P_path, color="#8EAD3A", lw=2.5, label="Precios (P)")
     hline!([ss_init["P"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_final["P"]], color=:black, ls=:dash, label="SS Final")
-    title!("Evolución de Precios")
+    title!("Evolución Temporal de Precios (P)")
     xlabel!("Tiempo (t)")
-    ylabel!("P")
+    ylabel!("Nivel de Precios (P)")
     
     # Panel 3: Diagrama de Fases
     p3 = plot(Y_path, P_path, color="#7A3E9F", lw=3, label="Trayectoria dinámica")
@@ -167,7 +167,7 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con diagrama d
     scatter!([ss_init["Y"]], [ss_init["P"]], color=:gray, markersize=6, label="EE Inicial")
     scatter!([ss_final["Y"]], [ss_final["P"]], color=:black, markersize=8, marker=:star, label="EE Final")
     
-    title!("Diagrama de Fases (Y, P)")
+    title!("Diagrama de Fases en el Plano (Y, P)")
     xlabel!("Producción (Y)")
     ylabel!("Nivel de Precios (P)")
     

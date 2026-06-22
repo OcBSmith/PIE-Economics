@@ -89,16 +89,16 @@ Bloque C+D, Bloque G+H completos.
 - [x] E34. Unificar colores con paleta UMA en P7 — Y→#004C97, C→#7A3E9F, I→#D95319, K→#8EAD3A (de paso se corrigió J4: la celda de comparación BK-vs-no-lineal mostraba K y un "error absoluto" en vez de C y K con error relativo, como hace Python)
 - [x] E35. Unificar colores con paleta UMA en P8 — corregido un mapeo de colores "desordenado" (k usaba azul, y usaba púrpura, c usaba verde — ninguno coincidía con Python): k→#8EAD3A, y→#004C97, c→#7A3E9F, gy→#D95319; SS Final corregido de negro a rojo; panel de Regla de Oro con las regiones pastel exactas de Python (#E6F2FF/#FFE6E6) y el punto de la Regla de Oro en #8EAD3A
 - [x] E36. Unificar colores con paleta UMA en P9 — Y→#004C97, C→#7A3E9F, I→#D95319, K→#8EAD3A; SS Final corregido de negro a rojo (coincidiendo con P8)
-- [ ] E37. Unificar etiquetas/títulos/leyendas descriptivos en P0
-- [ ] E38. Unificar etiquetas/títulos/leyendas descriptivos en P1
-- [ ] E39. Unificar etiquetas/títulos/leyendas descriptivos en P2
-- [ ] E40. Unificar etiquetas/títulos/leyendas descriptivos en P3
-- [ ] E41. Unificar etiquetas/títulos/leyendas descriptivos en P4
-- [ ] E42. Unificar etiquetas/títulos/leyendas descriptivos en P5
-- [ ] E43. Unificar etiquetas/títulos/leyendas descriptivos en P6
-- [ ] E44. Unificar etiquetas/títulos/leyendas descriptivos en P7
-- [ ] E45. Unificar etiquetas/títulos/leyendas descriptivos en P8
-- [ ] E46. Unificar etiquetas/títulos/leyendas descriptivos en P9
+- [~] E37. Unificar etiquetas/títulos/leyendas descriptivos en P0 — **no aplica**: la librería reutilizable `src/macroaicomp/plotting/phase_diagram.py` usa texto en inglés ("Periods", "Phase Diagram"); los títulos en español ya existentes en Julia son pedagógicamente más consistentes con el resto del proyecto (100% en español) que replicar ese inglés
+- [x] E38. Unificar etiquetas/títulos/leyendas descriptivos en P1 — títulos y ylabels (antes "Y"/"P" sueltos) ahora coinciden con Python: "Producción (Y)", "Nivel de Precios (P)"
+- [x] E39. Unificar etiquetas/títulos/leyendas descriptivos en P2 — "Trayectorias Temporales (s y p)", "Escala Logarítmica", "Tipos de Interés y Demanda Agregada"
+- [x] E40. Unificar etiquetas/títulos/leyendas descriptivos en P3 — títulos completos ("...a lo largo del Ciclo de Vida", "...Financieros", "...por Periodo") y ylabel "Unidades de Bienes"
+- [x] E41. Unificar etiquetas/títulos/leyendas descriptivos en P4 — mismos ajustes que P3 más "Asignación del Tiempo (Trabajo vs Ocio)"
+- [x] E42. Unificar etiquetas/títulos/leyendas descriptivos en P5 — títulos y ylabels de las 3 secciones (lump-sum/distorsionador/SS) alineados con los 3 paneles de Python ("Consumo de Bienes", "Oferta de Trabajo (L)", "Acumulación de Activos", "Decisión de Consumo Óptimo")
+- [x] E43. Unificar etiquetas/títulos/leyendas descriptivos en P6 — añadidos los ylabels que faltaban en los 3 paneles ("Ratio q", "Capital (K)", "Inversión (I)") y corregidos títulos ("Ratio Q de Tobin", "Dinámica de Inversión", "Comparación: ...")
+- [x] E44. Unificar etiquetas/títulos/leyendas descriptivos en P7 — añadidos los ylabels que faltaban (Y, C, I, K) y corregidos los 4 títulos para que coincidan con Python ("Evolución de la Producción (PIB)", etc.)
+- [x] E45. Unificar etiquetas/títulos/leyendas descriptivos en P8 — añadidos ylabels (k, y, c) y corregidos títulos ("Stock de Capital per cápita", "Producción per cápita (PIB p.c.)")
+- [x] E46. Unificar etiquetas/títulos/leyendas descriptivos en P9 — corregidos títulos ("Evolución de la Producción...", "Respuesta de Consumo...(Salto)", etc.) y ylabels a minúsculas (y,c,i,k) igual que Python; corregida también la falta de acento en "Períodos"
 - [~] E47. Añadir etiquetas 'SS Inicial' / 'SS Final' en P1-P9 — P6 y P9 ya lo tenían; añadido en P1 (Panel de Precios, antes "P inicial"/"P final") y P8 (las hlines iniciales tenían `label=""` vacío). **No aplica igual en el resto**: P2 muestra 2 variables (s, p) en el mismo panel y la distinción por variable (`s Inicial`, `p Inicial`) es más clara que un genérico "SS"; P3/P4/P5/P7 son modelos de horizonte finito (ciclo de vida, DGE) que no tienen una comparación de estado estacionario inicial/final del mismo tipo que P1/P6/P8/P9
 
 ## TIPO F — Falta de interactividad (widgets)

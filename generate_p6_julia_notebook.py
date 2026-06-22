@@ -58,17 +58,19 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa In
     hline!([ss_init["q"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_final["q"]], color=:black, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
-    title!("Q de Tobin (q_t)")
-    xlabel!("Periodos")
-    
+    title!("Ratio Q de Tobin")
+    xlabel!("Período (t)")
+    ylabel!("Ratio q")
+
     # Panel 2: Capital
     p2 = plot(t_axis, res["K"], color="#004C97", lw=2.5, label="Capital (K)")
     hline!([ss_init["K"]], color=:gray, ls=:dot, label="SS Inicial")
     hline!([ss_final["K"]], color=:black, ls=:dash, label="SS Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
     title!("Stock de Capital (K_t)")
-    xlabel!("Periodos")
-    
+    xlabel!("Período (t)")
+    ylabel!("Capital (K)")
+
     # Panel 3: Inversión con depreciación y sombreado
     I_dep = delta_val .* res["K"]
     I_net = res["I"] .- I_dep
@@ -79,8 +81,9 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva: Shock Tasa In
     hline!([ss_init["I"]], color=:gray, ls=:dot, label="I Inicial")
     hline!([ss_final["I"]], color=:black, ls=:dash, label="I Final")
     vline!([t_shock], color=:grey, ls=:dot, alpha=0.5, label="")
-    title!("Inversión (I_t)")
-    xlabel!("Periodos")
+    title!("Dinámica de Inversión")
+    xlabel!("Período (t)")
+    ylabel!("Inversión (I)")
     
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
          plot_title="Ajuste de Inversión y Capital ante Shock", top_margin=10mm)
@@ -105,13 +108,15 @@ t_axis = 0:(T_sim - 1)
 
 p1 = plot(t_axis, res_nonlin["q"], label="No Lineal", color="#7A3E9F", lw=3)
 plot!(t_axis, res_lin["q"], label="Linealizado", color="#7A3E9F", ls=:dash, lw=2)
-title!("q de Tobin (Lineal vs No Lineal)")
-xlabel!("Tiempo")
+title!("Comparación: Q de Tobin (q_t)")
+xlabel!("Período (t)")
+ylabel!("Ratio q")
 
 p2 = plot(t_axis, res_nonlin["K"], label="No Lineal", color="#004C97", lw=3)
 plot!(t_axis, res_lin["K"], label="Linealizado", color="#004C97", ls=:dash, lw=2)
-title!("Capital (Lineal vs No Lineal)")
-xlabel!("Tiempo")
+title!("Comparación: Stock de Capital (K_t)")
+xlabel!("Período (t)")
+ylabel!("Capital (K)")
 
 plot(p1, p2, layout=(1,2), size=(800, 350))
 """))

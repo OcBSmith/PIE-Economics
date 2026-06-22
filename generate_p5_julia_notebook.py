@@ -94,26 +94,26 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
     # Panel 1: Consumo e Ingresos
     p1 = plot(t_axis, res["C"], color="#7A3E9F", lw=2.5, label="Consumo (C)")
     plot!(t_axis, res["W_L"], color="#8EAD3A", lw=2.5, ls=:dash, label="Ingreso Neto")
-    title!("Consumo e Ingreso Salarial")
+    title!("Consumo de Bienes")
     xlabel!("Periodo (t)")
-    ylabel!("Bienes")
-    
+    ylabel!("Unidades de C")
+
     # Panel 2: Oferta de Trabajo y Ocio
     p2 = plot(t_axis, res["L"], color="#E05A47", lw=2.5, label="Trabajo (L)")
     plot!(t_axis, res["O"], color="#3BB193", lw=2.5, ls=:dot, label="Ocio (O=1-L)")
     ylims!(-0.05, 1.05)
-    title!("Asignación del Tiempo")
+    title!("Oferta de Trabajo (L)")
     xlabel!("Periodo (t)")
-    ylabel!("Fracción")
-    
+    ylabel!("Fracción de Tiempo Trabajado")
+
     # Panel 3: Activos
     p3 = plot(t_axis, res["B"], color="#004C97", lw=2.5, label="Activos (B)")
     hline!([0.0], color=:black, ls=:dot, label="")
     plot!(t_axis, max.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color="#004C97", lw=0, label="Ahorro")
     plot!(t_axis, min.(res["B"], 0.0), fillrange=0, fillalpha=0.2, color="#D95319", lw=0, label="Deuda")
-    title!("Evolución de Activos")
+    title!("Acumulación de Activos")
     xlabel!("Periodo (t)")
-    ylabel!("Riqueza Neta")
+    ylabel!("Activos (B)")
     
     plot(p1, p2, p3, layout=(1,3), size=(1100, 350), 
          plot_title="Efecto de Impuestos Distorsionadores", top_margin=10mm)
@@ -138,10 +138,10 @@ nb.cells.append(nbf.v4.new_code_cell("""# Simulación interactiva con Interact.j
     p1 = plot(t_axis, res["C"], color="#7A3E9F", lw=2.5, label="Consumo Óptimo")
     plot!(t_axis, W_ss, color=:gray, lw=2.0, ls=:dash, label="Salario Bruto (W)")
     plot!(t_axis, res["W_net"], color="#8EAD3A", lw=2.5, label="Ingreso Disponible")
-    title!("Consumo e Ingresos")
+    title!("Decisión de Consumo Óptimo")
     xlabel!("Periodo (t)")
-    ylabel!("Bienes")
-    
+    ylabel!("Consumo (C)")
+
     # Panel 2: Activos
     p2 = plot(t_axis, res["B"], color="#D95319", lw=2.5, label="Ahorro Privado (B)")
     plot!(t_axis, res["B_ss"], color="#8EAD3A", lw=2.5, label="Fondo SS (B_ss)")
