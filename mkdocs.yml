@@ -1,64 +1,77 @@
-site_name: MacroAIComp - Proyecto de Innovación Educativa
-site_description: Documentación y Cuadernos Pedagógicos para Macroeconomía Dinámica en Python y Julia.
-site_author: Dr. Antonio F. Romero Carrasco et al.
-repo_url: https://github.com/tu-usuario/PIE-MacroAIComp
-repo_name: PIE-MacroAIComp
+site_name: "MACRO-AI-COMP"
+site_description: "Laboratorio virtual de Macroeconomía Computacional — Python & Julia"
+site_author: "Equipo MACRO-AI-COMP (UMA)"
+copyright: "CC BY-SA 4.0 — Universidad de Málaga"
+repo_url: "https://github.com/OcBSmith/PIE-Economics"
+repo_name: "OcBSmith/PIE-Economics"
 
 theme:
   name: material
   language: es
   palette:
-    # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: indigo
-      accent: deep purple
+      accent: blue
       toggle:
-        icon: material/weather-night
-        name: Switch to dark mode
-    # Palette toggle for dark mode
+        icon: material/brightness-7
+        name: Cambiar a modo oscuro
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
       primary: indigo
-      accent: deep purple
+      accent: light-blue
       toggle:
-        icon: material/weather-sunny
-        name: Switch to light mode
+        icon: material/brightness-4
+        name: Cambiar a modo claro
   features:
-    - navigation.tabs
     - navigation.sections
-    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
     - content.code.copy
-    - content.code.annotate
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
 
 markdown_extensions:
   - admonition
-  - pymdownx.details
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.arithmatex:
-      generic: true
   - pymdownx.highlight:
       anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.details
   - toc:
       permalink: true
 
 extra_javascript:
-  - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
   - Inicio: index.md
-  - Wiki del Proyecto: WIKI.md
-  - Guía Pedagógica: GUIA_PEDAGOGICA.md
-  - Guía para Principiantes: GUIA_PARA_PRINCIPIANTES.md
-  - Despliegue en MyBinder: DESPLIEGUE_BINDER.md
-
+  - Prácticas Python:
+      - "P0 — Sistemas dinámicos": practicas/00-introduccion-sistemas-dinamicos/python.ipynb
+      - "P1 — IS-LM dinámico": practicas/01-is-lm-dinamico/python.ipynb
+      - "P2 — Overshooting (Dornbusch)": practicas/02-overshooting-dornbusch/python.ipynb
+      - "P3 — Consumo-ahorro": practicas/03-consumo-ahorro/python.ipynb
+      - "P4 — Consumo-ocio": practicas/04-consumo-ocio/python.ipynb
+      - "P5 — Gobierno y fiscalidad": practicas/05-gobierno-fiscal/python.ipynb
+      - "P6 — Q de Tobin": practicas/06-tobin-q/python.ipynb
+      - "P7 — Equilibrio general (DGE)": practicas/07-equilibrio-general-dinamico/python.ipynb
+      - "P8 — Solow-Swan": practicas/08-solow-swan/python.ipynb
+      - "P9 — Ramsey": practicas/09-ramsey/python.ipynb
+  - Prácticas Julia:
+      - "P0 Julia": practicas/00-introduccion-sistemas-dinamicos/julia.ipynb
+      - "P1 Julia": practicas/01-is-lm-dinamico/julia.ipynb
+      - "P2 Julia": practicas/02-overshooting-dornbusch/julia.ipynb
+      - "P3 Julia": practicas/03-consumo-ahorro/julia.ipynb
+      - "P4 Julia": practicas/04-consumo-ocio/julia.ipynb
+      - "P5 Julia": practicas/05-gobierno-fiscal/julia.ipynb
+      - "P6 Julia": practicas/06-tobin-q/julia.ipynb
+      - "P7 Julia": practicas/07-equilibrio-general-dinamico/julia.ipynb
+      - "P8 Julia": practicas/08-solow-swan/julia.ipynb
+      - "P9 Julia": practicas/09-ramsey/julia.ipynb
+  - "Guía del profesor": guia-profesor.md
