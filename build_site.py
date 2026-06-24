@@ -1,6 +1,8 @@
 """Build the MkDocs site: copy notebooks into docs/, then run mkdocs build."""
 
-import shutil, os, glob
+import glob
+import os
+import shutil
 
 # Clean and recreate docs/practicas
 if os.path.exists("docs/practicas"):
