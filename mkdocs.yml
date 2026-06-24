@@ -47,8 +47,13 @@ markdown_extensions:
   - toc:
       permalink: true
 
+extra_css:
+  - https://unpkg.com/thebe@latest/lib/thebe.css
+  - stylesheets/extra.css
+
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - javascripts/thebe.js
 
 nav:
   - Inicio: index.md
