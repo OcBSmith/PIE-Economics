@@ -275,7 +275,9 @@ function runPythonCell(code, outDiv) {
         figs.forEach(function(b64) {
           var img = document.createElement('img');
           img.src = 'data:image/png;base64,' + b64;
-          img.style.cssText = 'display:block; width:100%; height:auto; margin-top:8px;';
+          img.style.cssText = 'display:block; width:100%; height:auto; margin-top:8px; cursor:zoom-in;';
+          img.title = 'Click para ver en grande';
+          img.addEventListener('click', function() { openImageLightbox(img.src); });
           outDiv.appendChild(img);
         });
       }
@@ -288,6 +290,30 @@ function runPythonCell(code, outDiv) {
       outDiv.style.borderLeftColor = '#D95319';
       outDiv.style.color = '#D95319';
     });
+}
+
+// Click-to-enlarge: rather than fight whatever the surrounding page's CSS
+// does to the inline thumbnail's width, open a full-viewport overlay with
+// the image at (almost) its native size. Click anywhere or press Escape
+// to close.
+function openImageLightbox(src) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(0,0,0,0.85); display:flex; align-items:center; justify-content:center; z-index:9999; cursor:zoom-out;';
+
+  var bigImg = document.createElement('img');
+  bigImg.src = src;
+  bigImg.style.cssText = 'max-width:96vw; max-height:96vh; box-shadow:0 0 24px rgba(0,0,0,0.6);';
+  overlay.appendChild(bigImg);
+
+  function close() {
+    overlay.remove();
+    document.removeEventListener('keydown', onKey);
+  }
+  function onKey(e) { if (e.key === 'Escape') close(); }
+
+  overlay.addEventListener('click', close);
+  document.addEventListener('keydown', onKey);
+  document.body.appendChild(overlay);
 }
 
 // ---------------------------------------------------------------------
