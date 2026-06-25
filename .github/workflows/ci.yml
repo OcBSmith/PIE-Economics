@@ -85,3 +85,17 @@ jobs:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
+
+  warm-binder:
+    runs-on: ubuntu-latest
+    needs: [python-tests, julia-tests]
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - name: Pre-warm Binder image cache
+      # Kicks off a repo2docker build for this commit so the image is
+      # already cached by the time a real visitor clicks "Activar
+      # Python/Julia" on the site. BinderHub keeps building server-side
+      # even after the client disconnects, so it's fine to not wait for
+      # the full build (which can take several minutes) here.
+      run: |
+        curl -s -m 60 -N "https://mybinder.org/build/gh/${{ github.repository }}/main" > /dev/null || true

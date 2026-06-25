@@ -140,7 +140,8 @@ solo cambia que la pieza "Thebe (JS)" es código propio, no la librería.
 | Sliders ipywidgets / Interact.jl | ❌ | Necesitan WebSocket bidireccional (no soportado) |
 | `@manipulate` de Julia | ❌ | Ídem |
 | `interact()` de Python | ❌ | Ídem |
-| Cold start (primera vez) | 🐢 1-2 min | Lo pone Binder, no hay forma de evitarlo |
+| Cold start (primera vez tras cada push) | 🐢 varios min | Lo pone el build de Docker de Binder (repo2docker); no se puede acelerar desde el JS. Mitigado desde 2026-06-25: el job `warm-binder` de `.github/workflows/ci.yml` lanza ese build justo tras cada deploy, así que normalmente ya está cacheado cuando un visitante real entra |
+| Cold start si el cache de Binder ha expirado | 🐢 varios min | Puede pasar si nadie visita la web durante un tiempo largo; el pre-calentado solo cubre justo después de cada push |
 | Caliente (ya arrancado) | ⚡ instantáneo | Mientras el kernel no se duerma (10 min) |
 
 ---
