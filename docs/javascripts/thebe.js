@@ -1,8 +1,7 @@
-// Thebe configuration for MACRO-AI-COMP
-// Provides kernel activation and live code execution directly in the page
+// Live code execution for MACRO-AI-COMP
+// Connects directly to Binder's Jupyter kernel (no external dependencies)
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Only run on notebook pages (they have code blocks in content)
   var hasCode = document.querySelector('.md-content pre');
   if (!hasCode) return;
 
@@ -11,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Build kernel selector bar
   var bar = document.createElement('div');
-  bar.id = 'thebe-bar';
+  bar.id = 'kernel-bar';
   bar.style.cssText = 'background:#f0f4ff; border:1px solid #d0d8f0; border-radius:6px; padding:12px 16px; margin-bottom:20px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; font-size:14px;';
 
   var label = document.createElement('strong');
@@ -30,7 +29,7 @@ document.addEventListener('DOMContentLoaded', function() {
   bar.appendChild(btnJl);
 
   var status = document.createElement('span');
-  status.id = 'thebe-status';
+  status.id = 'kernel-status';
   status.style.cssText = 'color:#666;margin-left:8px;font-size:13px';
   bar.appendChild(status);
 
@@ -45,160 +44,177 @@ document.addEventListener('DOMContentLoaded', function() {
   content.insertBefore(bar, content.firstChild);
 
   // Button click handlers
-  btnPy.addEventListener('click', function() { activateThebe('python'); });
-  btnJl.addEventListener('click', function() { activateThebe('julia'); });
+  btnPy.addEventListener('click', function() { connectKernel('python'); });
+  btnJl.addEventListener('click', function() { connectKernel('julia'); });
 
-  // Store code block indices
+  // Store code blocks
   var codeBlocks = document.querySelectorAll('.md-content pre code');
   codeBlocks.forEach(function(block, i) {
-    block.parentElement.setAttribute('data-code-index', i);
+    block.parentElement.setAttribute('data-code-idx', i);
   });
 });
 
-var thebeInstance = null;
+var ws = null;
+var sessionId = null;
+var execCount = 0;
 
-function activateThebe(kernel) {
-  var status = document.getElementById('thebe-status');
-  var btnPy = document.querySelector('#thebe-bar button:nth-child(2)');
-  var btnJl = document.querySelector('#thebe-bar button:nth-child(3)');
+function connectKernel(kernel) {
+  var status = document.getElementById('kernel-status');
+  var buttons = document.querySelectorAll('#kernel-bar button');
+  buttons.forEach(function(b) { b.disabled = true; b.style.opacity = '0.5'; });
 
-  status.textContent = '⏳ Conectando a Binder (1-2 min la primera vez)...';
+  status.textContent = '⏳ Contactando Binder...';
   status.style.color = '#D95319';
-  btnPy.disabled = true;
-  btnJl.disabled = true;
-  btnPy.style.opacity = '0.5';
-  btnJl.style.opacity = '0.5';
 
-  // Dynamically load Thebe from CDN
-  var script = document.createElement('script');
-  script.src = 'https://unpkg.com/thebe@latest/lib/index.js';
-  script.onload = function() {
-    initThebe(kernel);
-  };
-  script.onerror = function() {
-    status.textContent = '❌ Error al cargar Thebe (problema de red).';
-    status.style.color = '#D95319';
-    btnPy.disabled = false;
-    btnJl.disabled = false;
-    btnPy.style.opacity = '1';
-    btnJl.style.opacity = '1';
-  };
-  document.head.appendChild(script);
+  // Step 1: Ask Binder to start a server for this repo
+  var binderUrl = 'https://mybinder.org/build/gh/OcBSmith/PIE-Economics/main';
+  fetch(binderUrl, {method: 'POST'})
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      status.textContent = '⏳ Arrancando servidor (1-2 min)...';
+      // Poll until ready
+      return waitForBinder(data.url, kernel);
+    })
+    .catch(function(err) {
+      status.textContent = '❌ Error: ' + (err.message || 'Binder no disponible');
+      status.style.color = '#D95319';
+      buttons.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+    });
 }
 
-function initThebe(kernel) {
-  var status = document.getElementById('thebe-status');
+function waitForBinder(url, kernel, attempt) {
+  attempt = attempt || 0;
+  var status = document.getElementById('kernel-status');
 
-  thebeInstance = new Thebe({
-    kernelOptions: {
-      name: kernel === 'python' ? 'python3' : 'julia-1.10',
-      kernelName: kernel === 'python' ? 'python3' : 'julia-1.10',
-      path: '.',
-    },
-    binderOptions: {
-      repo: 'OcBSmith/PIE-Economics',
-      ref: 'main',
-      repoProvider: 'github',
-    },
-    codeMirrorConfig: {
-      theme: 'default',
-      lineNumbers: true,
-    },
-  });
+  return fetch(url + 'api')
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.status === 'ready') {
+        status.textContent = '⏳ Conectando kernel ' + kernel.toUpperCase() + '...';
+        return launchKernel(url, kernel);
+      } else if (attempt < 60) {
+        return new Promise(function(resolve) {
+          setTimeout(function() {
+            status.textContent = '⏳ Arrancando servidor (' + Math.floor(attempt / 6) + ' min aprox)...';
+            resolve(waitForBinder(url, kernel, attempt + 1));
+          }, 10000);
+        });
+      } else {
+        throw new Error('Timeout: el servidor no arrancó tras 10 min');
+      }
+    });
+}
 
-  thebeInstance.on('status', function(evt, data) {
-    if (data.status === 'building') {
-      status.textContent = '⏳ Binder construyendo imagen...';
-    } else if (data.status === 'launching') {
-      status.textContent = '⏳ Arrancando kernel ' + kernel.toUpperCase() + '...';
-    } else if (data.status === 'ready') {
-      status.innerHTML = '🟢 Kernel ' + kernel.toUpperCase() + ' listo | <a href="#" id="reload-link" style="color:#004C97">🔄 Reiniciar</a>';
-      status.style.color = '#2E7D32';
-      document.getElementById('reload-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        location.reload();
-      });
-    } else if (data.status === 'failed') {
-      status.innerHTML = '❌ Error al conectar. <a href="#" id="retry-link" style="color:#D95319">Reintentar</a>';
+function launchKernel(serverUrl, kernel) {
+  var status = document.getElementById('kernel-status');
+  var kernelName = kernel === 'python' ? 'python3' : 'julia-1.10';
+
+  // Create a kernel via Jupyter API
+  return fetch(serverUrl + 'api/kernels', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({name: kernelName})
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(kernelInfo) {
+      sessionId = kernelInfo.id;
+      // Connect WebSocket to kernel
+      var wsUrl = serverUrl.replace('https://', 'wss://').replace('http://', 'ws://');
+      ws = new WebSocket(wsUrl + 'api/kernels/' + sessionId + '/channels');
+
+      ws.onopen = function() {
+        status.innerHTML = '🟢 Kernel ' + kernel.toUpperCase() + ' listo | <a href="#" id="reload-kernel" style="color:#004C97">🔄 Reiniciar</a>';
+        status.style.color = '#2E7D32';
+        document.getElementById('reload-kernel').addEventListener('click', function(e) {
+          e.preventDefault(); location.reload();
+        });
+        addRunButtons();
+      };
+
+      ws.onmessage = function(event) {
+        var msg = JSON.parse(event.data);
+        var outDiv = document.querySelector('.thebe-output[data-session="' + sessionId + '"][data-exec="' + (execCount - 1) + '"]');
+        if (!outDiv) return;
+
+        if (msg.msg_type === 'stream') {
+          outDiv.textContent = msg.content.text;
+        } else if (msg.msg_type === 'execute_result' || msg.msg_type === 'display_data') {
+          var data = msg.content.data;
+          if (data && data['text/plain']) {
+            outDiv.textContent = data['text/plain'];
+          }
+        } else if (msg.msg_type === 'error') {
+          outDiv.textContent = msg.content.ename + ': ' + msg.content.evalue;
+          outDiv.style.borderLeftColor = '#D95319';
+          outDiv.style.color = '#D95319';
+        }
+      };
+
+      ws.onerror = function() {
+        status.textContent = '❌ Error de conexión WebSocket. El kernel puede estar caído.';
+        status.style.color = '#D95319';
+      };
+    })
+    .catch(function(err) {
+      status.textContent = '❌ Error: ' + (err.message || 'No se pudo lanzar el kernel');
       status.style.color = '#D95319';
-      document.getElementById('retry-link').addEventListener('click', function(e) {
-        e.preventDefault();
-        location.reload();
-      });
-    }
-  });
-
-  thebeInstance.on('error', function(evt, error) {
-    status.textContent = '❌ Error: ' + (error.message || 'desconocido');
-    status.style.color = '#D95319';
-  });
-
-  // Mount Thebe on all code blocks
-  document.querySelectorAll('.md-content pre').forEach(function(pre) {
-    pre.classList.add('thebe-code');
-  });
-
-  thebeInstance.mount();
-
-  // Add Run buttons to code cells after Thebe has initialized
-  setTimeout(function() {
-    addRunButtons();
-  }, 4000);
+    });
 }
 
 function addRunButtons() {
-  document.querySelectorAll('.thebe-code').forEach(function(pre) {
-    // Skip if already has a button
-    if (pre.querySelector('.thebe-run')) return;
+  document.querySelectorAll('.md-content pre').forEach(function(pre) {
+    if (pre.querySelector('.kernel-run')) return;
 
     var runBtn = document.createElement('button');
     runBtn.textContent = '▶ Run';
-    runBtn.classList.add('thebe-run');
-    runBtn.style.cssText = 'position:absolute; top:4px; right:4px; background:#004C97; color:white; border:none; padding:4px 12px; border-radius:3px; cursor:pointer; font-size:12px; font-weight:bold; z-index:10';
+    runBtn.classList.add('kernel-run');
+    runBtn.style.cssText = 'position:absolute; top:4px; right:4px; background:#004C97; color:white; border:none; padding:4px 12px; border-radius:3px; cursor:pointer; font-size:12px; font-weight:bold; z-index:10; opacity:0.9';
+    runBtn.onmouseover = function() { this.style.opacity = '1'; };
+    runBtn.onmouseout = function() { this.style.opacity = '0.9'; };
+
     runBtn.addEventListener('click', function() {
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        alert('Kernel no conectado. Pulsa "Activar Python" o "Activar Julia" primero.');
+        return;
+      }
+
       var code = pre.querySelector('code').textContent;
-      // Find or create output div
       var outDiv = pre.nextElementSibling;
       if (!outDiv || !outDiv.classList.contains('thebe-output')) {
         outDiv = document.createElement('div');
         outDiv.classList.add('thebe-output');
         outDiv.style.cssText = 'background:#f8f8f8; border-left:3px solid #004C97; padding:8px 12px; margin-top:4px; margin-bottom:12px; font-family:monospace; font-size:13px; white-space:pre-wrap; max-height:400px; overflow:auto';
-        if (pre.nextSibling) {
-          pre.parentNode.insertBefore(outDiv, pre.nextSibling);
-        } else {
-          pre.parentNode.appendChild(outDiv);
-        }
+        pre.parentNode.insertBefore(outDiv, pre.nextSibling);
       }
       outDiv.textContent = '⏳ Ejecutando...';
       outDiv.style.borderLeftColor = '#004C97';
       outDiv.style.color = '#333';
 
-      // Try using Thebe API, fall back to raw kernel
-      if (thebeInstance && thebeInstance.session && thebeInstance.session.kernel) {
-        var future = thebeInstance.session.kernel.requestExecute({ code: code });
-        future.onDone = function() {
-          outDiv.textContent = '✅ Ejecutado (ver output en consola del navegador)';
-        };
-        future.onIOPub = function(msg) {
-          if (msg.msg_type === 'stream') {
-            outDiv.textContent = msg.content.text;
-          } else if (msg.msg_type === 'execute_result' || msg.msg_type === 'display_data') {
-            var data = msg.content.data;
-            if (data && data['text/plain']) {
-              outDiv.textContent = data['text/plain'];
-            }
-          } else if (msg.msg_type === 'error') {
-            outDiv.textContent = msg.content.ename + ': ' + msg.content.evalue;
-            outDiv.style.borderLeftColor = '#D95319';
-            outDiv.style.color = '#D95319';
-          }
-        };
-      } else {
-        outDiv.textContent = '❌ Kernel no disponible. Pulsa "Activar Python" o "Activar Julia" primero.';
-        outDiv.style.borderLeftColor = '#D95319';
-        outDiv.style.color = '#D95319';
-      }
+      execCount++;
+      outDiv.setAttribute('data-session', sessionId);
+      outDiv.setAttribute('data-exec', execCount);
+
+      var msg = {
+        header: {
+          msg_id: 'exec_' + execCount,
+          username: 'alumno',
+          session: sessionId,
+          msg_type: 'execute_request',
+          version: '5.3'
+        },
+        content: {
+          code: code,
+          silent: false,
+          store_history: true,
+          allow_stdin: false,
+          stop_on_error: false
+        },
+        parent_header: {},
+        metadata: {}
+      };
+      ws.send(JSON.stringify(msg));
     });
+
     pre.style.position = 'relative';
     pre.appendChild(runBtn);
   });
