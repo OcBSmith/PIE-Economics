@@ -423,6 +423,14 @@ function addRunButtons() {
     // it were part of the code.
     var code = pre.textContent;
 
+    // The code box (.highlight-ipynb) is often only as wide as its
+    // longest line of code, not the full content column. Anchoring the
+    // output to that box's *wrapper* (one level up, in the normal page
+    // flow) instead of to `pre` itself means the output div -- and any
+    // image inside it -- spans the real content width instead of being
+    // squeezed into the narrow code box.
+    var wrapper = pre.parentNode;
+
     var runBtn = document.createElement('button');
     runBtn.textContent = '▶ Run';
     runBtn.classList.add('kernel-run');
@@ -436,12 +444,12 @@ function addRunButtons() {
         return;
       }
 
-      var outDiv = pre.nextElementSibling;
+      var outDiv = wrapper.nextElementSibling;
       if (!outDiv || !outDiv.classList.contains('thebe-output')) {
         outDiv = document.createElement('div');
         outDiv.classList.add('thebe-output');
-        outDiv.style.cssText = 'background:#f8f8f8; border-left:3px solid #004C97; padding:8px 12px; margin-top:4px; margin-bottom:12px; font-family:monospace; font-size:13px; white-space:pre-wrap; max-height:400px; overflow:auto';
-        pre.parentNode.insertBefore(outDiv, pre.nextSibling);
+        outDiv.style.cssText = 'background:#f8f8f8; border-left:3px solid #004C97; padding:8px 12px; margin-top:4px; margin-bottom:12px; font-family:monospace; font-size:13px; white-space:pre-wrap; max-height:400px; overflow:auto; width:100%; box-sizing:border-box;';
+        wrapper.parentNode.insertBefore(outDiv, wrapper.nextSibling);
       }
       outDiv.textContent = '⏳ Ejecutando...';
       outDiv.style.borderLeftColor = '#004C97';
