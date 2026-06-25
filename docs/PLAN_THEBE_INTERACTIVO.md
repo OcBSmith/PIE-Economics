@@ -46,25 +46,55 @@ El alumno:
 
 ---
 
+## ⚠️ Nota de arquitectura (2026-06-25)
+
+La librería `thebe` estándar se probó y se **abandonó** (commit `b12a1c6`):
+su loader AMD no cargaba de forma fiable en la página. `docs/javascripts/thebe.js`
+es ahora un cliente propio que habla directamente con la API REST/WebSocket
+de un servidor Binder (sin la librería `thebe`/`thebe-lite`). El nombre del
+archivo se conserva por continuidad. El diagrama de arquitectura más abajo
+sigue siendo correcto a alto nivel (web → WebSocket → kernel en Binder);
+solo cambia que la pieza "Thebe (JS)" es código propio, no la librería.
+
 ## 📋 Plan de trabajo (~2 días)
 
-### Fase 1 — Infraestructura Thebe (~3 h)
+### Fase 1 — Infraestructura de ejecución en vivo (~3 h)
 
-1. [ ] Añadir `thebe` y `thebe-lite` a `mkdocs.yml` como JS/CSS
-2. [ ] Configurar Thebe para conectar con BinderHub
-3. [ ] Añadir botón "Activar kernel Python" / "Activar kernel Julia" al
-   inicio de cada página de práctica
+1. [x] ~~Añadir `thebe` y `thebe-lite` a `mkdocs.yml` como JS/CSS~~ —
+   reemplazado por `docs/javascripts/thebe.js` (cliente WebSocket propio,
+   sin dependencia de la librería); `extra_css`/`extra_javascript` de
+   `mkdocs.yml` ya no cargan `thebe.css` ni la librería `thebe`
+2. [x] Configurar la conexión con BinderHub — `fetch` a
+   `mybinder.org/build/gh/OcBSmith/PIE-Economics/main`, sondeo hasta
+   `status: ready`, luego `POST api/kernels` + `WebSocket` a
+   `api/kernels/<id>/channels` (ver `connectKernel`/`waitForBinder`/
+   `launchKernel` en `thebe.js`)
+3. [x] Añadir botón "Activar kernel Python" / "Activar kernel Julia" al
+   inicio de cada página de práctica — barra `#kernel-bar` insertada por
+   `thebe.js`, con botón "▶ Run" inyectado en cada bloque `<pre>` al
+   conectar
 4. [ ] Probar con P0 Python: que una celda simple ejecute y muestre output
-5. [ ] Probar con P0 Julia: misma validación
+   — **sin verificar en navegador real** (no hay browser tool disponible
+   en esta sesión de unificación de documentación; pendiente de
+   verificación manual, ver `docs/WIKI.md` Sesión 26)
+5. [ ] Probar con P0 Julia: misma validación — pendiente, mismo motivo que 4
 
 ### Fase 2 — Conversión de notebooks (~3 h)
 
-6. [ ] Modificar `build_site.py` para que los notebooks copiados tengan
-   metadatos compatibles con Thebe (celdas de código marcadas como
-   ejecutables)
-7. [ ] Separar notebooks Python y Julia en páginas distintas (ya está
-   hecho en mkdocs.yml)
-8. [ ] Añadir selector de kernel al inicio de cada notebook
+6. [~] Modificar `build_site.py` para que los notebooks copiados tengan
+   metadatos compatibles con Thebe — **no aplica**: al abandonar la
+   librería `thebe` (nota de arquitectura arriba), no hace falta ningún
+   metadato especial; `thebe.js` lee el código directamente de los
+   `<pre><code>` que `mkdocs-jupyter` ya renderiza
+7. [x] Separar notebooks Python y Julia en páginas distintas — ya estaba
+   hecho en `mkdocs.yml` (secciones "Prácticas Python"/"Prácticas Julia")
+   desde el commit del sitio MkDocs, antes de este plan
+8. [!] Añadir selector de kernel al inicio de cada notebook — **hallazgo
+   pendiente de arreglar**: `thebe.js` muestra SIEMPRE los dos botones
+   ("Activar Python" y "Activar Julia") en cualquier página, incluida una
+   página de notebook Julia (donde el código no es Python y viceversa).
+   Debería mostrar solo el botón del kernel que corresponde al lenguaje de
+   esa página. No corregido en esta sesión (alcance: solo documentación)
 9. [ ] Probar P1-P9 Python: ejecutar celdas clave (estado estacionario,
    simulación, gráficos)
 10. [ ] Probar P1-P9 Julia: ejecutar celdas clave

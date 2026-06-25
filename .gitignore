@@ -20,6 +20,12 @@ An_Introduction_to_Computational_Macroeconomics*.docx
 # MkDocs build directory
 site/
 
+# Artefactos generados por build_site.py (copia root -> docs/ antes de
+# `mkdocs build`); la fuente canonica es la raiz, no estos archivos.
+docs/index.md
+docs/guia-profesor.md
+docs/practicas/
+
 # Temp scratch files
 scratch/
 

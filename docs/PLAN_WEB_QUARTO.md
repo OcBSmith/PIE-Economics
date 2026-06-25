@@ -1,5 +1,14 @@
 # Plan de Web Interactiva — MACRO-AI-COMP
 
+> ⚠️ **SUPERSEDED (2026-06-25).** Se evaluó Quarto pero finalmente se
+> implementó con **MkDocs Material** (`mkdocs.yml` + `build_site.py` en la
+> raíz del repo, plugin `mkdocs-jupyter`), ya en producción en
+> https://ocbsmith.github.io/PIE-Economics/. No existe ningún `_quarto.yml`
+> en el repo. Este documento queda como registro histórico de la
+> evaluación inicial — no es el plan vigente. El plan activo de la web es
+> [`docs/PLAN_THEBE_INTERACTIVO.md`](PLAN_THEBE_INTERACTIVO.md). Ver
+> Decisión técnica #10 en `docs/WIKI.md`.
+
 > Publicar las prácticas como sitio web navegable manteniendo el código
 > visible, manipulable y pedagógicamente intacto.
 

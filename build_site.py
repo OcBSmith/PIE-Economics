@@ -18,7 +18,9 @@ for practice_dir in sorted(glob.glob("practicas/*/")):
     )
     print(f"Copied: {practice_dir} -> {dest}")
 
-# Copy root index.md and guia-profesor.md into docs/
+# Copy root index.md and guia-profesor.md into docs/.
+# The root files are the source of truth; docs/index.md and
+# docs/guia-profesor.md are gitignored build artifacts overwritten here.
 for f in ["index.md", "guia-profesor.md"]:
     if os.path.exists(f):
         shutil.copy(f, os.path.join("docs", f))

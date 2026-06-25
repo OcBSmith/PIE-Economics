@@ -11,9 +11,13 @@
 
 ## ESTADO — EMPEZAR AQUÍ
 
-**P0 completo** (referencia, no tocar salvo bugs reales). **Sesión 23 (2026-06-22):
-Bloques A, B, C, E, G completos. Bloque F parcial. Bloque D diferido.**
-Ver commit `b5926e0` para el detalle completo.
+**COMPLETO.** P0 completo (referencia, no tocar salvo bugs reales) y
+bloques A-G todos `[x]`, incluido el Bloque D (comentarios de programación),
+que se dio como "diferido" en la sesión 23 (2026-06-22) pero se terminó
+después en la sesión 23-24 — ver la cabecera del propio Bloque D más abajo.
+Corregido este párrafo el 2026-06-25 porque seguía describiendo el estado a
+mitad de sesión en vez del cierre real. Ver `git log` y `docs/WIKI.md` para
+el detalle completo.
 
 ---
 

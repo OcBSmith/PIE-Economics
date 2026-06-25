@@ -6,11 +6,13 @@
 
 ## ESTADO — EMPEZAR AQUÍ
 
-**Commiteado y verificado** (ver `git log`): Bloque K, Bloque A, Bloque B,
-Bloque C+D, Bloque G+H completos.
-
-**Siguiente**: Bloque I (calibración informativa), luego Bloque E
-(visualización — el más grande, ~3 días), F, J, M.
+**COMPLETO.** Todos los bloques A-M están cerrados: cada ítem está `[x]`
+(hecho) o `[~]`/`[!]` (no aplica / revertido a propósito, con su razón
+documentada en la propia línea). Verificado el 2026-06-25 al revisar el
+documento completo, no solo este encabezado — quedaba desactualizado desde
+el cierre real del plan (decía "siguiente: Bloque I, E, F, J, M" cuando esos
+bloques ya estaban resueltos). Si se reabre este plan en el futuro, no
+fiarse de este párrafo sin volver a repasar los checkboxes del cuerpo.
 
 ---
 

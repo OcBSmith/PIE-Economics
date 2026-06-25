@@ -48,7 +48,6 @@ markdown_extensions:
       permalink: true
 
 extra_css:
-  - https://unpkg.com/thebe@latest/lib/thebe.css
   - stylesheets/extra.css
 
 extra_javascript:

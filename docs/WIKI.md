@@ -2,11 +2,13 @@
 
 Registro vivo de **decisiones técnicas, hallazgos sobre el material fuente y
 progreso real**, día a día. Complementa al
-[`PLAN_MAESTRO_MACRO_AI_COMP.md`](../PLAN_MAESTRO_MACRO_AI_COMP.md) (que
-define QUÉ hay que hacer y lleva los checkboxes oficiales) y a las futuras
-actas de `docs/actas/` (que documentarán decisiones formales con Aneli,
-Torres y Cabello). Esta wiki es el cuaderno de trabajo del PTGAS: el CÓMO,
-el POR QUÉ de cada elección, y lo que se va descubriendo sobre la marcha.
+[`PLAN_MAESTRO_MACRO_AI_COMP.md`](https://github.com/OcBSmith/PIE-Economics/blob/main/PLAN_MAESTRO_MACRO_AI_COMP.md)
+(que define QUÉ hay que hacer y lleva los checkboxes oficiales; vive en la
+raíz del repo, no en `docs/`, así que no es parte del sitio MkDocs — el
+enlace va directo a GitHub) y a las futuras actas de `docs/actas/` (que
+documentarán decisiones formales con Aneli, Torres y Cabello). Esta wiki es
+el cuaderno de trabajo del PTGAS: el CÓMO, el POR QUÉ de cada elección, y lo
+que se va descubriendo sobre la marcha.
 
 Cómo añadir una entrada: al final de cada sesión de trabajo, añade un bloque
 fechado en **Registro cronológico**. Si la sesión deja una decisión que
@@ -28,6 +30,9 @@ no está bien reflejado en el plan maestro, añádelo a **Hallazgos**.
 | 6 | En P0 se usa un **gráfico estático multi-escenario** en vez de un slider interactivo (`@manipulate`/`Interact.jl`) en Julia | 2026-06-22 | `WebIO.jl` (la base de `Interact.jl`) depende de la extensión `webio-jupyterlab-provider`, que solo soporta JupyterLab 3.x (`@jupyterlab/application >=3.0.0 <4.0.0` declarado en su propio manifiesto) — incompatibilidad estructural confirmada con JupyterLab 4.5.9, el que usa este proyecto. La única alternativa sería bajar JupyterLab a 3.x en las 10 prácticas, que se descarta por ahora. El gráfico estático (4 escenarios fijos en la misma figura) da la misma información pedagógica y funciona siempre (local, Binder, Colab) |
 | 7 | **P0 se va a usar como práctica de referencia pedagógica**: se revisará a fondo (Python y Julia) para maximizar su calidad didáctica, y esa revisión servirá de plantilla/ejemplo para mejorar la pedagogía del resto de prácticas (P1-P9) | 2026-06-22 | Decisión del usuario tras cerrar el plan de homogeneización Julia↔Python. **Alcance ya concretado y aplicado a P0** en dos ejes: económico (tablas del oráculo visibles en el propio notebook, junto a cada cálculo) y de programación (comentarios QUÉ/POR QUÉ/QUÉ VERÁS en cada celda de código, incluida la sintaxis básica para alumnos sin experiencia previa). P1-P9 siguen sin tocar — esta revisión es la plantilla a replicar, no el trabajo en sí |
 | 8 | **Hito 2 del plan maestro (guion de laboratorio) se adelanta para P0** como piloto: se crea `practicas/_plantilla/GUION.md` (plantilla maestra) y `practicas/00-introduccion-sistemas-dinamicos/GUION.md` (relleno para P0) | 2026-06-22 | Al pedir una nota de calidad de P0 (8/10), el usuario decidió cerrar las 3 carencias señaladas. De las 3, solo esta era corregible con trabajo de implementación: la asimetría de interactividad Julia/Python se mantiene tal cual (decisión #6, ya tomada), y el `.xlsx` original sigue pendiente de Anelí (no es un problema de código). La validación de la plantilla contra un guion real de Química Orgánica (que el plan maestro pide) queda pendiente de revisión manual del usuario |
+| 9 | **El repositorio se hace público en GitHub** (`OcBSmith/PIE-Economics`), con CI completo (lint + tests Python/Julia + deploy automático a GitHub Pages) | 2026-06-23 | Supera la Decisión técnica #1 ("trabajar en local sin remoto hasta tener contenido suficiente"). Con P0-P9 completos en Python y Julia, homogeneizados y verificados, se consideró que ya había contenido suficiente para publicar. El cambio no quedó registrado explícitamente en su momento; se documenta aquí retroactivamente tras una sesión de unificación de documentación (2026-06-25) |
+| 10 | **Web pública vía MkDocs Material**, no Quarto | 2026-06-23/24 | Se evaluó Quarto (`docs/PLAN_WEB_QUARTO.md`) pero se implementó con MkDocs Material + `mkdocs-jupyter` (`mkdocs.yml`, `build_site.py`), que renderiza los `.ipynb` directamente sin paso de conversión y se integra mejor con el flujo de trabajo ya existente basado en notebooks. `docs/PLAN_WEB_QUARTO.md` queda marcado como superseded |
+| 11 | **Ejecución de código en vivo con un cliente WebSocket propio, no con la librería Thebe** | 2026-06-25 | El plan inicial (`docs/PLAN_THEBE_INTERACTIVO.md`) proponía la librería `thebe` estándar, pero su loader AMD resultó incompatible con el entorno de la página (botones sin `onclick` funcional, dependencias que no cargaban). Se sustituyó por `docs/javascripts/thebe.js`, un cliente hecho a mano que habla directamente con la API REST/WebSocket de un servidor Binder (build → poll `ready` → crear kernel → `execute_request` por cada botón "Run"). El nombre del archivo (`thebe.js`) se mantiene por continuidad aunque ya no usa la librería |
 
 ## Hallazgos sobre el libro / la fuente
 
@@ -55,6 +60,14 @@ no está bien reflejado en el plan maestro, añádelo a **Hallazgos**.
 5. **Pandoc + Python ya estaban instalados** en la máquina (vía WinGet /
    Microsoft Store), lo que permitió convertir los `.docx` a texto sin
    instalar nada nuevo. `gh` CLI también disponible y autenticado.
+6. **`docs/index.md` y `docs/guia-profesor.md` eran copias generadas, no la
+   fuente.** `build_site.py` los sobrescribe copiándolos desde la raíz del
+   repo antes de cada `mkdocs build` (igual que hace con `docs/practicas/`
+   a partir de `practicas/`). Estaban commiteados por error (sin estar en
+   `.gitignore`), lo que hacía parecer que eran "los canónicos" al estar
+   dentro de `docs/` — al revés de la realidad. Corregido el 2026-06-25:
+   añadidos a `.gitignore` y destrackeados con `git rm --cached`. Editar
+   siempre `index.md`/`guia-profesor.md` de la **raíz**.
 
 ## Estructura actual del repo (snapshot 2026-06-17)
 
@@ -479,3 +492,61 @@ Pendiente del monorepo objetivo (plan §1.2): `prompts/`, `bitacora/`,
   y verificar con `nbconvert --execute` real (no solo exit code).
   Coste total de la sesión: ~3h de trabajo con agentes + ~1h de
   post-procesamiento y verificación.
+
+### 2026-06-23 (Sesión 24 — Repo público y primera versión de la web)
+
+- Con P0-P9 completos y homogeneizados en Python y Julia, se publicó el
+  repositorio en GitHub como `OcBSmith/PIE-Economics` (supera la Decisión
+  técnica #1; ver Decisión #9 más arriba) y se configuró `.github/workflows/ci.yml`
+  con tres jobs: `python-tests`, `julia-tests` y `deploy-docs` (este último
+  depende de los dos primeros y publica en GitHub Pages).
+- Se evaluó Quarto como motor de la web pública (`docs/PLAN_WEB_QUARTO.md`)
+  pero se optó por **MkDocs Material** (Decisión #10): creado `mkdocs.yml`
+  (tema `material`, plugin `mkdocs-jupyter` para renderizar los `.ipynb`
+  directamente) y `build_site.py` (copia `practicas/` e `index.md`/
+  `guia-profesor.md` de la raíz a `docs/` antes del build).
+- Commit `795cc5c` ("feat: sitio web con MkDocs Material + GitHub Pages").
+  Un primer intento de formateo automático (`black`) y de ese mismo commit
+  fallaron en CI (ver `gh run list`); corregidos en commits posteriores
+  (`08223b0`, `0a41ddd`).
+
+### 2026-06-24 (Sesión 25 — Ejecución de código en vivo: primer intento con Thebe)
+
+- Creado `docs/PLAN_THEBE_INTERACTIVO.md`: plan para sustituir los simples
+  enlaces a Binder por ejecución de código embebida en la propia página
+  (celdas editables con botón "Run").
+- Commit `3a62372`: primera versión de `docs/javascripts/thebe.js` usando la
+  librería `thebe` estándar (cargada vía `extra_css`/`extra_javascript` en
+  `mkdocs.yml`).
+- Commit `ff45a70`: los botones "Activar Python"/"Activar Julia" no tenían
+  ningún manejador de eventos enganchado (faltaba `addEventListener`) —
+  corregido.
+
+### 2026-06-25 (Sesión 26 — Sustitución de Thebe por WebSocket directo)
+
+- La librería `thebe` resultó tener un loader AMD incompatible con el
+  entorno de la página (ver Decisión #11 más arriba). Commit `b12a1c6`:
+  reescrito `docs/javascripts/thebe.js` como cliente propio que habla
+  directamente con la API de un servidor Binder: `POST` a
+  `mybinder.org/build/...` → sondeo de `api` hasta `status: ready` →
+  `POST api/kernels` → `WebSocket` a `api/kernels/<id>/channels` →
+  `execute_request` por cada botón "Run" de cada bloque de código.
+  Verificado en CI: los 3 jobs (`python-tests`, `julia-tests`,
+  `deploy-docs`) pasaron en verde (run `28149904232`).
+- Pendiente de verificación manual en navegador real (no se ha podido
+  confirmar visualmente en esta sesión que el flujo completo — activar
+  kernel, esperar a Binder, pulsar Run, ver output — funciona de extremo a
+  extremo; `docs/PLAN_THEBE_INTERACTIVO.md` sigue con sus checkboxes de
+  Fase 2-4 sin marcar).
+
+### 2026-06-25 (Sesión 27 — Unificación de documentación)
+
+- A petición del usuario, lectura completa de toda la documentación del
+  repo y corrección de inconsistencias encontradas para evitar confusión:
+  `README.md` desactualizado (decía "sin remoto, solo P0 completo"),
+  cabeceras "ESTADO" de `docs/PLAN_HOMOGENEIZACION_JULIA.md` y
+  `docs/PLAN_HOMOGENEIZACION_PEDAGOGICA.md` que no reflejaban que ambos
+  planes ya estaban cerrados, `docs/PLAN_WEB_QUARTO.md` sin marcar como
+  superseded, y el hallazgo #6 de esta misma sección (duplicado
+  raíz/`docs/` con la dirección de la copia invertida respecto a lo que
+  parecía a simple vista).

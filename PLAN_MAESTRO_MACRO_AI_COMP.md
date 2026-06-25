@@ -4,7 +4,7 @@
 > **Duración:** 24 meses (Noviembre 2026 – Noviembre 2028)
 > **IP / Coordinadora:** Dra. Anelí Bongers
 > **Responsable técnico (PTGAS):** Dr. Antonio Francisco Romero Carrasco
-> **Versión del plan:** v1.0 — última actualización: 2026-06-17
+> **Versión del plan:** v1.0 — última actualización: 2026-06-25
 
 ---
 
@@ -158,11 +158,20 @@ Los megaprompts de la Capa B (§7) tienen instrucción explícita: *"Si el alumn
 
 ### 1.1. Identidad del proyecto
 
-- [ ] Reservar nombre de la organización en GitHub: `macro-ai-comp-uma` (AR)
+- [!] Reservar nombre de la organización en GitHub: `macro-ai-comp-uma` (AR)
+  — el repo se publicó como `OcBSmith/PIE-Economics` (cuenta personal, no
+  una organización dedicada); revisar si merece la pena migrar antes de
+  que haya más forks/clones externos, o aceptar este nombre como definitivo
 - [ ] Crear cuentas/roles para AB, JLT, JMC dentro de la organización (AR)
 - [ ] Reservar dominio corto (opcional): `macroaicomp.uma.es` o subdominio en GitHub Pages
 - [ ] Diseñar logo simple y paleta (azul UMA + verde laboratorio)
-- [ ] Redactar `README.md` raíz con misión, equipo y badges (build, license MIT, DOI)
+- [~] Redactar `README.md` raíz con misión, equipo y badges (build, license
+  MIT, DOI) — misión, equipo y badge de CI ya están; **faltan los badges de
+  license y DOI porque no existe ningún archivo `LICENSE` en el repo
+  todavía**, a pesar de que `README.md` y `mkdocs.yml` ya afirman "Código:
+  MIT. Material docente: CC BY-SA 4.0" — esa afirmación no está respaldada
+  por ningún archivo legal real; crear `LICENSE` (MIT) y `LICENSE-DOCS`
+  (CC BY-SA 4.0) es work pendiente, no asumir que ya está hecho
 
 ### 1.2. Arquitectura del monorepo
 
@@ -240,14 +249,27 @@ macro-ai-comp/
 - [x] Crear `.JuliaFormatter.toml` con estilo BlueStyle
 - [x] Crear `setup.py` / `pyproject.toml` para que `macroaicomp` sea instalable con `pip install -e .`
 - [x] Crear `Project.toml` del paquete Julia `MacroAIComp`
-- [~] Configurar GitHub Actions para CI:
+- [~] Configurar GitHub Actions para CI (`.github/workflows/ci.yml`, 3 jobs:
+  `python-tests`, `julia-tests`, `deploy-docs`) — añadido y verificado
+  2026-06-25 (ver `docs/WIKI.md`, Decisión #9 y Sesión 24):
   - [ ] Test que cada notebook se ejecuta sin errores (`nbconvert --execute`)
-  - [ ] Test que los scripts Julia se compilan (`julia --project -e "using MacroAIComp"`)
-  - [x] Ejecutar `pytest tests/python/` con coverage ≥ 80%
+    — sigue sin estar en CI; se hace manualmente antes de cada commit
+  - [x] Test que los scripts Julia se compilan — implícito en el job
+    `julia-tests` (cada `tests/julia/test_*.jl` empieza con
+    `using MacroAIComp`; si no compilara, `runtests.jl` fallaría)
+  - [~] Ejecutar `pytest tests/python/` — el job lo ejecuta, pero **sin
+    medir coverage real** (no hay `pytest-cov` en `pyproject.toml` ni
+    `--cov` en el CI); el "≥80%" de este checkbox no está verificado,
+    solo que los tests pasan
   - [x] Ejecutar `julia --project tests/julia/runtests.jl`
-  - [ ] Render automático de notebooks a HTML para GitHub Pages
-  - [ ] Badge de estado del CI en el README
-- [ ] Habilitar GitHub Pages servido desde `/docs`
+  - [x] Render automático de notebooks a HTML para GitHub Pages — vía
+    `mkdocs-jupyter` + `build_site.py`, job `deploy-docs`
+  - [x] Badge de estado del CI en el README — añadido 2026-06-25
+- [x] Habilitar GitHub Pages — publicado en
+  https://ocbsmith.github.io/PIE-Economics/ vía `actions/deploy-pages`
+  (artefacto de GitHub Actions, no literalmente "servido desde `/docs`" de
+  una rama estática — el job `deploy-docs` construye el sitio en `_site/`
+  y lo sube como artefacto de Pages)
 - [ ] Configurar Zenodo para DOI automático en releases (citabilidad académica)
 
 ### 1.3. Entornos reproducibles
@@ -282,15 +304,15 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 | # | Capítulo del libro (Bongers/Gómez/Torres 2019) | Modelo | Excel original | Apéndice MATLAB/DYNARE de verificación | Versión Python/Colab | Versión Julia | Bitácora plantilla | Prompts curados | Estado |
 |---|---|---|---|---|---|---|---|---|---|
 | P0 | Cap. 1 — Introduction to computational dynamic systems | Sistema 2 ecuaciones genérico | [ ] localizar `.xlsx` del libro | App. B (MATLAB) + App. C (DYNARE) | [x] `practicas/00/python.ipynb` | [x] `practicas/00/julia.ipynb` | [x] `practicas/00/GUION.md` | [ ] | [~] Python y Julia listos, verificados y con GUION.md; falta Excel y prompts |
-| P1 | Cap. 2 — The dynamic IS-LM model | IS-LM dinámico + Phillips | [ ] | App. D (MATLAB) + App. E (DYNARE) | [x] | [x] | [x] `practicas/01/GUION.md` | [ ] | [~] Python y Julia listos, verificados y con GUION.md; falta oraculo.md visible + asserts en Python |
-| P2 | Cap. 3 — Exchange rate overshooting | Dornbusch overshooting | [ ] | App. F (DYNARE) | [x] | [x] | [x] `practicas/02/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
-| P3 | Cap. 4 — Consumption-saving optimal decision | Hogar consumo-ahorro | [ ] | App. G (MATLAB) + App. H (Newton) | [x] | [x] | [x] `practicas/03/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
-| P4 | Cap. 5 — Consumption-saving + leisure | Hogar con oferta de trabajo | [ ] | App. I (MATLAB) | [x] | [x] | [x] `practicas/04/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
-| P5 | Cap. 6 — Government and fiscal policy | Impuestos + cotizaciones | [ ] | App. J (MATLAB) | [x] | [x] | [x] `practicas/05/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
-| P6 | Cap. 7 — Firm/investment, Tobin's Q | Tobin Q | [ ] | App. K (DYNARE) | [x] | [x] | [x] `practicas/06/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
-| P7 | Cap. 8 — Basic Dynamic General Equilibrium | DGE básico | [ ] | App. L (MATLAB) + App. M (DYNARE) + App. N (DSGE) | [x] | [x] | [x] `practicas/07/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
-| P8 | Cap. 9 — Neoclassical exogenous growth | Solow-Swan | [ ] | App. O (MATLAB) | [x] | [x] | [x] `practicas/08/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
-| P9 | Cap. 10 — Ramsey's optimal growth | Ramsey | [ ] | App. P (DYNARE) | [x] | [x] | [x] `practicas/09/GUION.md` | [ ] | [~] Python y Julia listos, verificados, con GUION.md y oráculo; falta asserts en notebooks |
+| P1 | Cap. 2 — The dynamic IS-LM model | IS-LM dinámico + Phillips | [ ] | App. D (MATLAB) + App. E (DYNARE) | [x] | [x] | [x] `practicas/01/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible, enlazado en el notebook (cerrado 2026-06-22, plan de homogeneización pedagógica) |
+| P2 | Cap. 3 — Exchange rate overshooting | Dornbusch overshooting | [ ] | App. F (DYNARE) | [x] | [x] | [x] `practicas/02/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible, enlazado en el notebook |
+| P3 | Cap. 4 — Consumption-saving optimal decision | Hogar consumo-ahorro | [ ] | App. G (MATLAB) + App. H (Newton) | [x] | [x] | [x] `practicas/03/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible; enlace al GUION heredado vía generador, no verificado 1:1 |
+| P4 | Cap. 5 — Consumption-saving + leisure | Hogar con oferta de trabajo | [ ] | App. I (MATLAB) | [x] | [x] | [x] `practicas/04/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible, enlazado en el notebook |
+| P5 | Cap. 6 — Government and fiscal policy | Impuestos + cotizaciones | [ ] | App. J (MATLAB) | [x] | [x] | [x] `practicas/05/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible, enlazado en el notebook |
+| P6 | Cap. 7 — Firm/investment, Tobin's Q | Tobin Q | [ ] | App. K (DYNARE) | [x] | [x] | [x] `practicas/06/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible, enlazado en el notebook |
+| P7 | Cap. 8 — Basic Dynamic General Equilibrium | DGE básico | [ ] | App. L (MATLAB) + App. M (DYNARE) + App. N (DSGE) | [x] | [x] | [x] `practicas/07/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible; enlace al GUION heredado vía generador, no verificado 1:1 |
+| P8 | Cap. 9 — Neoclassical exogenous growth | Solow-Swan | [ ] | App. O (MATLAB) | [x] | [x] | [x] `practicas/08/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible; enlace al GUION heredado vía generador, no verificado 1:1 |
+| P9 | Cap. 10 — Ramsey's optimal growth | Ramsey | [ ] | App. P (DYNARE) | [x] | [x] | [x] `practicas/09/GUION.md` | [ ] | [x] Python y Julia completos, verificados (tests+asserts), GUION.md, oráculo visible; enlace al GUION heredado vía generador, no verificado 1:1 |
 | X1 | Extra Cabello — Optimización lineal/no lineal | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
 | X2 | Extra Cabello — Matemáticas financieras (rentas, amortización) | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
 | X3 | Extra Cabello — SymPy en métodos matemáticos | (a definir con JMC) | n/a | n/a | [ ] | [ ] | [ ] | [ ] | [ ] |
@@ -368,7 +390,10 @@ Esta tabla es el corazón operativo del proyecto. Cada fila se cierra cuando las
 
 #### 3.1.5. Portar a Julia — primer empujón (Mes 6)
 
-- [~] **P0, P1, P8** en Julia (P0 completado, P1 y P8 en curso/pendientes)
+- [x] **P0-P9 completos en Julia** (no solo P0/P1/P8 como decía la
+  planificación original de este apartado — el resto del portado, previsto
+  para la Fase III §5.1.1, se adelantó y se cerró ya en Fase I junto con la
+  homogeneización pedagógica Julia↔Python, ver `docs/PLAN_HOMOGENEIZACION_JULIA.md`)
   - [ ] Comparar tiempos y elegancia frente a Python en una "nota técnica" → entra como sección del manual
 
 #### 3.1.6. Modelos extra de Cabello (Meses 4-6)
@@ -544,14 +569,17 @@ Cada system prompt incluye obligatoriamente:
 #### 5.1.1. Cerrar el portado a Julia de P4-P9 (Meses 13-14)
 
 > Trabajo pendiente de la Fase I, ahora con urgencia porque entra en docencia.
+> **Ya completado anticipadamente en Fase I** (2026-06-19/22, ver
+> `docs/WIKI.md` y `docs/PLAN_HOMOGENEIZACION_JULIA.md`) — se deja la lista
+> original como referencia de qué se cerró, no como pendiente.
 
-- [ ] **P4** Cap. 5 — Consumo-ocio en Julia (`Optim.jl`)
-- [ ] **P5** Cap. 6 — Gobierno fiscal en Julia
-- [ ] **P6** Cap. 7 — Tobin Q en Julia (`DifferentialEquations.jl` para el ODE)
-- [ ] **P7** Cap. 8 — DGE básico en Julia (`NLsolve.jl` para el sistema no lineal)
-- [ ] **P9** Cap. 10 — Ramsey en Julia (`BoundaryValueDiffEq.jl`)
-- [ ] **Bonus Nivel 3**: introducir DSGE estocástico con `DynamicSSE.jl` o portar Appendix N
-- [ ] Cada notebook Julia con benchmark de velocidad frente al equivalente Python → tabla en el manual
+- [x] **P4** Cap. 5 — Consumo-ocio en Julia (`NLsolve.jl`/`Optim.jl`)
+- [x] **P5** Cap. 6 — Gobierno fiscal en Julia
+- [x] **P6** Cap. 7 — Tobin Q en Julia (`NLsolve.jl`)
+- [x] **P7** Cap. 8 — DGE básico en Julia (`NLsolve.jl` para el sistema no lineal)
+- [x] **P9** Cap. 10 — Ramsey en Julia (resolvedor de disparo/bisección, no `BoundaryValueDiffEq.jl`)
+- [ ] **Bonus Nivel 3**: introducir DSGE estocástico con `DynamicSSE.jl` o portar Appendix N — sigue pendiente, no se ha hecho
+- [ ] Cada notebook Julia con benchmark de velocidad frente al equivalente Python → tabla en el manual — `BenchmarkTools.jl` está integrado en los notebooks, pero la tabla comparativa del manual no se ha redactado
 
 #### 5.1.2. Despliegue en aula avanzada
 
