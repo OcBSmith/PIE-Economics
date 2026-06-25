@@ -237,14 +237,18 @@ function connectPython() {
 // (Jupyter cell-magic / IPython shell-escape syntax), which plain CPython
 // can't parse -- Pyodide runs raw Python, not an IPython shell. Those
 // lines only ever appear in the Colab-install cell (irrelevant here, since
-// we already install packages ourselves), so it's safe to drop any line
-// that starts with % or ! instead of letting the whole cell fail to parse.
+// we already install packages ourselves), so it's safe to neutralize any
+// line that starts with % or !. Replacing with an empty string is NOT
+// enough: in this project the "!pip install ..." line is always the only
+// statement inside an `if:` block, so blanking it leaves an empty block
+// ("IndentationError: expected an indented block"). Replacing with `pass`
+// at the same indentation keeps the block syntactically valid either way.
 function stripJupyterMagics(code) {
   return code
     .split('\n')
     .map(function(line) {
-      var first = line.replace(/^\s+/, '').charAt(0);
-      return (first === '%' || first === '!') ? '' : line;
+      var match = line.match(/^(\s*)[%!]/);
+      return match ? match[1] + 'pass' : line;
     })
     .join('\n');
 }

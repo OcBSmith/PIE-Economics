@@ -8,7 +8,7 @@ It uses a discrete-time formulation with saddle-path expectations readjustment.
 
 from dataclasses import dataclass
 import numpy as np
-from typing import Dict, Tuple, List
+from typing import Dict, Tuple
 
 
 @dataclass
@@ -139,7 +139,7 @@ def _build_system_matrix(params: DornbuschParameters) -> np.ndarray:
     return A
 
 
-def eigenvalues(params: DornbuschParameters) -> List[float]:
+def eigenvalues(params: DornbuschParameters) -> np.ndarray:
     """Calcula los autovalores de la matriz del sistema A.
 
     Parameters
@@ -148,12 +148,12 @@ def eigenvalues(params: DornbuschParameters) -> List[float]:
 
     Returns
     -------
-    List[float]
+    np.ndarray
         Autovalores reales ordenados.
     """
     A = _build_system_matrix(params)
     eigs = np.linalg.eigvals(A)
-    return list(np.real(eigs))
+    return np.real(eigs)
 
 
 def is_saddle_path(params: DornbuschParameters) -> bool:
