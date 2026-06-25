@@ -92,6 +92,57 @@ function loadPyodideScript() {
   });
 }
 
+// The notebooks import the project's own package (src/macroaicomp/), which
+// is local source code, not something installable from PyPI/the Pyodide
+// package index. We fetch its .py files straight from GitHub (the repo is
+// public, raw.githubusercontent.com allows cross-origin fetch) and write
+// them into Pyodide's virtual filesystem, mirroring the real package
+// layout, then add that folder to sys.path.
+var MACROAICOMP_RAW_BASE = 'https://raw.githubusercontent.com/OcBSmith/PIE-Economics/main/src/macroaicomp/';
+var MACROAICOMP_FILES = [
+  '__init__.py',
+  'models/__init__.py',
+  'models/arms_race.py',
+  'models/consumption_leisure.py',
+  'models/consumption_savings.py',
+  'models/dge.py',
+  'models/dornbusch.py',
+  'models/fiscal_policy.py',
+  'models/growth.py',
+  'models/islm.py',
+  'models/ramsey.py',
+  'models/tobin_q.py',
+  'plotting/__init__.py',
+  'plotting/phase_diagram.py'
+];
+
+// FS.mkdir only creates one level at a time and throws if the directory
+// already exists -- this builds up each path segment by segment (like
+// `mkdir -p`) using only that base primitive, since it's the one method
+// guaranteed to exist on Pyodide's Emscripten-backed virtual filesystem.
+function mkdirp(path) {
+  var current = '';
+  path.split('/').filter(Boolean).forEach(function(part) {
+    current += '/' + part;
+    try { pyodide.FS.mkdir(current); } catch (e) { /* already exists */ }
+  });
+}
+
+function installMacroaicomp() {
+  mkdirp('/macroaicomp_pkg/macroaicomp/models');
+  mkdirp('/macroaicomp_pkg/macroaicomp/plotting');
+  return Promise.all(MACROAICOMP_FILES.map(function(relPath) {
+    return fetch(MACROAICOMP_RAW_BASE + relPath)
+      .then(function(r) {
+        if (!r.ok) throw new Error('No se pudo descargar macroaicomp/' + relPath);
+        return r.text();
+      })
+      .then(function(src) {
+        pyodide.FS.writeFile('/macroaicomp_pkg/macroaicomp/' + relPath, src);
+      });
+  }));
+}
+
 function connectPython() {
   var status = document.getElementById('kernel-status');
   setButtonsDisabled(true);
@@ -109,9 +160,46 @@ function connectPython() {
         return pyodide.loadPackage(['numpy', 'scipy', 'matplotlib']);
       })
       .then(function() {
-        // Agg: render to an in-memory buffer, no GUI event loop. We grab
-        // the figures ourselves after each cell via _capture_figures().
+        status.textContent = '⏳ Descargando el paquete del proyecto (macroaicomp)...';
+        return installMacroaicomp();
+      })
+      .then(function() {
         return pyodide.runPythonAsync(
+          'import sys\n' +
+          'sys.path.insert(0, "/macroaicomp_pkg")\n' +
+          '\n' +
+          // ipywidgets has no Pyodide build. The notebooks only use it for
+          // sliders, which never worked in this lightweight Run-button view
+          // anyway (same limitation as the Julia/Binder path) -- this shim
+          // lets the import succeed and runs the plotting function once
+          // with the sliders' default values instead of crashing the cell.
+          'import types\n' +
+          '_ipywidgets = types.ModuleType("ipywidgets")\n' +
+          '\n' +
+          'class _Widget:\n' +
+          '    def __init__(self, value=None, **kwargs):\n' +
+          '        self.value = value\n' +
+          '\n' +
+          'class _Dropdown(_Widget):\n' +
+          '    def __init__(self, value=None, options=None, **kwargs):\n' +
+          '        if value is None and options:\n' +
+          '            first = options[0]\n' +
+          '            value = first[1] if isinstance(first, (list, tuple)) else first\n' +
+          '        super().__init__(value=value, **kwargs)\n' +
+          '\n' +
+          'def _interact(func, **kwargs):\n' +
+          '    call_kwargs = {k: (v.value if isinstance(v, _Widget) else v) for k, v in kwargs.items()}\n' +
+          '    return func(**call_kwargs)\n' +
+          '\n' +
+          '_ipywidgets.FloatSlider = _Widget\n' +
+          '_ipywidgets.IntSlider = _Widget\n' +
+          '_ipywidgets.Checkbox = _Widget\n' +
+          '_ipywidgets.Dropdown = _Dropdown\n' +
+          '_ipywidgets.interact = _interact\n' +
+          'sys.modules["ipywidgets"] = _ipywidgets\n' +
+          '\n' +
+          // Agg: render to an in-memory buffer, no GUI event loop. We grab
+          // the figures ourselves after each cell via _capture_figures().
           'import matplotlib\n' +
           'matplotlib.use("AGG")\n' +
           'import matplotlib.pyplot as plt, base64, io\n' +
@@ -145,12 +233,28 @@ function connectPython() {
     });
 }
 
+// The notebooks' setup cells use "%%capture" and "!pip install ..."
+// (Jupyter cell-magic / IPython shell-escape syntax), which plain CPython
+// can't parse -- Pyodide runs raw Python, not an IPython shell. Those
+// lines only ever appear in the Colab-install cell (irrelevant here, since
+// we already install packages ourselves), so it's safe to drop any line
+// that starts with % or ! instead of letting the whole cell fail to parse.
+function stripJupyterMagics(code) {
+  return code
+    .split('\n')
+    .map(function(line) {
+      var first = line.replace(/^\s+/, '').charAt(0);
+      return (first === '%' || first === '!') ? '' : line;
+    })
+    .join('\n');
+}
+
 function runPythonCell(code, outDiv) {
   outDiv.textContent = '';
   pyodide.setStdout({batched: function(msg) { outDiv.textContent += msg + '\n'; }});
   pyodide.setStderr({batched: function(msg) { outDiv.textContent += msg + '\n'; }});
 
-  return pyodide.runPythonAsync(code)
+  return pyodide.runPythonAsync(stripJupyterMagics(code))
     .then(function() {
       return pyodide.runPythonAsync('_capture_figures()');
     })

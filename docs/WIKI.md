@@ -36,6 +36,37 @@ no está bien reflejado en el plan maestro, añádelo a **Hallazgos**.
 | 12 | **Pre-calentar la imagen de Binder en cada deploy** (job `warm-binder` en `.github/workflows/ci.yml`) | 2026-06-25 | El usuario reportó que Binder tardaba "muchísimo" en cargar. La causa real es el build de Docker de `repo2docker` (no algo arreglable desde el JS), agravado por dependencias Julia sin uso real (`Symbolics`, `DataFrames`, quitadas el mismo día). Primer paso de mitigación antes de decidir si migrar Python a Pyodide (ver decisión #13) |
 | 13 | **Python se ejecuta localmente en el navegador vía Pyodide (WebAssembly), no contra un kernel Binder**; Julia se queda en Binder | 2026-06-25 | Pre-calentar Binder (decisión #12) ayudó pero no resolvió el problema de fondo: en pruebas reales con el usuario, el build de Binder seguía tardando varios minutos y la conexión SSE se cortó a mitad ("Error de conexión con Binder") en la fase de subida de capas Docker (imagen de varios GB por Julia+paquetes científicos). Verificado contra el índice oficial de paquetes de Pyodide v0.26.4 (`pyodide-lock.json`): `numpy`/`scipy`/`matplotlib`/`sympy`/`pandas` SÍ están disponibles, `cvxpy`/`ipywidgets` NO. Julia no tiene un runtime WASM de producción equivalente, así que se queda en Binder sin cambios — esta migración es solo para Python. Las celdas con `cvxpy` (solo P3/P4/P5) muestran un aviso en vez de intentar ejecutar y fallar con un traceback confuso |
 
+**3 bugs reales encontrados al probar la migración de la decisión #13 en
+vivo** (mismo día, primera prueba real del usuario tras el deploy):
+1. **`src/macroaicomp` (el paquete del propio proyecto) nunca se cargaba
+   en Pyodide** — solo se instalaban `numpy`/`scipy`/`matplotlib` (paquetes
+   de terceros); el código del proyecto es fuente local, no algo
+   publicado en el índice de paquetes de Pyodide. Esto rompía
+   absolutamente todas las celdas de cada notebook que llamaran a
+   `default_calibration()`, `steady_state()`, etc. (es decir, casi todo el
+   contenido real). Corregido descargando los 14 archivos `.py` de
+   `src/macroaicomp/` desde `raw.githubusercontent.com` (repo público, CORS
+   abierto) y escribiéndolos en el sistema de archivos virtual de Pyodide
+   con `pyodide.FS.writeFile`, añadiendo esa carpeta a `sys.path`.
+2. **`from ipywidgets import interact, FloatSlider` rompía la celda
+   entera de imports**, arrastrando en cascada el `NameError` a todas las
+   celdas siguientes del notebook (ningún nombre del paquete se llegaba a
+   importar). Corregido con un shim mínimo: un módulo `ipywidgets` falso
+   en `sys.modules` donde `FloatSlider`/`IntSlider`/`Checkbox`/`Dropdown`
+   solo guardan su `value` por defecto e `interact()` llama a la función
+   una vez con esos valores por defecto — mismo resultado pedagógico que
+   ya se acepta en Binder/Julia (sliders no interactivos, gráfico estático
+   con los valores base).
+3. **`%%capture` y `!pip install ...` (magias de Jupyter/IPython) no son
+   Python válido** para el intérprete plano que usa
+   `pyodide.runPythonAsync` — daban `SyntaxError` en la primera celda de
+   cada notebook (la celda de instalación para Colab, irrelevante aquí
+   porque ya instalamos los paquetes nosotros mismos). Corregido
+   eliminando cualquier línea que empiece por `%` o `!` antes de ejecutar
+   código Python (función `stripJupyterMagics`); no se aplica al camino
+   Julia, donde `!` es el operador de negación lógica, no un escape de
+   shell.
+
 ## Hallazgos sobre el libro / la fuente
 
 1. **El Capítulo 1 tiene dos apéndices de verificación, no uno.** La tabla
