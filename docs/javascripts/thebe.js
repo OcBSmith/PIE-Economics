@@ -66,61 +66,65 @@ function connectKernel(kernel) {
   status.textContent = '⏳ Contactando Binder...';
   status.style.color = '#D95319';
 
-  // Step 1: Ask Binder to start a server for this repo
+  // Binder's launch endpoint is a GET that streams Server-Sent Events
+  // (phase: waiting/building/launching/ready), not a POST returning a
+  // single JSON object. POSTing to it returns an HTML error page, which
+  // is why r.json() used to fail with "Unexpected token '<'".
   var binderUrl = 'https://mybinder.org/build/gh/OcBSmith/PIE-Economics/main';
-  fetch(binderUrl, {method: 'POST'})
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      status.textContent = '⏳ Arrancando servidor (1-2 min)...';
-      // Poll until ready
-      return waitForBinder(data.url, kernel);
-    })
-    .catch(function(err) {
-      status.textContent = '❌ Error: ' + (err.message || 'Binder no disponible');
+  var es = new EventSource(binderUrl);
+
+  es.onmessage = function(event) {
+    var data;
+    try {
+      data = JSON.parse(event.data);
+    } catch (e) {
+      return;
+    }
+
+    if (data.phase === 'ready') {
+      es.close();
+      status.textContent = '⏳ Conectando kernel ' + kernel.toUpperCase() + '...';
+      launchKernel(data.url, data.token, kernel);
+    } else if (data.phase === 'failed') {
+      es.close();
+      status.textContent = '❌ Binder no pudo construir el entorno: ' + (data.message || '');
       status.style.color = '#D95319';
       buttons.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
-    });
+    } else {
+      status.textContent = '⏳ ' + (data.message || data.phase || 'Arrancando...');
+    }
+  };
+
+  es.onerror = function() {
+    es.close();
+    status.textContent = '❌ Error de conexión con Binder';
+    status.style.color = '#D95319';
+    buttons.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+  };
 }
 
-function waitForBinder(url, kernel, attempt) {
-  attempt = attempt || 0;
-  var status = document.getElementById('kernel-status');
-
-  return fetch(url + 'api')
-    .then(function(r) { return r.json(); })
-    .then(function(data) {
-      if (data.status === 'ready') {
-        status.textContent = '⏳ Conectando kernel ' + kernel.toUpperCase() + '...';
-        return launchKernel(url, kernel);
-      } else if (attempt < 60) {
-        return new Promise(function(resolve) {
-          setTimeout(function() {
-            status.textContent = '⏳ Arrancando servidor (' + Math.floor(attempt / 6) + ' min aprox)...';
-            resolve(waitForBinder(url, kernel, attempt + 1));
-          }, 10000);
-        });
-      } else {
-        throw new Error('Timeout: el servidor no arrancó tras 10 min');
-      }
-    });
-}
-
-function launchKernel(serverUrl, kernel) {
+function launchKernel(serverUrl, token, kernel) {
   var status = document.getElementById('kernel-status');
   var kernelName = kernel === 'python' ? 'python3' : 'julia-1.10';
+  var tokenParam = 'token=' + encodeURIComponent(token);
 
   // Create a kernel via Jupyter API
-  return fetch(serverUrl + 'api/kernels', {
+  return fetch(serverUrl + 'api/kernels?' + tokenParam, {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({name: kernelName})
   })
-    .then(function(r) { return r.json(); })
+    .then(function(r) {
+      if (!r.ok) {
+        throw new Error('No se pudo crear el kernel (HTTP ' + r.status + ')');
+      }
+      return r.json();
+    })
     .then(function(kernelInfo) {
       sessionId = kernelInfo.id;
       // Connect WebSocket to kernel
       var wsUrl = serverUrl.replace('https://', 'wss://').replace('http://', 'ws://');
-      ws = new WebSocket(wsUrl + 'api/kernels/' + sessionId + '/channels');
+      ws = new WebSocket(wsUrl + 'api/kernels/' + sessionId + '/channels?' + tokenParam);
 
       ws.onopen = function() {
         status.innerHTML = '🟢 Kernel ' + kernel.toUpperCase() + ' listo | <a href="#" id="reload-kernel" style="color:#004C97">🔄 Reiniciar</a>';
