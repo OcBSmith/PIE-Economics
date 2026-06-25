@@ -46,12 +46,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Button click handlers
   btnPy.addEventListener('click', function() { connectKernel('python'); });
   btnJl.addEventListener('click', function() { connectKernel('julia'); });
-
-  // Store code blocks
-  var codeBlocks = document.querySelectorAll('.md-content pre code');
-  codeBlocks.forEach(function(block, i) {
-    block.parentElement.setAttribute('data-code-idx', i);
-  });
 });
 
 var ws = null;
@@ -166,8 +160,20 @@ function launchKernel(serverUrl, token, kernel) {
 }
 
 function addRunButtons() {
-  document.querySelectorAll('.md-content pre').forEach(function(pre) {
+  // mkdocs-jupyter renders notebook *input* cells as
+  // <div class="highlight-ipynb hl-python|hl-julia"><pre>...</pre></div>
+  // (Pygments puts the code directly in <pre>, no <code> wrapper) and
+  // notebook *output* (already-printed text) as a bare <pre> with no
+  // such wrapping div. Scoping to ".highlight-ipynb pre" targets only
+  // the executable input cells, not the saved output text.
+  document.querySelectorAll('.md-content .highlight-ipynb pre').forEach(function(pre) {
     if (pre.querySelector('.kernel-run')) return;
+
+    // Capture the code now, before the button is appended as a child of
+    // `pre` below — otherwise pre.textContent at click time would also
+    // include the button's own "▶ Run" label, sent to the kernel as if
+    // it were part of the code.
+    var code = pre.textContent;
 
     var runBtn = document.createElement('button');
     runBtn.textContent = '▶ Run';
@@ -182,7 +188,6 @@ function addRunButtons() {
         return;
       }
 
-      var code = pre.querySelector('code').textContent;
       var outDiv = pre.nextElementSibling;
       if (!outDiv || !outDiv.classList.contains('thebe-output')) {
         outDiv = document.createElement('div');
