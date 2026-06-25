@@ -28,64 +28,75 @@ El alumno:
 │  ┌──────────────────────────────────────────────────┐│
 │  │  MkDocs Material + tema UMA                      ││
 │  │  ┌────────────────────────────────────────────┐  ││
-│  │  │  Thebe (JS)                                │  ││
+│  │  │  docs/javascripts/thebe.js                 │  ││
 │  │  │  Convierte celdas <pre> en editables + Run │  ││
-│  │  └──────────────┬─────────────────────────────┘  ││
-│  └─────────────────┼────────────────────────────────┘│
-└────────────────────┼─────────────────────────────────┘
-                     │ WebSocket / HTTP
-                     ▼
-┌──────────────────────────────────────────────────────┐
-│  MyBinder.org (gratis)                                │
-│  ┌──────────────────────────────────────────────────┐│
-│  │  Jupyter Kernel (Python 3.11 / Julia 1.10)       ││
-│  │  Ejecuta el código y devuelve outputs            ││
-│  └──────────────────────────────────────────────────┘│
-└──────────────────────────────────────────────────────┘
+│  │  └──┬──────────────────────────────────────┬──┘  ││
+│  └─────┼──────────────────────────────────────┼─────┘│
+└────────┼──────────────────────────────────────┼──────┘
+   Python │ (Pyodide, en el propio navegador)   │ Julia (WebSocket/HTTP)
+         ▼                                      ▼
+┌──────────────────────┐         ┌──────────────────────────────────────┐
+│  Pyodide (WebAssembly)│         │  MyBinder.org (gratis)                │
+│  Corre en el navegador│         │  ┌──────────────────────────────────┐│
+│  del alumno, sin red  │         │  │  Jupyter Kernel (Julia 1.10)    ││
+│  ni servidor          │         │  │  Ejecuta el código y devuelve   ││
+│                       │         │  │  outputs                        ││
+└──────────────────────┘         │  └──────────────────────────────────┘│
+                                   └──────────────────────────────────────┘
 ```
 
 ---
 
-## ⚠️ Nota de arquitectura (2026-06-25)
+## ⚠️ Nota de arquitectura (2026-06-25, actualizada el mismo día)
 
 La librería `thebe` estándar se probó y se **abandonó** (commit `b12a1c6`):
 su loader AMD no cargaba de forma fiable en la página. `docs/javascripts/thebe.js`
-es ahora un cliente propio que habla directamente con la API REST/WebSocket
-de un servidor Binder (sin la librería `thebe`/`thebe-lite`). El nombre del
-archivo se conserva por continuidad. El diagrama de arquitectura más abajo
-sigue siendo correcto a alto nivel (web → WebSocket → kernel en Binder);
-solo cambia que la pieza "Thebe (JS)" es código propio, no la librería.
+pasó a ser un cliente propio que hablaba directamente con la API REST/WebSocket
+de un servidor Binder para ambos lenguajes.
+
+Tras varias pruebas reales con el usuario (build de Binder de varios
+minutos, conexión SSE cortada a mitad), se decidió ir más lejos para
+Python: **ya no usa Binder en absoluto**. Corre con **Pyodide**
+(Python/WebAssembly) directamente en el navegador del alumno — sin
+servidor, sin red salvo la descarga inicial del runtime. **Julia se queda
+en Binder** porque no existe un runtime WASM de producción equivalente
+(ver Decisión técnica #13 en `docs/WIKI.md`). El nombre del archivo
+(`thebe.js`) se conserva por continuidad aunque ya no usa la librería
+`thebe` ni, para Python, ningún servidor remoto.
 
 ## 📋 Plan de trabajo (~2 días)
 
 ### Fase 1 — Infraestructura de ejecución en vivo (~3 h)
 
 1. [x] ~~Añadir `thebe` y `thebe-lite` a `mkdocs.yml` como JS/CSS~~ —
-   reemplazado por `docs/javascripts/thebe.js` (cliente WebSocket propio,
-   sin dependencia de la librería); `extra_css`/`extra_javascript` de
-   `mkdocs.yml` ya no cargan `thebe.css` ni la librería `thebe`
-2. [x] Configurar la conexión con BinderHub — `fetch` a
-   `mybinder.org/build/gh/OcBSmith/PIE-Economics/main`, sondeo hasta
-   `status: ready`, luego `POST api/kernels` + `WebSocket` a
-   `api/kernels/<id>/channels` (ver `connectKernel`/`waitForBinder`/
-   `launchKernel` en `thebe.js`)
+   reemplazado por `docs/javascripts/thebe.js`: Python vía Pyodide
+   (sin servidor), Julia vía cliente WebSocket propio contra Binder. Sin
+   dependencia de la librería `thebe`/`thebe-lite` en ningún caso;
+   `extra_css`/`extra_javascript` de `mkdocs.yml` no cargan nada de eso
+2. [x] Configurar la conexión con BinderHub (**solo Julia** desde
+   2026-06-25) — `EventSource` a `mybinder.org/build/gh/OcBSmith/PIE-Economics/main`
+   (stream de Server-Sent Events, no polling), luego `POST api/kernels` +
+   `WebSocket` a `api/kernels/<id>/channels` (ver `connectKernel`/
+   `launchKernel` en `thebe.js`). Python ya no contacta a Binder — ver
+   `connectPython`/`loadPyodideScript` en el mismo archivo
 3. [x] Añadir botón "Activar kernel Python" / "Activar kernel Julia" al
    inicio de cada página de práctica — barra `#kernel-bar` insertada por
-   `thebe.js`, con botón "▶ Run" inyectado en cada bloque `<pre>` al
-   conectar
+   `thebe.js`, con botón "▶ Run" inyectado en cada celda de código real
+   (`.highlight-ipynb pre`) al conectar
 4. [ ] Probar con P0 Python: que una celda simple ejecute y muestre output
    — **sin verificar en navegador real** (no hay browser tool disponible
-   en esta sesión de unificación de documentación; pendiente de
-   verificación manual, ver `docs/WIKI.md` Sesión 26)
-5. [ ] Probar con P0 Julia: misma validación — pendiente, mismo motivo que 4
+   en esta sesión; pendiente de verificación manual del usuario). Tras el
+   cambio a Pyodide (2026-06-25) esto ya no depende de Binder
+5. [ ] Probar con P0 Julia: misma validación — pendiente, sigue dependiendo de Binder
 
 ### Fase 2 — Conversión de notebooks (~3 h)
 
 6. [~] Modificar `build_site.py` para que los notebooks copiados tengan
-   metadatos compatibles con Thebe — **no aplica**: al abandonar la
-   librería `thebe` (nota de arquitectura arriba), no hace falta ningún
-   metadato especial; `thebe.js` lee el código directamente de los
-   `<pre><code>` que `mkdocs-jupyter` ya renderiza
+   metadatos compatibles con Thebe — **no aplica**: ni Pyodide (Python) ni
+   el cliente WebSocket propio (Julia) necesitan metadatos especiales;
+   `thebe.js` lee el código directamente de los bloques `<pre>` que
+   `mkdocs-jupyter`/Pygments ya renderiza (sin `<code>` interior — ver
+   commit `3786ac9`)
 7. [x] Separar notebooks Python y Julia en páginas distintas — ya estaba
    hecho en `mkdocs.yml` (secciones "Prácticas Python"/"Prácticas Julia")
    desde el commit del sitio MkDocs, antes de este plan
@@ -94,10 +105,11 @@ solo cambia que la pieza "Thebe (JS)" es código propio, no la librería.
    ("Activar Python" y "Activar Julia") en cualquier página, incluida una
    página de notebook Julia (donde el código no es Python y viceversa).
    Debería mostrar solo el botón del kernel que corresponde al lenguaje de
-   esa página. No corregido en esta sesión (alcance: solo documentación)
+   esa página. Sigue sin corregir
 9. [ ] Probar P1-P9 Python: ejecutar celdas clave (estado estacionario,
-   simulación, gráficos)
-10. [ ] Probar P1-P9 Julia: ejecutar celdas clave
+   simulación, gráficos) y confirmar que las celdas con `cvxpy` (P3/P4/P5)
+   muestran el aviso en vez de fallar
+10. [ ] Probar P1-P9 Julia: ejecutar celdas clave (sigue vía Binder)
 
 ### Fase 3 — Manejo de widgets (~2 h)
 
@@ -133,16 +145,23 @@ solo cambia que la pieza "Thebe (JS)" es código propio, no la librería.
 
 ## ⚠️ Limitaciones
 
+> **Nota 2026-06-25**: Python ya **no** depende de Binder — corre en
+> Pyodide (WebAssembly) directamente en el navegador del alumno (ver
+> Decisión técnica #13 en `docs/WIKI.md`). Las filas de "cold start"
+> de abajo aplican solo a **Julia**, que sigue usando Binder.
+
 | Funcionalidad | ¿Funciona? | Nota |
 |---|---|---|
-| Ejecutar celda y ver output | ✅ | Texto, tablas, prints |
-| Gráficos matplotlib / Plots.jl | ✅ | Se renderizan como PNG/SVG debajo de la celda |
-| Sliders ipywidgets / Interact.jl | ❌ | Necesitan WebSocket bidireccional (no soportado) |
+| Ejecutar celda Python y ver output | ✅ | Pyodide local; texto y gráficos matplotlib (PNG), sin red salvo la carga inicial del runtime |
+| Celdas Python con `cvxpy` (P3/P4/P5) | ❌ | `cvxpy` no tiene build para WebAssembly; se muestra un aviso en vez de un traceback. Sí funciona en Binder o en local |
+| Ejecutar celda Julia y ver output | ✅ | Vía Binder, como antes |
+| Gráficos Plots.jl (Julia) | ✅ | Se renderizan como PNG/SVG debajo de la celda |
+| Sliders ipywidgets / Interact.jl | ❌ | No soportados en ningún caso (ni Pyodide ni nuestro cliente WebSocket a Binder) — necesitan widgets de Jupyter reales, solo disponibles abriendo Binder/JupyterLab completo |
 | `@manipulate` de Julia | ❌ | Ídem |
-| `interact()` de Python | ❌ | Ídem |
-| Cold start (primera vez tras cada push) | 🐢 varios min | Lo pone el build de Docker de Binder (repo2docker); no se puede acelerar desde el JS. Mitigado desde 2026-06-25: el job `warm-binder` de `.github/workflows/ci.yml` lanza ese build justo tras cada deploy, así que normalmente ya está cacheado cuando un visitante real entra |
-| Cold start si el cache de Binder ha expirado | 🐢 varios min | Puede pasar si nadie visita la web durante un tiempo largo; el pre-calentado solo cubre justo después de cada push |
-| Caliente (ya arrancado) | ⚡ instantáneo | Mientras el kernel no se duerma (10 min) |
+| Cold start Python (primera vez) | ⚡ segundos | Descarga de Pyodide + numpy/scipy/matplotlib, no hay servidor de por medio |
+| Cold start Julia (primera vez tras cada push) | 🐢 varios min | Lo pone el build de Docker de Binder (repo2docker); no se puede acelerar desde el JS. Mitigado desde 2026-06-25: el job `warm-binder` de `.github/workflows/ci.yml` lanza ese build justo tras cada deploy, así que normalmente ya está cacheado cuando un visitante real entra |
+| Cold start Julia si el caché de Binder ha expirado | 🐢 varios min | Puede pasar si nadie visita la web durante un tiempo largo; el pre-calentado solo cubre justo después de cada push |
+| Julia caliente (ya arrancado) | ⚡ instantáneo | Mientras el kernel no se duerma (10 min) |
 
 ---
 

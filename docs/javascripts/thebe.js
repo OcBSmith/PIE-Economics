@@ -1,5 +1,10 @@
-// Live code execution for MACRO-AI-COMP
-// Connects directly to Binder's Jupyter kernel (no external dependencies)
+// Live code execution for MACRO-AI-COMP.
+//
+// Python runs locally in the browser via Pyodide (Python compiled to
+// WebAssembly) -- no server, no Binder, no network round-trip per cell.
+// Julia has no comparable production-ready WASM runtime, so it still
+// goes through a Binder-launched Jupyter kernel over WebSocket, exactly
+// as before.
 
 document.addEventListener('DOMContentLoaded', function() {
   var hasCode = document.querySelector('.md-content pre');
@@ -44,18 +49,138 @@ document.addEventListener('DOMContentLoaded', function() {
   content.insertBefore(bar, content.firstChild);
 
   // Button click handlers
-  btnPy.addEventListener('click', function() { connectKernel('python'); });
+  btnPy.addEventListener('click', function() { connectPython(); });
   btnJl.addEventListener('click', function() { connectKernel('julia'); });
 });
 
 var ws = null;
 var sessionId = null;
 var execCount = 0;
+var activeKernel = null; // 'python' (Pyodide, local) or 'julia' (Binder)
+var pyodide = null;
+var pyodideLoading = null;
+
+function setButtonsDisabled(disabled) {
+  document.querySelectorAll('#kernel-bar button').forEach(function(b) {
+    b.disabled = disabled;
+    b.style.opacity = disabled ? '0.5' : '1';
+  });
+}
+
+// ---------------------------------------------------------------------
+// Python: Pyodide, runs locally in the browser (no Binder involved)
+// ---------------------------------------------------------------------
+
+var PYODIDE_VERSION = 'v0.26.4';
+var PYODIDE_INDEX_URL = 'https://cdn.jsdelivr.net/pyodide/' + PYODIDE_VERSION + '/full/';
+
+// cvxpy needs compiled solvers (ECOS/SCS/OSQP) with no WebAssembly build,
+// so it cannot run under Pyodide. Used only in P3/P4/P5 (consumption
+// savings/leisure, fiscal policy) as an alternative to the fsolve-based
+// solver -- those specific cells get a friendly message instead of a
+// confusing Python traceback.
+var CVXPY_RE = /\bcvxpy\b/;
+
+function loadPyodideScript() {
+  if (window.loadPyodide) return Promise.resolve();
+  return new Promise(function(resolve, reject) {
+    var script = document.createElement('script');
+    script.src = PYODIDE_INDEX_URL + 'pyodide.js';
+    script.onload = resolve;
+    script.onerror = function() { reject(new Error('No se pudo cargar pyodide.js')); };
+    document.head.appendChild(script);
+  });
+}
+
+function connectPython() {
+  var status = document.getElementById('kernel-status');
+  setButtonsDisabled(true);
+  status.textContent = '⏳ Cargando Python en tu navegador (Pyodide)...';
+  status.style.color = '#D95319';
+
+  if (!pyodideLoading) {
+    pyodideLoading = loadPyodideScript()
+      .then(function() {
+        return loadPyodide({indexURL: PYODIDE_INDEX_URL});
+      })
+      .then(function(py) {
+        pyodide = py;
+        status.textContent = '⏳ Instalando numpy/scipy/matplotlib...';
+        return pyodide.loadPackage(['numpy', 'scipy', 'matplotlib']);
+      })
+      .then(function() {
+        // Agg: render to an in-memory buffer, no GUI event loop. We grab
+        // the figures ourselves after each cell via _capture_figures().
+        return pyodide.runPythonAsync(
+          'import matplotlib\n' +
+          'matplotlib.use("AGG")\n' +
+          'import matplotlib.pyplot as plt, base64, io\n' +
+          'def _capture_figures():\n' +
+          '    figs = []\n' +
+          '    for n in plt.get_fignums():\n' +
+          '        buf = io.BytesIO()\n' +
+          '        plt.figure(n).savefig(buf, format="png", bbox_inches="tight")\n' +
+          '        figs.append(base64.b64encode(buf.getvalue()).decode("ascii"))\n' +
+          '    plt.close("all")\n' +
+          '    return figs\n'
+        );
+      });
+  }
+
+  pyodideLoading
+    .then(function() {
+      activeKernel = 'python';
+      status.innerHTML = '🟢 Python listo (en tu navegador) | <a href="#" id="reload-kernel" style="color:#004C97">🔄 Reiniciar</a>';
+      status.style.color = '#2E7D32';
+      document.getElementById('reload-kernel').addEventListener('click', function(e) {
+        e.preventDefault(); location.reload();
+      });
+      addRunButtons();
+    })
+    .catch(function(err) {
+      status.textContent = '❌ Error cargando Python: ' + (err.message || err);
+      status.style.color = '#D95319';
+      pyodideLoading = null;
+      setButtonsDisabled(false);
+    });
+}
+
+function runPythonCell(code, outDiv) {
+  outDiv.textContent = '';
+  pyodide.setStdout({batched: function(msg) { outDiv.textContent += msg + '\n'; }});
+  pyodide.setStderr({batched: function(msg) { outDiv.textContent += msg + '\n'; }});
+
+  return pyodide.runPythonAsync(code)
+    .then(function() {
+      return pyodide.runPythonAsync('_capture_figures()');
+    })
+    .then(function(figsProxy) {
+      var figs = figsProxy.toJs();
+      figsProxy.destroy();
+      figs.forEach(function(b64) {
+        var img = document.createElement('img');
+        img.src = 'data:image/png;base64,' + b64;
+        img.style.maxWidth = '100%';
+        outDiv.appendChild(img);
+      });
+      if (!outDiv.textContent && figs.length === 0) {
+        outDiv.textContent = '(sin salida)';
+      }
+    })
+    .catch(function(err) {
+      outDiv.textContent += (err.message || String(err));
+      outDiv.style.borderLeftColor = '#D95319';
+      outDiv.style.color = '#D95319';
+    });
+}
+
+// ---------------------------------------------------------------------
+// Julia: unchanged -- Binder-launched Jupyter kernel over WebSocket
+// ---------------------------------------------------------------------
 
 function connectKernel(kernel) {
   var status = document.getElementById('kernel-status');
-  var buttons = document.querySelectorAll('#kernel-bar button');
-  buttons.forEach(function(b) { b.disabled = true; b.style.opacity = '0.5'; });
+  setButtonsDisabled(true);
 
   status.textContent = '⏳ Contactando Binder...';
   status.style.color = '#D95319';
@@ -83,7 +208,7 @@ function connectKernel(kernel) {
       es.close();
       status.textContent = '❌ Binder no pudo construir el entorno: ' + (data.message || '');
       status.style.color = '#D95319';
-      buttons.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+      setButtonsDisabled(false);
     } else {
       status.textContent = '⏳ ' + (data.message || data.phase || 'Arrancando...');
     }
@@ -93,13 +218,13 @@ function connectKernel(kernel) {
     es.close();
     status.textContent = '❌ Error de conexión con Binder';
     status.style.color = '#D95319';
-    buttons.forEach(function(b) { b.disabled = false; b.style.opacity = '1'; });
+    setButtonsDisabled(false);
   };
 }
 
 function launchKernel(serverUrl, token, kernel) {
   var status = document.getElementById('kernel-status');
-  var kernelName = kernel === 'python' ? 'python3' : 'julia-1.10';
+  var kernelName = 'julia-1.10';
   var tokenParam = 'token=' + encodeURIComponent(token);
 
   // Create a kernel via Jupyter API
@@ -121,6 +246,7 @@ function launchKernel(serverUrl, token, kernel) {
       ws = new WebSocket(wsUrl + 'api/kernels/' + sessionId + '/channels?' + tokenParam);
 
       ws.onopen = function() {
+        activeKernel = 'julia';
         status.innerHTML = '🟢 Kernel ' + kernel.toUpperCase() + ' listo | <a href="#" id="reload-kernel" style="color:#004C97">🔄 Reiniciar</a>';
         status.style.color = '#2E7D32';
         document.getElementById('reload-kernel').addEventListener('click', function(e) {
@@ -156,8 +282,14 @@ function launchKernel(serverUrl, token, kernel) {
     .catch(function(err) {
       status.textContent = '❌ Error: ' + (err.message || 'No se pudo lanzar el kernel');
       status.style.color = '#D95319';
+      setButtonsDisabled(false);
     });
 }
+
+// ---------------------------------------------------------------------
+// Shared: "▶ Run" buttons on every input cell, dispatching to whichever
+// kernel (Pyodide or Binder/Julia) is currently active.
+// ---------------------------------------------------------------------
 
 function addRunButtons() {
   // mkdocs-jupyter renders notebook *input* cells as
@@ -170,7 +302,7 @@ function addRunButtons() {
     if (pre.querySelector('.kernel-run')) return;
 
     // Capture the code now, before the button is appended as a child of
-    // `pre` below — otherwise pre.textContent at click time would also
+    // `pre` below -- otherwise pre.textContent at click time would also
     // include the button's own "▶ Run" label, sent to the kernel as if
     // it were part of the code.
     var code = pre.textContent;
@@ -183,7 +315,7 @@ function addRunButtons() {
     runBtn.onmouseout = function() { this.style.opacity = '0.9'; };
 
     runBtn.addEventListener('click', function() {
-      if (!ws || ws.readyState !== WebSocket.OPEN) {
+      if (!activeKernel) {
         alert('Kernel no conectado. Pulsa "Activar Python" o "Activar Julia" primero.');
         return;
       }
@@ -198,6 +330,23 @@ function addRunButtons() {
       outDiv.textContent = '⏳ Ejecutando...';
       outDiv.style.borderLeftColor = '#004C97';
       outDiv.style.color = '#333';
+
+      if (activeKernel === 'python') {
+        if (CVXPY_RE.test(code)) {
+          outDiv.textContent = 'Esta celda usa cvxpy, que no está disponible en el modo de ejecución en el navegador (sin build para WebAssembly). Pruébala en Binder (🎮, arriba a la derecha) o en tu entorno local.';
+          outDiv.style.borderLeftColor = '#D95319';
+          outDiv.style.color = '#D95319';
+          return;
+        }
+        runPythonCell(code, outDiv);
+        return;
+      }
+
+      // Julia path: unchanged Binder/WebSocket flow.
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        alert('Kernel no conectado. Pulsa "Activar Julia" primero.');
+        return;
+      }
 
       execCount++;
       outDiv.setAttribute('data-session', sessionId);
