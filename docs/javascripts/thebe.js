@@ -207,7 +207,7 @@ function connectPython() {
           '    figs = []\n' +
           '    for n in plt.get_fignums():\n' +
           '        buf = io.BytesIO()\n' +
-          '        plt.figure(n).savefig(buf, format="png", bbox_inches="tight")\n' +
+          '        plt.figure(n).savefig(buf, format="png", dpi=150, bbox_inches="tight")\n' +
           '        figs.append(base64.b64encode(buf.getvalue()).decode("ascii"))\n' +
           '    plt.close("all")\n' +
           '    return figs\n'
@@ -265,12 +265,20 @@ function runPythonCell(code, outDiv) {
     .then(function(figsProxy) {
       var figs = figsProxy.toJs();
       figsProxy.destroy();
-      figs.forEach(function(b64) {
-        var img = document.createElement('img');
-        img.src = 'data:image/png;base64,' + b64;
-        img.style.maxWidth = '100%';
-        outDiv.appendChild(img);
-      });
+      if (figs.length > 0) {
+        // These figures are typically 3-panel, wide (figsize=(18, 5)) --
+        // forcing width:100% (not just max-width) makes them fill the
+        // content column instead of rendering at a cramped native size,
+        // and lifting the 400px max-height (set for short text outputs)
+        // avoids clipping/squashing a tall multi-panel chart.
+        outDiv.style.maxHeight = 'none';
+        figs.forEach(function(b64) {
+          var img = document.createElement('img');
+          img.src = 'data:image/png;base64,' + b64;
+          img.style.cssText = 'display:block; width:100%; height:auto; margin-top:8px;';
+          outDiv.appendChild(img);
+        });
+      }
       if (!outDiv.textContent && figs.length === 0) {
         outDiv.textContent = '(sin salida)';
       }
